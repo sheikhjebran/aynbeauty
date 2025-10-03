@@ -8,12 +8,13 @@ interface User {
   last_name: string
   email: string
   phone: string
+  role?: string
 }
 
 interface AuthContextType {
   user: User | null
   token: string | null
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string; isAdmin?: boolean }>
   logout: () => void
   loading: boolean
 }

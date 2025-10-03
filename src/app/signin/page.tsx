@@ -43,11 +43,16 @@ export default function SignInPage() {
 
     const result = await login(formData.email, formData.password)
     
+    console.log('Login result:', result) // Debug log
+    
     if (result.success) {
+      console.log('Login successful, isAdmin:', result.isAdmin) // Debug log
       // Check if user is admin and redirect accordingly
       if (result.isAdmin) {
+        console.log('Redirecting to admin dashboard') // Debug log
         router.push('/admin')
       } else {
+        console.log('Redirecting to:', redirectUrl) // Debug log
         router.push(redirectUrl)
       }
     } else {
