@@ -53,7 +53,7 @@ export function MobileHeader() {
                     onError={() => setLogoError(true)}
                   />
                   <span className="ml-2 text-xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-                    AYNBeauty
+                    AYN Beauty
                   </span>
                 </div>
               ) : (
@@ -62,7 +62,7 @@ export function MobileHeader() {
                   <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-md flex items-center justify-center">
                     <span className="text-white font-bold text-lg">A</span>
                   </div>
-                  <span className="ml-2 text-2xl font-bold gradient-text">AynBeauty</span>
+                  <span className="ml-2 text-2xl font-bold gradient-text">Ayn Beauty</span>
                 </div>
               )}
             </Link>
@@ -136,7 +136,7 @@ export function MobileHeader() {
                   <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold">A</span>
                   </div>
-                  <span className="ml-2 text-xl font-bold gradient-text">AynBeauty</span>
+                  <span className="ml-2 text-xl font-bold gradient-text">Ayn Beauty</span>
                 </div>
                 <button
                   onClick={toggleMenu}

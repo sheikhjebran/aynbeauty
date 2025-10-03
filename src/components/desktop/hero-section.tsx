@@ -4,6 +4,18 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
+interface HeroSlide {
+  id: number
+  title: string
+  subtitle: string
+  description: string
+  buttonText: string
+  buttonLink: string
+  image?: string
+  video?: string
+  bgColor: string
+}
+
 export function DesktopHeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
 
@@ -15,7 +27,7 @@ export function DesktopHeroSection() {
       description: 'Find everything from makeup to skincare at AynBeauty',
       buttonText: 'Shop Now',
       buttonLink: '/products',
-      image: 'https://picsum.photos/1200/600?random=1',
+      video: '/welcome-banner.mp4',
       bgColor: 'from-pink-500 to-purple-600'
     },
     {
@@ -60,15 +72,28 @@ export function DesktopHeroSection() {
           {/* Background */}
           <div className={`absolute inset-0 bg-gradient-to-r ${slide.bgColor} opacity-90`} />
           
-          {/* Background Image */}
+          {/* Background Video/Image */}
           <div className="absolute inset-0">
-            <Image
-              src={slide.image}
-              alt={slide.title}
-              fill
-              className="object-cover"
-              priority={index === 0}
-            />
+            {slide.video ? (
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="w-full h-full object-cover"
+              >
+                <source src={slide.video} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            ) : slide.image ? (
+              <Image
+                src={slide.image}
+                alt={slide.title}
+                fill
+                className="object-cover"
+                priority={index === 0}
+              />
+            ) : null}
           </div>
 
           {/* Content */}

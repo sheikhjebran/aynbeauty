@@ -88,7 +88,7 @@ export function DesktopHeader() {
               <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-xl">A</span>
               </div>
-              <span className="ml-3 text-2xl font-bold gradient-text">AynBeauty</span>
+              <span className="ml-3 text-2xl font-bold gradient-text">Ayn Beauty</span>
             </Link>
           </div>
 

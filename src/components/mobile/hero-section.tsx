@@ -3,13 +3,23 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 
+interface MobileSlide {
+  id: number
+  title: string
+  subtitle: string
+  cta: string
+  gradient: string
+  image?: string
+  video?: string
+}
+
 export function MobileHeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
 
   const slides = [
     {
       id: 1,
-      image: 'https://picsum.photos/800/600?random=18',
+      video: '/welcome-banner.mp4',
       title: 'New Beauty Arrivals',
       subtitle: 'Discover the latest in makeup & skincare',
       cta: 'Shop Now',
@@ -55,10 +65,29 @@ export function MobileHeroSection() {
       >
         {slides.map((slide, index) => (
           <div key={slide.id} className="w-full flex-shrink-0 relative">
-            {/* Background Image */}
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-100 to-secondary-100">
-              {/* Placeholder for image */}
-              <div className="w-full h-full bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200"></div>
+            {/* Background Video/Image */}
+            <div className="absolute inset-0">
+              {slide.video ? (
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="w-full h-full object-cover"
+                >
+                  <source src={slide.video} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              ) : slide.image ? (
+                <Image
+                  src={slide.image}
+                  alt={slide.title}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200"></div>
+              )}
             </div>
 
             {/* Gradient Overlay */}
