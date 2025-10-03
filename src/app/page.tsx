@@ -65,6 +65,19 @@ export default function HomePage() {
     }
   }, [])
 
+  // Helper function to convert product prices from strings to numbers
+  const convertProductPrices = (products: any[]): Product[] => {
+    return products.map(product => ({
+      ...product,
+      price: parseFloat(product.price),
+      discounted_price: product.discounted_price ? parseFloat(product.discounted_price) : null,
+      rating: parseFloat(product.rating) || 0,
+      rating_count: parseInt(product.rating_count) || 0,
+      brand: product.category_name || '',
+      category: product.category_name || ''
+    }))
+  }
+
   const fetchHomepageData = async () => {
     try {
       // Fetch homepage content
@@ -78,14 +91,14 @@ export default function HomePage() {
       const productsResponse = await fetch('/api/products?featured=true&limit=8')
       if (productsResponse.ok) {
         const productsData = await productsResponse.json()
-        setFeaturedProducts(productsData.products || [])
+        setFeaturedProducts(convertProductPrices(productsData.products || []))
       }
 
       // Fetch trending products
       const trendingResponse = await fetch('/api/products?trending=true&limit=6')
       if (trendingResponse.ok) {
         const trendingData = await trendingResponse.json()
-        setTrendingProducts(trendingData.products || [])
+        setTrendingProducts(convertProductPrices(trendingData.products || []))
       }
 
     } catch (error) {
@@ -136,7 +149,9 @@ export default function HomePage() {
       if (response.ok) {
         alert('Product added to cart!')
       } else {
-        alert('Failed to add product to cart')
+        const errorData = await response.json()
+        console.error('Cart API error:', errorData)
+        alert(errorData.error || errorData.message || 'Failed to add product to cart')
       }
     } catch (error) {
       console.error('Error adding to cart:', error)
@@ -159,14 +174,19 @@ export default function HomePage() {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
+          action: 'add',
           product_id: productId
         })
       })
 
       if (response.ok) {
         alert('Product added to wishlist!')
+      } else if (response.status === 409) {
+        alert('Product is already in your wishlist!')
       } else {
-        alert('Failed to add product to wishlist')
+        const errorData = await response.json()
+        console.error('Wishlist API error:', errorData)
+        alert(errorData.error || errorData.message || 'Failed to add product to wishlist')
       }
     } catch (error) {
       console.error('Error adding to wishlist:', error)

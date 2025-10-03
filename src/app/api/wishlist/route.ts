@@ -26,7 +26,6 @@ export async function GET(request: NextRequest) {
         w.created_at,
         p.name as product_name,
         p.price,
-        p.original_price,
         p.slug,
         b.name as brand_name,
         pi.image_url,
@@ -39,7 +38,7 @@ export async function GET(request: NextRequest) {
       LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = TRUE
       LEFT JOIN product_reviews pr ON p.id = pr.product_id AND pr.is_approved = TRUE
       WHERE w.user_id = ? AND p.is_active = TRUE
-      GROUP BY w.id, w.product_id, w.created_at, p.name, p.price, p.original_price, 
+      GROUP BY w.id, w.product_id, w.created_at, p.name, p.price, 
                p.slug, b.name, pi.image_url, p.stock_quantity
       ORDER BY w.created_at DESC
     `

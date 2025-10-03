@@ -90,7 +90,13 @@ export default function ProductDetailPage() {
       }
       
       const data = await response.json()
-      setProduct(data.product)
+      // Convert string prices to numbers for proper comparison
+      const productData = {
+        ...data.product,
+        price: parseFloat(data.product.price),
+        discounted_price: data.product.discounted_price ? parseFloat(data.product.discounted_price) : undefined
+      }
+      setProduct(productData)
       
       // Fetch product images
       const imagesResponse = await fetch(`/api/products/${productId}/images`)
@@ -107,7 +113,8 @@ export default function ProductDetailPage() {
         const reviewsData = await reviewsResponse.json()
         if (reviewsData.success) {
           setReviews(reviewsData.reviews || [])
-          setAverageRating(reviewsData.averageRating || 0)
+          const rating = reviewsData.averageRating || 0
+          setAverageRating(typeof rating === 'string' ? parseFloat(rating) : rating)
         }
       }
     } catch (error) {
@@ -434,7 +441,7 @@ export default function ProductDetailPage() {
                   {renderStars(Math.round(averageRating))}
                 </div>
                 <span className="text-sm text-gray-600">
-                  {averageRating > 0 ? `${averageRating.toFixed(1)} out of 5` : 'No ratings yet'}
+                  {averageRating > 0 ? `${(typeof averageRating === 'number' ? averageRating : 0).toFixed(1)} out of 5` : 'No ratings yet'}
                 </span>
                 <span className="text-sm text-gray-500">
                   ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})

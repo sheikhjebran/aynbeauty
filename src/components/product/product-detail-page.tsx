@@ -144,8 +144,8 @@ export function ProductDetailPage({ productId }: ProductDetailPageProps) {
     )
   }
 
-  const currentPrice = product.sale_price || product.price
-  const originalPrice = product.sale_price ? product.price : null
+  const currentPrice = Number(product.sale_price || product.price) || 0
+  const originalPrice = product.sale_price ? Number(product.price) || 0 : null
   const discount = originalPrice ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) : 0
 
   return (
@@ -261,7 +261,7 @@ export function ProductDetailPage({ productId }: ProductDetailPageProps) {
                     ))}
                   </div>
                   <span className="ml-2 text-gray-600">
-                    {product.avg_rating.toFixed(1)} ({product.review_count} reviews)
+                    {typeof product.avg_rating === 'number' ? product.avg_rating.toFixed(1) : '0.0'} ({product.review_count} reviews)
                   </span>
                 </div>
               )}
@@ -437,11 +437,11 @@ export function ProductDetailPage({ productId }: ProductDetailPageProps) {
                     </h3>
                     <div className="flex items-center mt-1">
                       <span className="font-semibold text-gray-900">
-                        ₹{(relatedProduct.sale_price || relatedProduct.price).toFixed(2)}
+                        ₹{Number(relatedProduct.sale_price || relatedProduct.price).toFixed(2)}
                       </span>
                       {relatedProduct.sale_price && (
                         <span className="ml-2 text-gray-500 line-through text-sm">
-                          ₹{relatedProduct.price.toFixed(2)}
+                          ₹{Number(relatedProduct.price).toFixed(2)}
                         </span>
                       )}
                     </div>
@@ -449,7 +449,7 @@ export function ProductDetailPage({ productId }: ProductDetailPageProps) {
                       <div className="flex items-center mt-1">
                         <Star className="w-4 h-4 text-yellow-400 fill-current" />
                         <span className="ml-1 text-sm text-gray-600">
-                          {relatedProduct.avg_rating.toFixed(1)}
+                          {typeof relatedProduct.avg_rating === 'number' ? relatedProduct.avg_rating.toFixed(1) : '0.0'}
                         </span>
                       </div>
                     )}

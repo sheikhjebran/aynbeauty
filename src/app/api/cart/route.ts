@@ -25,11 +25,11 @@ export async function GET(request: NextRequest) {
     const cartItems = await getMany(`
       SELECT 
         ci.*,
-        p.name,
+        p.name as product_name,
         p.price,
-        p.sale_price,
         p.sku,
         p.stock_quantity,
+        p.slug as product_slug,
         (SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.sort_order LIMIT 1) as image_url,
         b.name as brand_name
       FROM cart_items ci

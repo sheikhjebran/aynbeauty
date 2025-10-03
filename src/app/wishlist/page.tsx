@@ -17,7 +17,7 @@ interface WishlistItem {
   brand_name: string
   image_url: string
   stock_quantity: number
-  avg_rating: number
+  avg_rating: number | string
   review_count: number
   created_at: string
 }
@@ -152,29 +152,34 @@ export default function WishlistPage() {
     }).format(price)
   }
 
-  const renderStars = (rating: number) => {
+  const renderStars = (rating: number | string) => {
+    const numRating = typeof rating === 'string' ? parseFloat(rating) : rating
+    const safeRating = isNaN(numRating) ? 0 : numRating
+    
     return (
       <div className="flex items-center">
         {[...Array(5)].map((_, i) => (
           <StarIcon
             key={i}
-            className={`h-4 w-4 ${i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300'}`}
+            className={`h-4 w-4 ${i < Math.floor(safeRating) ? 'text-yellow-400' : 'text-gray-300'}`}
           />
         ))}
-        <span className="ml-1 text-sm text-gray-600">({rating.toFixed(1)})</span>
+        <span className="ml-1 text-sm text-gray-600">({safeRating.toFixed(1)})</span>
       </div>
     )
   }
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded mb-6 w-1/4"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-gray-200 h-80 rounded"></div>
-            ))}
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 py-8">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded mb-6 w-1/4"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-gray-200 h-80 rounded"></div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -183,32 +188,35 @@ export default function WishlistPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Error</h2>
-        <p className="text-gray-600 mb-4">{error}</p>
-        <button
-          onClick={fetchWishlistItems}
-          className="bg-pink-600 text-white px-4 py-2 rounded-md hover:bg-pink-700"
-        >
-          Try Again
-        </button>
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-4 py-8 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Error</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={fetchWishlistItems}
+            className="bg-pink-600 text-white px-4 py-2 rounded-md hover:bg-pink-700"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">My Wishlist</h1>
-        {wishlistItems.length > 0 && (
-          <button
-            onClick={clearWishlist}
-            className="text-red-600 hover:text-red-700 text-sm font-medium"
-          >
-            Clear All
-          </button>
-        )}
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">My Wishlist</h1>
+          {wishlistItems.length > 0 && (
+            <button
+              onClick={clearWishlist}
+              className="text-red-600 hover:text-red-700 text-sm font-medium"
+            >
+              Clear All
+            </button>
+          )}
+        </div>
 
       {wishlistItems.length === 0 ? (
         <div className="text-center py-16">
@@ -249,7 +257,7 @@ export default function WishlistPage() {
                 </div>
 
                 {/* Product Image */}
-                <Link href={`/product/${item.product_id}`}>
+                <Link href={`/products/${item.product_id}`}>
                   <div className="relative aspect-square">
                     <Image
                       src={item.image_url || `https://picsum.photos/300/300?random=${item.product_id}`}
@@ -272,7 +280,7 @@ export default function WishlistPage() {
 
                 {/* Product Details */}
                 <div className="p-4">
-                  <Link href={`/product/${item.product_id}`}>
+                  <Link href={`/products/${item.product_id}`}>
                     <h3 className="font-medium text-gray-900 mb-1 line-clamp-2 hover:text-pink-600">
                       {item.product_name}
                     </h3>
@@ -331,6 +339,7 @@ export default function WishlistPage() {
           </div>
         </>
       )}
+      </div>
     </div>
   )
 }
