@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
   try {
-    const { first_name, last_name, email, mobile, password, otp_method } = await request.json()
+    const { first_name, last_name, email, mobile, password } = await request.json()
 
     if (!first_name || !last_name || !email || !mobile || !password) {
       return NextResponse.json(
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     // Check if user already exists
     const [existingUser] = await executeQuery(`
-      SELECT id FROM users WHERE email = ? OR mobile = ?
+      SELECT id FROM users WHERE email = ? OR phone = ?
     `, [email, mobile]) as any[]
 
     if (existingUser) {
@@ -28,32 +28,20 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString()
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
-
-    // Create user (initially unverified)
+    // Create user (immediately active)
     const result = await executeQuery(`
       INSERT INTO users (
-        first_name, last_name, email, mobile, password, 
-        email_verification_token, email_verification_expires, 
+        first_name, last_name, email, phone, password, 
         is_active, email_verified, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
     `, [
       first_name, last_name, email, mobile, hashedPassword,
-      otp, otpExpiry, false, false
+      true, true // User is immediately active and verified
     ]) as any
-
-    // Send OTP based on method
-    if (otp_method === 'email') {
-      await sendEmailOTP(email, otp, first_name)
-    } else if (otp_method === 'whatsapp') {
-      await sendWhatsAppOTP(mobile, otp, first_name)
-    }
 
     return NextResponse.json({
       success: true,
-      message: `OTP sent to your ${otp_method}`,
+      message: 'Account created successfully! Please sign in.',
       user_id: result.insertId
     })
 
@@ -63,65 +51,5 @@ export async function POST(request: NextRequest) {
       { error: 'Failed to create account' },
       { status: 500 }
     )
-  }
-}
-
-async function sendEmailOTP(email: string, otp: string, firstName: string) {
-  // For now, just log the OTP (in production, use a real email service)
-  console.log(`Email OTP for ${email}: ${otp}`)
-  
-  // In production, you would integrate with services like:
-  // - SendGrid
-  // - AWS SES  
-  // - Nodemailer with SMTP
-  
-  // Example email content:
-  const emailContent = `
-    Hi ${firstName},
-    
-    Your verification code for AYN Beauty is: ${otp}
-    
-    This code will expire in 10 minutes.
-    
-    Best regards,
-    AYN Beauty Team
-  `
-  
-  // TODO: Implement actual email sending
-  return Promise.resolve()
-}
-
-async function sendWhatsAppOTP(mobile: string, otp: string, firstName: string) {
-  // For now, just log the OTP (in production, use WhatsApp Business API)
-  console.log(`WhatsApp OTP for ${mobile}: ${otp}`)
-  
-  // In production, you would integrate with:
-  // - WhatsApp Business API
-  // - Twilio WhatsApp API
-  // - Meta WhatsApp Business Platform
-  
-  try {
-    // Example WhatsApp message format:
-    const message = `Hi ${firstName}! Your AYN Beauty verification code is: ${otp}. Valid for 10 minutes.`
-    
-    // TODO: Implement actual WhatsApp API call
-    // const response = await fetch('https://api.whatsapp.com/send', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Authorization': `Bearer ${process.env.WHATSAPP_TOKEN}`,
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: JSON.stringify({
-    //     messaging_product: 'whatsapp',
-    //     to: mobile,
-    //     type: 'text',
-    //     text: { body: message }
-    //   })
-    // })
-    
-    return Promise.resolve()
-  } catch (error) {
-    console.error('WhatsApp OTP error:', error)
-    throw error
   }
 }

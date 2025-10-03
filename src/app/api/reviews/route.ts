@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import dbConnect from '@/lib/database'
+import pool from '@/lib/database'
 import { RowDataPacket, OkPacket } from 'mysql2'
 import jwt from 'jsonwebtoken'
 
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(url.searchParams.get('offset') || '0')
     const sortBy = url.searchParams.get('sort') || 'newest'
 
-    const connection = await dbConnect.getConnection()
+    const connection = await pool.getConnection()
     
     try {
       if (productId) {
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { action, product_id, rating, title, comment, review_id } = body
 
-    const connection = await dbConnect.getConnection()
+    const connection = await pool.getConnection()
 
     try {
       if (action === 'create_review') {
@@ -197,7 +197,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     const { review_id, rating, title, comment } = body
 
-    const connection = await dbConnect.getConnection()
+    const connection = await pool.getConnection()
 
     try {
       // Check if review belongs to user
@@ -251,7 +251,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ message: 'Review ID required' }, { status: 400 })
     }
 
-    const connection = await dbConnect.getConnection()
+    const connection = await pool.getConnection()
 
     try {
       // Check if review belongs to user or user is admin

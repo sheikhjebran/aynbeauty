@@ -1,15 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function SignInPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectUrl = searchParams?.get('redirect') || '/'
+  const { login, user } = useAuth()
   
   const [formData, setFormData] = useState({
     email: '',
@@ -18,6 +20,13 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      router.push(redirectUrl)
+    }
+  }, [user, router, redirectUrl])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -32,29 +41,15 @@ export default function SignInPage() {
     setLoading(true)
     setError('')
 
-    try {
-      const response = await fetch('/api/auth/signin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        localStorage.setItem('token', data.token)
-        localStorage.setItem('user', JSON.stringify(data.user))
-        router.push(redirectUrl)
-      } else {
-        setError(data.error || 'Failed to sign in')
-      }
-    } catch (error) {
-      setError('Something went wrong. Please try again.')
-    } finally {
-      setLoading(false)
+    const result = await login(formData.email, formData.password)
+    
+    if (result.success) {
+      router.push(redirectUrl)
+    } else {
+      setError(result.error || 'Login failed')
     }
+    
+    setLoading(false)
   }
 
   return (

@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
     // Find user
     const [user] = await executeQuery(`
-      SELECT id, first_name, mobile FROM users WHERE email = ?
+      SELECT id, first_name, phone FROM users WHERE email = ?
     `, [email]) as any[]
 
     if (!user) {
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     if (otp_method === 'email') {
       await sendEmailOTP(email, otp, user.first_name)
     } else if (otp_method === 'whatsapp') {
-      await sendWhatsAppOTP(user.mobile, otp, user.first_name)
+      await sendWhatsAppOTP(user.phone, otp, user.first_name)
     }
 
     return NextResponse.json({

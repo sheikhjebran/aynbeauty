@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     // Find user by email
     const [user] = await executeQuery(`
-      SELECT id, email, password, first_name, last_name, mobile, is_active, email_verified
+      SELECT id, email, password, first_name, last_name, phone, is_active, email_verified
       FROM users 
       WHERE email = ?
     `, [email]) as any[]
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { id: user.id, userId: user.id, email: user.email },
       process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '7d' }
     )
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
       email: user.email,
       first_name: user.first_name,
       last_name: user.last_name,
-      mobile: user.mobile
+      mobile: user.phone
     }
 
     return NextResponse.json({

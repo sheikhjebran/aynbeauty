@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     // Find user and verify OTP
     const [user] = await executeQuery(`
-      SELECT id, email, first_name, last_name, mobile, 
+      SELECT id, email, first_name, last_name, phone, 
              email_verification_token, email_verification_expires
       FROM users 
       WHERE email = ? AND email_verification_token = ?
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       email: user.email,
       first_name: user.first_name,
       last_name: user.last_name,
-      mobile: user.mobile
+      mobile: user.phone
     }
 
     return NextResponse.json({

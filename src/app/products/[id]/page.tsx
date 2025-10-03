@@ -12,9 +12,11 @@ import {
   ShareIcon,
   FireIcon,
   SparklesIcon,
-  NewspaperIcon
+  NewspaperIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline'
 import { StarIcon as StarSolidIcon, HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface ProductImage {
   id: number
@@ -56,6 +58,7 @@ interface ProductReview {
 export default function ProductDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const { user, token } = useAuth()
   const productId = params?.id as string
   
   const [product, setProduct] = useState<Product | null>(null)
@@ -66,6 +69,10 @@ export default function ProductDetailPage() {
   const [addingToCart, setAddingToCart] = useState(false)
   const [reviews, setReviews] = useState<ProductReview[]>([])
   const [averageRating, setAverageRating] = useState(0)
+  const [showReviewForm, setShowReviewForm] = useState(false)
+  const [reviewRating, setReviewRating] = useState(0)
+  const [reviewComment, setReviewComment] = useState('')
+  const [submittingReview, setSubmittingReview] = useState(false)
 
   useEffect(() => {
     if (productId) {
@@ -114,9 +121,8 @@ export default function ProductDetailPage() {
   const addToCart = async () => {
     try {
       setAddingToCart(true)
-      const token = localStorage.getItem('token')
       
-      if (!token) {
+      if (!user || !token) {
         router.push('/signin')
         return
       }
@@ -148,9 +154,7 @@ export default function ProductDetailPage() {
 
   const addToWishlist = async () => {
     try {
-      const token = localStorage.getItem('token')
-      
-      if (!token) {
+      if (!user || !token) {
         router.push('/signin')
         return
       }
@@ -174,6 +178,58 @@ export default function ProductDetailPage() {
     } catch (error) {
       console.error('Add to wishlist error:', error)
       alert('Failed to add product to wishlist')
+    }
+  }
+
+  const submitReview = async () => {
+    if (!user || !token) {
+      router.push('/signin')
+      return
+    }
+
+    if (reviewRating === 0) {
+      alert('Please select a rating')
+      return
+    }
+
+    if (!reviewComment.trim()) {
+      alert('Please write a comment')
+      return
+    }
+
+    try {
+      setSubmittingReview(true)
+
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          action: 'create_review',
+          product_id: product?.id,
+          rating: reviewRating,
+          comment: reviewComment.trim()
+        })
+      })
+
+      if (response.ok) {
+        alert('Review submitted successfully!')
+        setShowReviewForm(false)
+        setReviewRating(0)
+        setReviewComment('')
+        // Refresh reviews
+        fetchProduct()
+      } else {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Failed to submit review')
+      }
+    } catch (error) {
+      console.error('Submit review error:', error)
+      alert('Failed to submit review: ' + (error instanceof Error ? error.message : 'Unknown error'))
+    } finally {
+      setSubmittingReview(false)
     }
   }
 
@@ -205,6 +261,23 @@ export default function ProductDetailPage() {
         key={index}
         className={`h-5 w-5 ${index < rating ? 'text-yellow-400' : 'text-gray-300'}`}
       />
+    ))
+  }
+
+  const renderInteractiveStars = (rating: number, onRatingChange: (rating: number) => void) => {
+    return [...Array(5)].map((_, index) => (
+      <button
+        key={index}
+        type="button"
+        onClick={() => onRatingChange(index + 1)}
+        className="focus:outline-none"
+      >
+        <StarSolidIcon
+          className={`h-6 w-6 transition-colors ${
+            index < rating ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-200'
+          }`}
+        />
+      </button>
     ))
   }
 
@@ -261,7 +334,8 @@ export default function ProductDetailPage() {
             <div className="flex items-center gap-4">
               <button
                 onClick={addToWishlist}
-                className="p-2 text-gray-600 hover:text-red-500 transition-colors"
+                className="p-2 text-pink-600 hover:text-pink-700 hover:bg-pink-50 rounded-lg border border-pink-200 transition-colors"
+                title="Add to Wishlist"
               >
                 <HeartIcon className="h-6 w-6" />
               </button>
@@ -429,7 +503,8 @@ export default function ProductDetailPage() {
                   
                   <button
                     onClick={addToWishlist}
-                    className="px-6 py-3 border border-gray-300 rounded-lg hover:border-pink-600 hover:text-pink-600 transition-colors"
+                    className="px-6 py-3 border-2 border-pink-200 text-pink-600 hover:border-pink-600 hover:bg-pink-50 rounded-lg transition-colors flex items-center justify-center"
+                    title="Add to Wishlist"
                   >
                     <HeartIcon className="h-5 w-5" />
                   </button>
@@ -444,21 +519,80 @@ export default function ProductDetailPage() {
           <div className="border-t pt-8">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900">Customer Reviews</h2>
-              <button 
-                onClick={() => {
-                  const token = localStorage.getItem('token')
-                  if (!token) {
-                    router.push('/signin')
-                  } else {
-                    // Navigate to review form
-                    alert('Review form coming soon!')
-                  }
-                }}
-                className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors"
-              >
-                Rate This Product
-              </button>
+              {user && (
+                <button 
+                  onClick={() => setShowReviewForm(true)}
+                  className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors"
+                >
+                  Write a Review
+                </button>
+              )}
             </div>
+
+            {/* Review Form Modal */}
+            {showReviewForm && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-lg max-w-md w-full p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Write a Review</h3>
+                    <button
+                      onClick={() => {
+                        setShowReviewForm(false)
+                        setReviewRating(0)
+                        setReviewComment('')
+                      }}
+                      className="text-gray-400 hover:text-gray-600"
+                    >
+                      <XMarkIcon className="h-6 w-6" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Rating
+                      </label>
+                      <div className="flex items-center gap-1">
+                        {renderInteractiveStars(reviewRating, setReviewRating)}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Your Review
+                      </label>
+                      <textarea
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        placeholder="Share your experience with this product..."
+                        rows={4}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-pink-500"
+                      />
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => {
+                          setShowReviewForm(false)
+                          setReviewRating(0)
+                          setReviewComment('')
+                        }}
+                        className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={submitReview}
+                        disabled={submittingReview || reviewRating === 0 || !reviewComment.trim()}
+                        className="flex-1 px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {submittingReview ? 'Submitting...' : 'Submit Review'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {reviews.length > 0 ? (
               <div className="space-y-6">
@@ -484,19 +618,21 @@ export default function ProductDetailPage() {
             ) : (
               <div className="text-center py-8">
                 <p className="text-gray-500 mb-4">No reviews yet. Be the first to review this product!</p>
-                <button 
-                  onClick={() => {
-                    const token = localStorage.getItem('token')
-                    if (!token) {
-                      router.push('/signin')
-                    } else {
-                      alert('Review form coming soon!')
-                    }
-                  }}
-                  className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700 transition-colors"
-                >
-                  Write a Review
-                </button>
+                {user ? (
+                  <button 
+                    onClick={() => setShowReviewForm(true)}
+                    className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700 transition-colors"
+                  >
+                    Write a Review
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => router.push('/signin')}
+                    className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700 transition-colors"
+                  >
+                    Sign in to Write a Review
+                  </button>
+                )}
               </div>
             )}
           </div>

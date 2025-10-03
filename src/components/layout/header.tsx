@@ -13,16 +13,29 @@ import {
   XMarkIcon,
   ChevronDownIcon,
 } from '@heroicons/react/24/outline'
+import { useAuth } from '@/contexts/AuthContext'
+import { useCart } from '@/contexts/CartContext'
+import { useWishlist } from '@/contexts/WishlistContext'
 
 export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
-  const [cartCount, setCartCount] = useState(0)
-  const [wishlistCount, setWishlistCount] = useState(0)
   const [logoError, setLogoError] = useState(false)
   const router = useRouter()
+  
+  // Use contexts
+  const { user, logout } = useAuth()
+  const { totalItems: cartCount } = useCart()
+  const { items: wishlistItems } = useWishlist()
+  const wishlistCount = wishlistItems.length
+
+  const handleSignOut = () => {
+    logout()
+    setIsUserMenuOpen(false)
+    router.push('/')
+  }
 
   // Categories for navigation
   const categories = [
@@ -73,13 +86,6 @@ export function Header() {
   }
 
   useEffect(() => {
-    // Load cart and wishlist counts from localStorage or API
-    const storedCartCount = localStorage.getItem('cartCount')
-    const storedWishlistCount = localStorage.getItem('wishlistCount')
-    
-    if (storedCartCount) setCartCount(parseInt(storedCartCount))
-    if (storedWishlistCount) setWishlistCount(parseInt(storedWishlistCount))
-
     // Close dropdowns when clicking outside
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
@@ -214,28 +220,57 @@ export function Header() {
             <div className="relative user-menu-dropdown">
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="p-2 text-gray-600 hover:text-pink-600 transition-colors"
+                className="flex items-center p-2 text-gray-600 hover:text-pink-600 transition-colors"
               >
                 <UserIcon className="h-6 w-6" />
+                {user && (
+                  <span className="ml-2 text-sm font-medium hidden md:block">
+                    {user.first_name}
+                  </span>
+                )}
               </button>
               
               {/* User Dropdown */}
               {isUserMenuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200">
                   <div className="py-2">
-                    <Link href="/account" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
-                      My Account
-                    </Link>
-                    <Link href="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
-                      Orders
-                    </Link>
-                    <hr className="my-2" />
-                    <Link href="/signin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
-                      Sign In
-                    </Link>
-                    <Link href="/signup" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
-                      Sign Up
-                    </Link>
+                    {user ? (
+                      <>
+                        {/* Logged in user menu */}
+                        <div className="px-4 py-2 border-b border-gray-100">
+                          <p className="text-sm font-medium text-gray-900">
+                            {user.first_name} {user.last_name}
+                          </p>
+                          <p className="text-xs text-gray-500">{user.email}</p>
+                        </div>
+                        <Link href="/account" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
+                          My Account
+                        </Link>
+                        <Link href="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
+                          My Orders
+                        </Link>
+                        <Link href="/wishlist" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
+                          My Wishlist
+                        </Link>
+                        <hr className="my-2" />
+                        <button 
+                          onClick={handleSignOut}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors"
+                        >
+                          Sign Out
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {/* Guest user menu */}
+                        <Link href="/signin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
+                          Sign In
+                        </Link>
+                        <Link href="/signup" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
+                          Sign Up
+                        </Link>
+                      </>
+                    )}
                   </div>
                 </div>
               )}
