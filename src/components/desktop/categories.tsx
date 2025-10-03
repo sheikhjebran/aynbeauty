@@ -15,65 +15,51 @@ export function DesktopCategories() {
   const categories: Category[] = [
     {
       id: 1,
-      name: 'About Us',
-      slug: 'about',
-      image: 'https://picsum.photos/300/300?random=1',
-      productCount: 0
-    },
-    {
-      id: 2,
-      name: 'All Products',
-      slug: 'all-products',
-      image: 'https://picsum.photos/300/300?random=2',
-      productCount: 2450
-    },
-    {
-      id: 3,
       name: 'SkinCare',
       slug: 'skincare',
-      image: 'https://picsum.photos/300/300?random=3',
+      image: 'https://picsum.photos/300/300?random=1',
       productCount: 856
     },
     {
-      id: 4,
+      id: 2,
       name: 'Lips',
       slug: 'lips',
-      image: 'https://picsum.photos/300/300?random=4',
+      image: 'https://picsum.photos/300/300?random=2',
       productCount: 324
     },
     {
-      id: 5,
+      id: 3,
       name: 'Bath & Body',
       slug: 'bath-body',
-      image: 'https://picsum.photos/300/300?random=5',
+      image: 'https://picsum.photos/300/300?random=3',
       productCount: 567
     },
     {
-      id: 6,
+      id: 4,
       name: 'Fragrances',
       slug: 'fragrances',
-      image: 'https://picsum.photos/300/300?random=6',
+      image: 'https://picsum.photos/300/300?random=4',
       productCount: 389
     },
     {
-      id: 7,
+      id: 5,
       name: 'Eyes',
       slug: 'eyes',
-      image: 'https://picsum.photos/300/300?random=7',
+      image: 'https://picsum.photos/300/300?random=5',
       productCount: 298
     },
     {
-      id: 8,
+      id: 6,
       name: 'Nails',
       slug: 'nails',
-      image: 'https://picsum.photos/300/300?random=8',
+      image: 'https://picsum.photos/300/300?random=6',
       productCount: 156
     },
     {
-      id: 9,
+      id: 7,
       name: 'Combo Sets',
       slug: 'combo-sets',
-      image: 'https://picsum.photos/300/300?random=9',
+      image: 'https://picsum.photos/300/300?random=7',
       productCount: 89
     }
   ]
@@ -90,7 +76,7 @@ export function DesktopCategories() {
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-9 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-6">
           {categories.map((category) => (
             <Link
               key={category.id}

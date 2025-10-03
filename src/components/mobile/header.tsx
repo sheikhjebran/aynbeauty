@@ -7,13 +7,12 @@ import Image from 'next/image'
 export function MobileHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [logoError, setLogoError] = useState(false)
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
   const toggleSearch = () => setIsSearchOpen(!isSearchOpen)
 
   const categories = [
-    { name: 'About Us', href: '/about' },
-    { name: 'All Products', href: '/categories/all-products' },
     { name: 'SkinCare', href: '/categories/skincare' },
     { name: 'Lips', href: '/categories/lips' },
     { name: 'Bath & Body', href: '/categories/bath-body' },
@@ -28,7 +27,7 @@ export function MobileHeader() {
       {/* Fixed Header */}
       <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
         {/* Top Bar */}
-        <div className="px-4 py-4">
+        <div className="px-4 py-6">
           <div className="flex items-center justify-between">
             {/* Menu Button */}
             <button
@@ -42,28 +41,30 @@ export function MobileHeader() {
 
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <Image
-                src="/images/logo.png"
-                alt="AYN Beauty"
-                width={160}
-                height={55}
-                className="h-10 w-auto"
-                priority
-                onError={(e) => {
-                  // Fallback to text logo if image fails to load
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const fallback = target.nextElementSibling as HTMLElement;
-                  if (fallback) fallback.style.display = 'flex';
-                }}
-              />
-              {/* Fallback text logo */}
-              <div className="hidden items-center">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-md flex items-center justify-center">
-                  <span className="text-white font-bold text-base">A</span>
+              {!logoError ? (
+                <div className="flex items-center">
+                  <Image
+                    src="/images/logo.png"
+                    alt="AYN Beauty"
+                    width={180}
+                    height={65}
+                    className="h-14 w-auto"
+                    priority
+                    onError={() => setLogoError(true)}
+                  />
+                  <span className="ml-2 text-xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+                    AYNBeauty
+                  </span>
                 </div>
-                <span className="ml-2 text-xl font-bold gradient-text">AynBeauty</span>
-              </div>
+              ) : (
+                /* Fallback text logo */
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-md flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">A</span>
+                  </div>
+                  <span className="ml-2 text-2xl font-bold gradient-text">AynBeauty</span>
+                </div>
+              )}
             </Link>
 
             {/* Header Actions */}

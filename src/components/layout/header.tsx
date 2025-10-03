@@ -21,20 +21,11 @@ export function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [cartCount, setCartCount] = useState(0)
   const [wishlistCount, setWishlistCount] = useState(0)
+  const [logoError, setLogoError] = useState(false)
   const router = useRouter()
 
   // Categories for navigation
   const categories = [
-    { 
-      name: 'About Us', 
-      href: '/about',
-      subcategories: []
-    },
-    { 
-      name: 'All Products', 
-      href: '/categories/all-products',
-      subcategories: ['New Arrivals', 'Best Sellers', 'On Sale', 'Trending']
-    },
     { 
       name: 'SkinCare', 
       href: '/categories/skincare',
@@ -104,13 +95,13 @@ export function Header() {
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       {/* Top Banner */}
-      <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white text-center py-3 text-sm">
+      <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white text-center py-4 text-sm">
         <p>✨ Free shipping on orders above ₹499 | Beauty Club members get early access to sales!</p>
       </div>
 
       {/* Main Header */}
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-28">
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -125,31 +116,33 @@ export function Header() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <Image
-              src="/images/logo.png"
-              alt="AYN Beauty"
-              width={200}
-              height={70}
-              className="h-12 w-auto md:h-14 md:w-auto"
-              priority
-              onError={(e) => {
-                // Fallback to text logo if image fails to load
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                const fallback = target.nextElementSibling as HTMLElement;
-                if (fallback) fallback.style.display = 'flex';
-              }}
-            />
-            {/* Fallback text logo */}
-            <div className="hidden items-center">
-              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                <span className="text-white font-bold text-xl">A</span>
+            {!logoError ? (
+              <div className="flex items-center">
+                <Image
+                  src="/images/logo.png"
+                  alt="AYN Beauty"
+                  width={220}
+                  height={80}
+                  className="h-16 w-auto md:h-20 md:w-auto"
+                  priority
+                  onError={() => setLogoError(true)}
+                />
+                <span className="ml-3 text-2xl md:text-3xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+                  AYNBeauty
+                </span>
               </div>
-              <span className="text-3xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-                AYN
-              </span>
-              <span className="text-2xl font-light text-gray-700 ml-1">Beauty</span>
-            </div>
+            ) : (
+              /* Fallback text logo */
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                  <span className="text-white font-bold text-2xl">A</span>
+                </div>
+                <span className="text-4xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+                  AYN
+                </span>
+                <span className="text-3xl font-light text-gray-700 ml-1">Beauty</span>
+              </div>
+            )}
           </Link>
 
           {/* Desktop Navigation */}
