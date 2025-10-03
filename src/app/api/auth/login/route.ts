@@ -19,24 +19,30 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user from database
-    const [user] = await executeQuery(
+    const users = await executeQuery(
       'SELECT * FROM users WHERE email = ?',
       [email]
     ) as any[]
 
-    if (!user) {
+    console.log('Database query result:', users.length > 0 ? 'User found' : 'User not found')
+
+    if (users.length === 0) {
       return NextResponse.json(
-        { error: 'Invalid email or password' },
+        { message: 'Invalid email or password' },
         { status: 401 }
       )
     }
 
+    const user = users[0]
+    console.log('User role:', user.role)
+
     // Verify password
     const isValidPassword = await bcrypt.compare(password, user.password)
+    console.log('Password validation:', isValidPassword ? 'Valid' : 'Invalid')
 
     if (!isValidPassword) {
       return NextResponse.json(
-        { error: 'Invalid email or password' },
+        { message: 'Invalid email or password' },
         { status: 401 }
       )
     }
@@ -55,12 +61,13 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Login successful',
       user: userWithoutPassword,
-      token
+      token,
+      isAdmin: user.role === 'admin'
     })
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
-      { error: 'Failed to login' },
+      { message: 'Failed to login' },
       { status: 500 }
     )
   }

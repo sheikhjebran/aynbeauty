@@ -78,12 +78,13 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Shop</h3>
             <ul className="space-y-2">
-              <li><Link href="/categories/makeup" className="text-gray-400 hover:text-white transition-colors">Makeup</Link></li>
               <li><Link href="/categories/skincare" className="text-gray-400 hover:text-white transition-colors">Skincare</Link></li>
-              <li><Link href="/categories/hair-care" className="text-gray-400 hover:text-white transition-colors">Hair Care</Link></li>
-              <li><Link href="/categories/fragrance" className="text-gray-400 hover:text-white transition-colors">Fragrance</Link></li>
-              <li><Link href="/categories/bath-body" className="text-gray-400 hover:text-white transition-colors">Bath & Body</Link></li>
-              <li><Link href="/categories/men" className="text-gray-400 hover:text-white transition-colors">Men's Grooming</Link></li>
+              <li><Link href="/categories/lips" className="text-gray-400 hover:text-white transition-colors">Lips</Link></li>
+              <li><Link href="/categories/bath-and-body" className="text-gray-400 hover:text-white transition-colors">Bath and Body</Link></li>
+              <li><Link href="/categories/fragrances" className="text-gray-400 hover:text-white transition-colors">Fragrances</Link></li>
+              <li><Link href="/categories/eyes" className="text-gray-400 hover:text-white transition-colors">Eyes</Link></li>
+              <li><Link href="/categories/nails" className="text-gray-400 hover:text-white transition-colors">Nails</Link></li>
+              <li><Link href="/categories/combo-sets" className="text-gray-400 hover:text-white transition-colors">Combo Sets</Link></li>
             </ul>
           </div>
 
@@ -123,6 +124,12 @@ export function Footer() {
               © {currentYear} AYN Beauty. All rights reserved.
             </p>
             <div className="flex items-center space-x-6 mt-4 md:mt-0">
+              <Link 
+                href="/admin/login" 
+                className="text-gray-500 hover:text-gray-300 text-xs transition-colors"
+              >
+                Admin
+              </Link>
               <div className="flex items-center space-x-4">
                 <span className="text-gray-400 text-sm">Secure payments by:</span>
                 <div className="flex space-x-2">

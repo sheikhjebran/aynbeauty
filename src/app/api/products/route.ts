@@ -8,24 +8,22 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
     const brand = searchParams.get('brand')
     const search = searchParams.get('search')
+    const trending = searchParams.get('trending')
+    const featured = searchParams.get('featured')
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '12')
     const offset = (page - 1) * limit
 
     let query = `
       SELECT 
-        p.*,
+        p.id, p.name, p.description, p.price, p.discounted_price, p.stock_quantity,
+        p.image_url, p.primary_image, p.is_trending, p.is_must_have, p.is_new_arrival,
+        p.created_at, p.updated_at,
         c.name as category_name,
-        c.slug as category_slug,
-        b.name as brand_name,
-        b.slug as brand_slug,
-        (SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.sort_order LIMIT 1) as main_image,
-        (SELECT AVG(pr.rating) FROM product_reviews pr WHERE pr.product_id = p.id) as avg_rating,
-        (SELECT COUNT(*) FROM product_reviews pr WHERE pr.product_id = p.id) as review_count
+        c.slug as category_slug
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
-      LEFT JOIN brands b ON p.brand_id = b.id
-      WHERE p.is_active = TRUE
+      WHERE 1=1
     `
 
     const params: any[] = []
@@ -35,19 +33,22 @@ export async function GET(request: NextRequest) {
       params.push(category)
     }
 
-    if (brand) {
-      query += ` AND b.slug = ?`
-      params.push(brand)
+    if (search) {
+      query += ` AND (p.name LIKE ? OR p.description LIKE ?)`
+      params.push(`%${search}%`, `%${search}%`)
     }
 
-    if (search) {
-      query += ` AND (p.name LIKE ? OR p.description LIKE ? OR b.name LIKE ?)`
-      params.push(`%${search}%`, `%${search}%`, `%${search}%`)
+    if (trending === 'true') {
+      query += ` AND p.is_trending = 1`
+    }
+
+    if (featured === 'true') {
+      query += ` AND p.is_must_have = 1`
     }
 
     // Get total count for pagination
     const countQuery = query.replace(
-      'SELECT p.*, c.name as category_name, c.slug as category_slug, b.name as brand_name, b.slug as brand_slug, (SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.sort_order LIMIT 1) as main_image, (SELECT AVG(pr.rating) FROM product_reviews pr WHERE pr.product_id = p.id) as avg_rating, (SELECT COUNT(*) FROM product_reviews pr WHERE pr.product_id = p.id) as review_count',
+      'SELECT p.id, p.name, p.description, p.price, p.discounted_price, p.stock_quantity, p.image_url, p.primary_image, p.is_trending, p.is_must_have, p.is_new_arrival, p.created_at, p.updated_at, c.name as category_name, c.slug as category_slug',
       'SELECT COUNT(*) as total'
     )
 

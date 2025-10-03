@@ -2,8 +2,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Poppins, Playfair_Display } from 'next/font/google'
 import { Providers } from './providers'
-import { Header } from '@/components/layout/header'
-import { Footer } from '@/components/layout/footer'
+import { ConditionalLayout } from '@/components/layout/conditional-layout'
 
 const poppins = Poppins({ 
   subsets: ['latin'],
@@ -68,11 +67,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${poppins.variable} ${playfair.variable} font-sans`}>
         <Providers>
-          <Header />
-          <main>
+          <ConditionalLayout>
             {children}
-          </main>
-          <Footer />
+          </ConditionalLayout>
         </Providers>
       </body>
     </html>

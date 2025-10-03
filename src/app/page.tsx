@@ -14,6 +14,10 @@ import {
 } from '@heroicons/react/24/outline'
 import { StarIcon as StarSolidIcon, HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid'
 
+// Import Hero Section components
+import { DesktopHeroSection } from '@/components/desktop/hero-section'
+import { MobileHeroSection } from '@/components/mobile/hero-section'
+
 interface Product {
   id: number
   name: string
@@ -25,14 +29,6 @@ interface Product {
   rating: number
   rating_count: number
   recommendation_reason?: string
-}
-
-interface Banner {
-  id: number
-  title: string
-  content: string
-  image_url: string
-  link_url: string
 }
 
 interface Campaign {
@@ -53,10 +49,8 @@ export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([])
   const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([])
   const [trendingProducts, setTrendingProducts] = useState<Product[]>([])
-  const [banners, setBanners] = useState<Banner[]>([])
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [loyaltyData, setLoyaltyData] = useState<LoyaltyData | null>(null)
-  const [currentBanner, setCurrentBanner] = useState(0)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [loading, setLoading] = useState(true)
 
@@ -71,22 +65,12 @@ export default function HomePage() {
     }
   }, [])
 
-  useEffect(() => {
-    if (banners.length > 1) {
-      const interval = setInterval(() => {
-        setCurrentBanner((prev) => (prev + 1) % banners.length)
-      }, 5000)
-      return () => clearInterval(interval)
-    }
-  }, [banners])
-
   const fetchHomepageData = async () => {
     try {
       // Fetch homepage content
       const contentResponse = await fetch('/api/content?type=homepage')
       if (contentResponse.ok) {
         const contentData = await contentResponse.json()
-        setBanners(contentData.banners || [])
         setCampaigns(contentData.offers || [])
       }
 
@@ -113,17 +97,8 @@ export default function HomePage() {
 
   const fetchPersonalizedData = async () => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await fetch('/api/personalization', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setRecommendedProducts(data.recommendations || [])
-      }
+      // Temporarily disabled to prevent errors
+      console.log('Personalization API temporarily disabled')
     } catch (error) {
       console.error('Error fetching personalized data:', error)
     }
@@ -131,17 +106,8 @@ export default function HomePage() {
 
   const fetchLoyaltyData = async () => {
     try {
-      const token = localStorage.getItem('token')
-      const response = await fetch('/api/loyalty', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setLoyaltyData(data.loyalty)
-      }
+      // Temporarily disabled to prevent errors
+      console.log('Loyalty API temporarily disabled')
     } catch (error) {
       console.error('Error fetching loyalty data:', error)
     }
@@ -261,9 +227,16 @@ export default function HomePage() {
 
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-gray-900">₹{product.discounted_price}</span>
-            {product.price > product.discounted_price && (
-              <span className="text-sm text-gray-500 line-through">₹{product.price}</span>
+            {product.discounted_price && product.discounted_price < product.price ? (
+              <>
+                <span className="text-lg font-bold text-pink-600">₹{product.discounted_price}</span>
+                <span className="text-sm text-gray-500 line-through">₹{product.price}</span>
+                <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">
+                  {Math.round(((product.price - product.discounted_price) / product.price) * 100)}% OFF
+                </span>
+              </>
+            ) : (
+              <span className="text-lg font-bold text-gray-900">₹{product.price}</span>
             )}
           </div>
           <button
@@ -296,64 +269,13 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Carousel - Tira Style */}
-      {banners.length > 0 && (
-        <section className="relative">
-          <div className="relative h-[450px] md:h-[600px] overflow-hidden">
-            {banners.map((banner, index) => (
-              <div
-                key={banner.id}
-                className={`absolute inset-0 transition-all duration-700 ease-in-out ${
-                  index === currentBanner ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-105'
-                }`}
-              >
-                <Image
-                  src={banner.image_url || '/placeholder-banner.jpg'}
-                  alt={banner.title}
-                  fill
-                  className="object-cover"
-                  priority={index === 0}
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent">
-                  <div className="container mx-auto px-4 h-full flex items-center">
-                    <div className="max-w-xl text-white">
-                      <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">
-                        {banner.title}
-                      </h1>
-                      <p className="text-lg md:text-xl mb-8 opacity-90 leading-relaxed">
-                        {banner.content}
-                      </p>
-                      {banner.link_url && (
-                        <Link
-                          href={banner.link_url}
-                          className="inline-block bg-white text-black px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105"
-                        >
-                          Shop Now
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-            
-            {/* Carousel Indicators */}
-            {banners.length > 1 && (
-              <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-3">
-                {banners.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentBanner(index)}
-                    className={`w-12 h-1 rounded-full transition-all duration-300 ${
-                      index === currentBanner ? 'bg-white' : 'bg-white/40 hover:bg-white/60'
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-      )}
+      {/* Hero Section with Video Banner */}
+      <div className="hidden md:block">
+        <DesktopHeroSection />
+      </div>
+      <div className="block md:hidden">
+        <MobileHeroSection />
+      </div>
 
       {/* Top Categories - Tira Style */}
       <section className="py-16 bg-white">
@@ -371,14 +293,15 @@ export default function HomePage() {
             </Link>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6">
             {[
-              { name: 'Makeup', image: '/images/categories/makeup.jpg', href: '/categories/makeup' },
               { name: 'Skincare', image: '/images/categories/skincare.jpg', href: '/categories/skincare' },
-              { name: 'Hair', image: '/images/categories/hair.jpg', href: '/categories/hair-care' },
-              { name: 'Fragrance', image: '/images/categories/fragrance.jpg', href: '/categories/fragrance' },
-              { name: 'Bath & Body', image: '/images/categories/bath-body.jpg', href: '/categories/bath-body' },
-              { name: 'Men', image: '/images/categories/men.jpg', href: '/categories/men' }
+              { name: 'Lips', image: '/images/categories/lips.jpg', href: '/categories/lips' },
+              { name: 'Bath and Body', image: '/images/categories/bath-body.jpg', href: '/categories/bath-and-body' },
+              { name: 'Fragrances', image: '/images/categories/fragrances.jpg', href: '/categories/fragrances' },
+              { name: 'Eyes', image: '/images/categories/eyes.jpg', href: '/categories/eyes' },
+              { name: 'Nails', image: '/images/categories/nails.jpg', href: '/categories/nails' },
+              { name: 'Combo Sets', image: '/images/categories/combo-sets.jpg', href: '/categories/combo-sets' }
             ].map((category) => (
               <Link key={category.name} href={category.href}>
                 <div className="group text-center cursor-pointer">

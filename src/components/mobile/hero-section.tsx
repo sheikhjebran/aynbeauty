@@ -5,12 +5,13 @@ import Image from 'next/image'
 
 interface MobileSlide {
   id: number
-  title: string
-  subtitle: string
-  cta: string
+  title?: string
+  subtitle?: string
+  cta?: string
   gradient: string
   image?: string
   video?: string
+  imageFit?: 'contain' | 'cover' | 'fill' // New optional property for image fitting
 }
 
 export function MobileHeroSection() {
@@ -19,27 +20,28 @@ export function MobileHeroSection() {
   const slides = [
     {
       id: 1,
-      video: '/welcome-banner.mp4',
+      video: '/images/banners/welcome-banner.mp4',
       title: 'New Beauty Arrivals',
       subtitle: 'Discover the latest in makeup & skincare',
-      cta: 'Shop Now',
-      gradient: 'from-pink-500/80 to-purple-600/80'
+      // gradient: 'from-pink-500/60 to-purple-600/60'
     },
     {
       id: 2,
-      image: 'https://picsum.photos/800/600?random=19',
+      image: '/images/banners/new-arrivals.jpg',
       title: 'Premium Skincare',
       subtitle: 'Glow with our bestselling products',
       cta: 'Explore',
-      gradient: 'from-blue-500/80 to-teal-600/80'
+      // gradient: 'from-blue-500/60 to-teal-600/60',
+      imageFit: 'cover' // Shows full image
     },
     {
       id: 3,
-      image: 'https://picsum.photos/800/600?random=20',
+      image: '/images/banners/bestsellers.jpg',
       title: 'Makeup Essentials',
       subtitle: 'Create your perfect look',
       cta: 'Get Started',
-      gradient: 'from-orange-500/80 to-red-600/80'
+      // gradient: 'from-orange-500/60 to-red-600/60',
+      imageFit: 'contain' // Shows full image
     }
   ]
 
@@ -57,58 +59,78 @@ export function MobileHeroSection() {
   }
 
   return (
-    <div className="relative h-96 overflow-hidden">
-      {/* Slides */}
-      <div 
-        className="flex transition-transform duration-500 ease-in-out h-full"
-        style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-      >
-        {slides.map((slide, index) => (
-          <div key={slide.id} className="w-full flex-shrink-0 relative">
-            {/* Background Video/Image */}
-            <div className="absolute inset-0">
-              {slide.video ? (
-                <video
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="w-full h-full object-cover"
-                >
-                  <source src={slide.video} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              ) : slide.image ? (
-                <Image
-                  src={slide.image}
-                  alt={slide.title}
-                  fill
-                  className="object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200"></div>
-              )}
-            </div>
+    <div className="relative w-full overflow-hidden">
+      {/* Mobile: Responsive height */}
+      <div className="h-[60vh] min-h-[350px] max-h-[500px] sm:h-[70vh] sm:min-h-[400px] sm:max-h-[600px]">
+        {/* Slides */}
+        <div 
+          className="flex transition-transform duration-500 ease-in-out h-full"
+          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+        >
+          {slides.map((slide, index) => (
+            <div key={slide.id} className="w-full flex-shrink-0 relative">
+              {/* Background Video/Image */}
+              <div className="absolute inset-0 bg-gray-900">
+                {slide.video ? (
+                  <video
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="w-full h-full object-cover"
+                    style={{ objectPosition: 'center 40%' }}
+                  >
+                    <source src={slide.video} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                ) : slide.image ? (
+                  /* 
+                    Options for image display:
+                    1. object-contain: Shows full image, may have empty spaces
+                    2. object-cover: Fills container, may crop image
+                    3. object-fill: Stretches image to fit (may distort)
+                  */
+                  <Image
+                    src={slide.image}
+                    alt={slide.title || 'Banner image'}
+                    fill
+                    className={`object-${slide.imageFit || 'contain'}`}
+                    priority={index === 0}
+                    sizes="(max-width: 768px) 100vw, 100vw"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-pink-200 via-purple-200 to-blue-200"></div>
+                )}
+              </div>
 
             {/* Gradient Overlay */}
             <div className={`absolute inset-0 bg-gradient-to-t ${slide.gradient}`}></div>
 
             {/* Content */}
-            <div className="relative h-full flex items-center justify-center px-6">
-              <div className="text-center text-white max-w-sm">
-                <h1 className="text-2xl md:text-3xl font-bold mb-3 leading-tight">
-                  {slide.title}
-                </h1>
-                <p className="text-lg mb-6 opacity-90">
-                  {slide.subtitle}
-                </p>
-                <button className="bg-white text-gray-900 font-semibold px-8 py-3 rounded-full hover:bg-gray-100 transition-colors shadow-lg">
-                  {slide.cta}
-                </button>
+            {(slide.title || slide.subtitle || slide.cta) && (
+              <div className="relative h-full flex items-center justify-center px-6">
+                <div className="text-center text-white max-w-sm">
+                  {slide.title && (
+                    <h1 className="text-2xl md:text-3xl font-bold mb-3 leading-tight">
+                      {slide.title}
+                    </h1>
+                  )}
+                  {slide.subtitle && (
+                    <p className="text-lg mb-6 opacity-90">
+                      {slide.subtitle}
+                    </p>
+                  )}
+                  {slide.cta && (
+                    <button className="bg-white text-gray-900 font-semibold px-8 py-3 rounded-full hover:bg-gray-100 transition-colors shadow-lg">
+                      {slide.cta}
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         ))}
+        </div>
       </div>
 
       {/* Slide Indicators */}

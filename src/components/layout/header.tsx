@@ -229,12 +229,12 @@ export function Header() {
                     <Link href="/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
                       Orders
                     </Link>
-                    <Link href="/loyalty" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
-                      Beauty Club
-                    </Link>
                     <hr className="my-2" />
-                    <Link href="/auth/login" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
+                    <Link href="/signin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
                       Sign In
+                    </Link>
+                    <Link href="/signup" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
+                      Sign Up
                     </Link>
                   </div>
                 </div>

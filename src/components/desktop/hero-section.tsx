@@ -6,11 +6,11 @@ import Image from 'next/image'
 
 interface HeroSlide {
   id: number
-  title: string
-  subtitle: string
-  description: string
-  buttonText: string
-  buttonLink: string
+  title?: string
+  subtitle?: string
+  description?: string
+  buttonText?: string
+  buttonLink?: string
   image?: string
   video?: string
   bgColor: string
@@ -27,7 +27,7 @@ export function DesktopHeroSection() {
       description: 'Find everything from makeup to skincare at AynBeauty',
       buttonText: 'Shop Now',
       buttonLink: '/products',
-      video: '/welcome-banner.mp4',
+      video: '/images/banners/welcome-banner.mp4',
       bgColor: 'from-pink-500 to-purple-600'
     },
     {
@@ -37,8 +37,7 @@ export function DesktopHeroSection() {
       description: 'Discover trending products from your favorite brands',
       buttonText: 'Explore New',
       buttonLink: '/new-arrivals',
-      image: 'https://picsum.photos/1200/600?random=2',
-      bgColor: 'from-purple-500 to-pink-600'
+      image: '/images/banners/new-arrivals.jpg',
     },
     {
       id: 3,
@@ -47,8 +46,8 @@ export function DesktopHeroSection() {
       description: 'Join thousands of happy customers',
       buttonText: 'Shop Bestsellers',
       buttonLink: '/bestsellers',
-      image: 'https://picsum.photos/1200/600?random=3',
-      bgColor: 'from-pink-600 to-purple-500'
+      image: '/images/banners/bestsellers.jpg',
+      
     }
   ]
 
@@ -88,7 +87,7 @@ export function DesktopHeroSection() {
             ) : slide.image ? (
               <Image
                 src={slide.image}
-                alt={slide.title}
+                alt={slide.title || 'Banner image'}
                 fill
                 className="object-cover"
                 priority={index === 0}
@@ -100,24 +99,32 @@ export function DesktopHeroSection() {
           <div className="relative z-10 h-full flex items-center">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
               <div className="max-w-3xl">
-                <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                  {slide.title}
-                </h1>
-                <p className="text-xl md:text-2xl text-white/90 mb-4">
-                  {slide.subtitle}
-                </p>
-                <p className="text-lg text-white/80 mb-8 max-w-2xl">
-                  {slide.description}
-                </p>
-                <Link
-                  href={slide.buttonLink}
-                  className="inline-flex items-center px-8 py-4 bg-white text-primary-600 font-semibold rounded-full hover:bg-gray-50 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 duration-300"
-                >
-                  {slide.buttonText}
-                  <svg className="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </Link>
+                  {slide.title && (
+                    <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
+                      {slide.title}
+                    </h1>
+                  )}
+                  {slide.subtitle && (
+                    <p className="text-xl md:text-2xl text-white/90 mb-4">
+                      {slide.subtitle}
+                    </p>
+                  )}
+                {slide.description && (
+                  <p className="text-lg text-white/80 mb-8 max-w-2xl">
+                    {slide.description}
+                  </p>
+                )}
+                {slide.buttonText && slide.buttonLink && (
+                  <Link
+                    href={slide.buttonLink}
+                    className="inline-flex items-center px-8 py-4 bg-white text-primary-600 font-semibold rounded-full hover:bg-gray-50 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 duration-300"
+                  >
+                    {slide.buttonText}
+                    <svg className="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </Link>
+                )}
               </div>
             </div>
           </div>
