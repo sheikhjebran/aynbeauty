@@ -1,19 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { executeQuery } from '@/lib/database'
+import { executeQuery, getMany, getOne } from '@/lib/database'
+import jwt from 'jsonwebtoken'
+
+interface User {
+  id: number
+  email: string
+}
 
 // GET /api/cart - Get user's cart items
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.headers.get('user-id') // You'll implement proper auth later
+    const token = request.headers.get('authorization')?.replace('Bearer ', '')
     
-    if (!userId) {
+    if (!token) {
       return NextResponse.json(
-        { error: 'User not authenticated' },
+        { error: 'Authentication required' },
         { status: 401 }
       )
     }
 
-    const cartItems = await executeQuery(`
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as User
+    const userId = decoded.id
+
+    const cartItems = await getMany(`
       SELECT 
         ci.*,
         p.name,
@@ -22,13 +31,10 @@ export async function GET(request: NextRequest) {
         p.sku,
         p.stock_quantity,
         (SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id ORDER BY pi.sort_order LIMIT 1) as image_url,
-        b.name as brand_name,
-        pv.variant_name,
-        pv.variant_value
+        b.name as brand_name
       FROM cart_items ci
       JOIN products p ON ci.product_id = p.id
       LEFT JOIN brands b ON p.brand_id = b.id
-      LEFT JOIN product_variants pv ON ci.variant_id = pv.id
       WHERE ci.user_id = ?
       ORDER BY ci.created_at DESC
     `, [userId]) as any[]
@@ -61,23 +67,26 @@ export async function GET(request: NextRequest) {
 // POST /api/cart - Add item to cart
 export async function POST(request: NextRequest) {
   try {
-    const userId = request.headers.get('user-id')
+    const token = request.headers.get('authorization')?.replace('Bearer ', '')
     
-    if (!userId) {
+    if (!token) {
       return NextResponse.json(
-        { error: 'User not authenticated' },
+        { error: 'Authentication required' },
         { status: 401 }
       )
     }
 
-    const { product_id, variant_id, quantity = 1 } = await request.json()
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as User
+    const userId = decoded.id
+
+    const { product_id, quantity = 1 } = await request.json()
 
     // Check if product exists and is in stock
-    const [product] = await executeQuery(`
-      SELECT stock_quantity, is_active 
+    const product = await getOne(`
+      SELECT stock_quantity, is_active, price 
       FROM products 
       WHERE id = ?
-    `, [product_id]) as any[]
+    `, [product_id]) as any
 
     if (!product || !product.is_active) {
       return NextResponse.json(
@@ -94,11 +103,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if item already exists in cart
-    const [existingItem] = await executeQuery(`
+    const existingItem = await getOne(`
       SELECT id, quantity 
       FROM cart_items 
-      WHERE user_id = ? AND product_id = ? AND variant_id = ?
-    `, [userId, product_id, variant_id || null]) as any[]
+      WHERE user_id = ? AND product_id = ?
+    `, [userId, product_id]) as any
 
     if (existingItem) {
       // Update quantity
@@ -118,9 +127,9 @@ export async function POST(request: NextRequest) {
     } else {
       // Add new item
       await executeQuery(`
-        INSERT INTO cart_items (user_id, product_id, variant_id, quantity)
-        VALUES (?, ?, ?, ?)
-      `, [userId, product_id, variant_id || null, quantity])
+        INSERT INTO cart_items (user_id, product_id, quantity, price, created_at, updated_at)
+        VALUES (?, ?, ?, ?, NOW(), NOW())
+      `, [userId, product_id, quantity, product.price])
     }
 
     return NextResponse.json({ 
@@ -139,14 +148,17 @@ export async function POST(request: NextRequest) {
 // DELETE /api/cart - Clear cart
 export async function DELETE(request: NextRequest) {
   try {
-    const userId = request.headers.get('user-id')
+    const token = request.headers.get('authorization')?.replace('Bearer ', '')
     
-    if (!userId) {
+    if (!token) {
       return NextResponse.json(
-        { error: 'User not authenticated' },
+        { error: 'Authentication required' },
         { status: 401 }
       )
     }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as User
+    const userId = decoded.id
 
     await executeQuery(`
       DELETE FROM cart_items WHERE user_id = ?

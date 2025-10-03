@@ -1,6 +1,4 @@
 {
-  "action": "create_review",
-  "product_id": 1,
-  "rating": 4,
-  "comment": "Good quality product!"
+  "product_id": 15,
+  "quantity": 2
 }

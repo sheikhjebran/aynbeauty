@@ -166,6 +166,7 @@ export default function ProductDetailPage() {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
+          action: 'add',
           product_id: product?.id
         })
       })

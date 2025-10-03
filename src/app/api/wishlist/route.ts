@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { executeQuery } from '@/lib/db'
+import { executeQuery, getMany } from '@/lib/database'
 import jwt from 'jsonwebtoken'
 
 interface User {
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
       ORDER BY w.created_at DESC
     `
 
-    const wishlistItems = await executeQuery(query, [userId])
+    const wishlistItems = await getMany(query, [userId])
 
     return NextResponse.json({ 
       items: wishlistItems,
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if product exists
-    const productExists = await executeQuery(
+    const productExists = await getMany(
       'SELECT id FROM products WHERE id = ? AND is_active = TRUE',
       [product_id]
     )
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
 
     if (action === 'add') {
       // Check if item already in wishlist
-      const existingItem = await executeQuery(
+      const existingItem = await getMany(
         'SELECT id FROM wishlist_items WHERE user_id = ? AND product_id = ?',
         [userId, product_id]
       )
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
 
     } else if (action === 'toggle') {
       // Check if item exists in wishlist
-      const existingItem = await executeQuery(
+      const existingItem = await getMany(
         'SELECT id FROM wishlist_items WHERE user_id = ? AND product_id = ?',
         [userId, product_id]
       )
