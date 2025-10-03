@@ -10,8 +10,7 @@ const dbConfig = {
   charset: 'utf8mb4',
   timezone: '+00:00',
   connectTimeout: 60000,
-  acquireTimeout: 60000,
-  timeout: 60000,
+  // Removed invalid options: acquireTimeout, timeout
 };
 
 // Create connection pool

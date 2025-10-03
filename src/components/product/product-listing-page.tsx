@@ -1,0 +1,476 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
+import { ChevronDownIcon, FunnelIcon, Squares2X2Icon, ListBulletIcon } from '@heroicons/react/24/outline'
+import { StarIcon } from '@heroicons/react/20/solid'
+import { AdvancedSearch } from '@/components/search'
+import { WishlistButton } from '@/components/wishlist'
+
+interface Product {
+  id: number
+  name: string
+  description: string
+  price: number
+  original_price?: number
+  brand: string
+  category: string
+  images: string[]
+  rating: number
+  review_count: number
+  is_featured: boolean
+  stock_quantity: number
+}
+
+interface ProductListingPageProps {
+  category?: string
+  searchParams?: { [key: string]: string | string[] | undefined }
+}
+
+const sortOptions = [
+  { value: 'newest', label: 'Newest First' },
+  { value: 'price-low', label: 'Price: Low to High' },
+  { value: 'price-high', label: 'Price: High to Low' },
+  { value: 'rating', label: 'Highest Rated' },
+  { value: 'popularity', label: 'Most Popular' },
+]
+
+const priceRanges = [
+  { value: '0-500', label: 'Under ₹500' },
+  { value: '500-1000', label: '₹500 - ₹1,000' },
+  { value: '1000-2000', label: '₹1,000 - ₹2,000' },
+  { value: '2000-5000', label: '₹2,000 - ₹5,000' },
+  { value: '5000+', label: 'Above ₹5,000' },
+]
+
+export function ProductListingPage({ category, searchParams }: ProductListingPageProps) {
+  const router = useRouter()
+  const urlSearchParams = useSearchParams()
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [totalProducts, setTotalProducts] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [showFilters, setShowFilters] = useState(false)
+  const [categories, setCategories] = useState<string[]>([])
+  const [brands, setBrands] = useState<string[]>([])
+
+  // Get current filters from URL
+  const currentSort = urlSearchParams.get('sort') || 'newest'
+  const currentSearch = urlSearchParams.get('search') || ''
+  const currentBrand = urlSearchParams.get('brand') || ''
+  const currentPriceRange = urlSearchParams.get('price') || ''
+  const currentRating = urlSearchParams.get('rating') || ''
+
+  useEffect(() => {
+    fetchProducts()
+    fetchFilters()
+  }, [category, searchParams])
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true)
+      const params = new URLSearchParams()
+      
+      if (category) params.append('category', category)
+      if (currentSearch) params.append('search', currentSearch)
+      if (currentBrand) params.append('brand', currentBrand)
+      if (currentSort) params.append('sort', currentSort)
+      if (currentPriceRange) params.append('price_range', currentPriceRange)
+      if (currentRating) params.append('min_rating', currentRating)
+      params.append('page', currentPage.toString())
+      params.append('limit', '20')
+
+      const response = await fetch(`/api/products?${params}`)
+      if (!response.ok) throw new Error('Failed to fetch products')
+      
+      const data = await response.json()
+      setProducts(data.products)
+      setTotalProducts(data.total)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchFilters = async () => {
+    try {
+      const response = await fetch('/api/categories')
+      if (response.ok) {
+        const data = await response.json()
+        setCategories(data.categories || [])
+        setBrands(data.brands || [])
+      }
+    } catch (err) {
+      console.error('Failed to fetch filters:', err)
+    }
+  }
+
+  const updateFilters = (key: string, value: string) => {
+    const params = new URLSearchParams(urlSearchParams.toString())
+    if (value) {
+      params.set(key, value)
+    } else {
+      params.delete(key)
+    }
+    params.delete('page') // Reset page when changing filters
+    router.push(`${window.location.pathname}?${params.toString()}`)
+  }
+
+  const clearFilters = () => {
+    const params = new URLSearchParams()
+    if (currentSearch) params.set('search', currentSearch)
+    router.push(`${window.location.pathname}?${params.toString()}`)
+  }
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 0
+    }).format(price)
+  }
+
+  const renderStars = (rating: number) => {
+    return (
+      <div className="flex items-center">
+        {[...Array(5)].map((_, i) => (
+          <StarIcon
+            key={i}
+            className={`h-4 w-4 ${i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300'}`}
+          />
+        ))}
+        <span className="ml-1 text-sm text-gray-600">({rating})</span>
+      </div>
+    )
+  }
+
+  const totalPages = Math.ceil(totalProducts / 20)
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded mb-4 w-1/3"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="bg-gray-200 h-80 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Error</h2>
+        <p className="text-gray-600">{error}</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      {/* Page Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          {category ? category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'All Products'}
+        </h1>
+        <p className="text-gray-600">
+          {totalProducts} product{totalProducts !== 1 ? 's' : ''} found
+        </p>
+      </div>
+
+      {/* Advanced Search */}
+      <div className="mb-6">
+        <AdvancedSearch 
+          onFiltersChange={(filters) => {
+            // Handle filter changes - this would trigger a new search
+            console.log('Filters changed:', filters)
+          }}
+        />
+      </div>
+
+      {/* Filters and Sorting */}
+      <div className="mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        {/* Mobile Filter Toggle */}
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="lg:hidden flex items-center gap-2 bg-white border border-gray-300 rounded-md px-4 py-2"
+        >
+          <FunnelIcon className="h-5 w-5" />
+          Filters
+        </button>
+
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          {/* Sort Dropdown */}
+          <div className="relative">
+            <select
+              value={currentSort}
+              onChange={(e) => updateFilters('sort', e.target.value)}
+              className="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-pink-500"
+            >
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDownIcon className="absolute right-2 top-3 h-4 w-4 pointer-events-none" />
+          </div>
+
+          {/* View Mode Toggle */}
+          <div className="flex border border-gray-300 rounded-md">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-2 ${viewMode === 'grid' ? 'bg-pink-500 text-white' : 'bg-white text-gray-600'}`}
+            >
+              <Squares2X2Icon className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-2 ${viewMode === 'list' ? 'bg-pink-500 text-white' : 'bg-white text-gray-600'}`}
+            >
+              <ListBulletIcon className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex gap-8">
+        {/* Sidebar Filters */}
+        <div className={`w-full lg:w-64 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+          <div className="bg-white border border-gray-200 rounded-lg p-6 sticky top-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-gray-900">Filters</h3>
+              <button
+                onClick={clearFilters}
+                className="text-sm text-pink-600 hover:text-pink-700"
+              >
+                Clear All
+              </button>
+            </div>
+
+            {/* Categories Filter */}
+            {!category && categories.length > 0 && (
+              <div className="mb-6">
+                <h4 className="font-medium text-gray-900 mb-3">Categories</h4>
+                <div className="space-y-2">
+                  {categories.slice(0, 5).map((cat) => (
+                    <label key={cat} className="flex items-center">
+                      <input
+                        type="radio"
+                        name="category"
+                        value={cat}
+                        onChange={(e) => router.push(`/category/${e.target.value}`)}
+                        className="text-pink-600 focus:ring-pink-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700 capitalize">{cat}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Brand Filter */}
+            {brands.length > 0 && (
+              <div className="mb-6">
+                <h4 className="font-medium text-gray-900 mb-3">Brands</h4>
+                <div className="space-y-2">
+                  {brands.slice(0, 8).map((brand) => (
+                    <label key={brand} className="flex items-center">
+                      <input
+                        type="radio"
+                        name="brand"
+                        value={brand}
+                        checked={currentBrand === brand}
+                        onChange={(e) => updateFilters('brand', e.target.checked ? e.target.value : '')}
+                        className="text-pink-600 focus:ring-pink-500"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">{brand}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Price Range Filter */}
+            <div className="mb-6">
+              <h4 className="font-medium text-gray-900 mb-3">Price Range</h4>
+              <div className="space-y-2">
+                {priceRanges.map((range) => (
+                  <label key={range.value} className="flex items-center">
+                    <input
+                      type="radio"
+                      name="price"
+                      value={range.value}
+                      checked={currentPriceRange === range.value}
+                      onChange={(e) => updateFilters('price', e.target.checked ? e.target.value : '')}
+                      className="text-pink-600 focus:ring-pink-500"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">{range.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Rating Filter */}
+            <div className="mb-6">
+              <h4 className="font-medium text-gray-900 mb-3">Rating</h4>
+              <div className="space-y-2">
+                {[4, 3, 2, 1].map((rating) => (
+                  <label key={rating} className="flex items-center">
+                    <input
+                      type="radio"
+                      name="rating"
+                      value={rating.toString()}
+                      checked={currentRating === rating.toString()}
+                      onChange={(e) => updateFilters('rating', e.target.checked ? e.target.value : '')}
+                      className="text-pink-600 focus:ring-pink-500"
+                    />
+                    <div className="ml-2 flex items-center">
+                      {renderStars(rating)}
+                      <span className="ml-1 text-sm text-gray-600">& up</span>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Products Grid/List */}
+        <div className="flex-1">
+          {products.length === 0 ? (
+            <div className="text-center py-12">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
+              <p className="text-gray-600">Try adjusting your filters or search terms.</p>
+            </div>
+          ) : (
+            <>
+              <div className={`${
+                viewMode === 'grid' 
+                  ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
+                  : 'space-y-4'
+              }`}>
+                {products.map((product) => (
+                  <div key={product.id} className={`bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow relative ${
+                    viewMode === 'list' ? 'flex' : ''
+                  }`}>
+                    {/* Wishlist Button */}
+                    <div className="absolute top-2 right-2 z-10">
+                      <WishlistButton productId={product.id} size="sm" />
+                    </div>
+
+                    <Link href={`/product/${product.id}`}>
+                      <div className={`relative ${viewMode === 'list' ? 'w-48 h-48' : 'aspect-square'}`}>
+                        <Image
+                          src={product.images[0] || `https://picsum.photos/300/300?random=${product.id}`}
+                          alt={product.name}
+                          fill
+                          className="object-cover"
+                        />
+                        {product.original_price && product.original_price > product.price && (
+                          <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs rounded">
+                            {Math.round(((product.original_price - product.price) / product.original_price) * 100)}% OFF
+                          </div>
+                        )}
+                        {product.stock_quantity === 0 && (
+                          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <span className="text-white font-semibold">Out of Stock</span>
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                      
+                    <div className={`p-4 ${viewMode === 'list' ? 'flex-1' : ''}`}>
+                      <Link href={`/product/${product.id}`}>
+                        <h3 className="font-medium text-gray-900 mb-1 line-clamp-2 hover:text-pink-600">{product.name}</h3>
+                      </Link>
+                      <p className="text-sm text-gray-600 mb-2">{product.brand}</p>
+                      
+                      <div className="flex items-center mb-2">
+                        {renderStars(product.rating)}
+                        <span className="ml-1 text-sm text-gray-600">({product.review_count})</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-bold text-gray-900">{formatPrice(product.price)}</span>
+                        {product.original_price && product.original_price > product.price && (
+                          <span className="text-sm text-gray-500 line-through">
+                            {formatPrice(product.original_price)}
+                          </span>
+                        )}
+                      </div>
+
+                      {viewMode === 'list' && (
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-3">{product.description}</p>
+                      )}
+
+                      <button
+                        disabled={product.stock_quantity === 0}
+                        className={`w-full py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+                          product.stock_quantity === 0
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            : 'bg-pink-600 text-white hover:bg-pink-700'
+                        }`}
+                      >
+                        {product.stock_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-8 flex justify-center">
+                  <nav className="flex items-center gap-2">
+                    <button
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Previous
+                    </button>
+                    
+                    {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                      const page = i + 1
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`px-3 py-2 text-sm font-medium rounded-md ${
+                            currentPage === page
+                              ? 'bg-pink-600 text-white'
+                              : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      )
+                    })}
+                    
+                    <button
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Next
+                    </button>
+                  </nav>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}

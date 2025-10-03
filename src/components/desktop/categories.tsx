@@ -15,45 +15,66 @@ export function DesktopCategories() {
   const categories: Category[] = [
     {
       id: 1,
-      name: 'Makeup',
-      slug: 'makeup',
-      image: 'https://picsum.photos/300/300?random=7',
-      productCount: 1245
+      name: 'About Us',
+      slug: 'about',
+      image: 'https://picsum.photos/300/300?random=1',
+      productCount: 0
     },
     {
       id: 2,
-      name: 'Skincare',
-      slug: 'skincare',
-      image: 'https://picsum.photos/300/300?random=8',
-      productCount: 856
+      name: 'All Products',
+      slug: 'all-products',
+      image: 'https://picsum.photos/300/300?random=2',
+      productCount: 2450
     },
     {
       id: 3,
-      name: 'Hair Care',
-      slug: 'hair-care',
-      image: 'https://picsum.photos/300/300?random=9',
-      productCount: 642
+      name: 'SkinCare',
+      slug: 'skincare',
+      image: 'https://picsum.photos/300/300?random=3',
+      productCount: 856
     },
     {
       id: 4,
-      name: 'Fragrance',
-      slug: 'fragrance',
-      image: 'https://picsum.photos/300/300?random=10',
-      productCount: 389
+      name: 'Lips',
+      slug: 'lips',
+      image: 'https://picsum.photos/300/300?random=4',
+      productCount: 324
     },
     {
       id: 5,
       name: 'Bath & Body',
       slug: 'bath-body',
-      image: 'https://picsum.photos/300/300?random=11',
+      image: 'https://picsum.photos/300/300?random=5',
       productCount: 567
     },
     {
       id: 6,
-      name: 'Tools & Appliances',
-      slug: 'tools-appliances',
-      image: 'https://picsum.photos/300/300?random=12',
-      productCount: 234
+      name: 'Fragrances',
+      slug: 'fragrances',
+      image: 'https://picsum.photos/300/300?random=6',
+      productCount: 389
+    },
+    {
+      id: 7,
+      name: 'Eyes',
+      slug: 'eyes',
+      image: 'https://picsum.photos/300/300?random=7',
+      productCount: 298
+    },
+    {
+      id: 8,
+      name: 'Nails',
+      slug: 'nails',
+      image: 'https://picsum.photos/300/300?random=8',
+      productCount: 156
+    },
+    {
+      id: 9,
+      name: 'Combo Sets',
+      slug: 'combo-sets',
+      image: 'https://picsum.photos/300/300?random=9',
+      productCount: 89
     }
   ]
 
@@ -69,7 +90,7 @@ export function DesktopCategories() {
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-9 gap-6">
           {categories.map((category) => (
             <Link
               key={category.id}

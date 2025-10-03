@@ -6,51 +6,67 @@ export function MobileCategories() {
   const categories = [
     {
       id: 1,
-      name: 'Makeup',
-      href: '/makeup',
-      icon: '💄',
+      name: 'All Products',
+      href: '/categories/all-products',
+      icon: '�️',
       color: 'from-pink-400 to-rose-500',
-      description: 'Face, Eyes, Lips'
+      description: 'Everything Beauty'
     },
     {
       id: 2,
-      name: 'Skincare',
-      href: '/skincare',
+      name: 'SkinCare',
+      href: '/categories/skincare',
       icon: '✨',
       color: 'from-blue-400 to-cyan-500',
       description: 'Cleanse, Treat, Moisturize'
     },
     {
       id: 3,
-      name: 'Hair Care',
-      href: '/hair',
-      icon: '🌸',
-      color: 'from-purple-400 to-indigo-500',
-      description: 'Shampoo, Conditioner, Styling'
+      name: 'Lips',
+      href: '/categories/lips',
+      icon: '💄',
+      color: 'from-red-400 to-pink-500',
+      description: 'Lipstick, Gloss, Balm'
     },
     {
       id: 4,
-      name: 'Fragrance',
-      href: '/fragrance',
-      icon: '🌺',
-      color: 'from-amber-400 to-orange-500',
-      description: 'Perfumes, Body Sprays'
+      name: 'Eyes',
+      href: '/categories/eyes',
+      icon: '👁️',
+      color: 'from-purple-400 to-indigo-500',
+      description: 'Mascara, Shadow, Liner'
     },
     {
       id: 5,
       name: 'Bath & Body',
-      href: '/bath-body',
+      href: '/categories/bath-body',
       icon: '🛁',
       color: 'from-teal-400 to-emerald-500',
       description: 'Body Care, Shower'
     },
     {
       id: 6,
-      name: 'Men',
-      href: '/men',
-      icon: '👨',
-      color: 'from-slate-400 to-gray-600',
-      description: 'Grooming, Skincare'
+      name: 'Fragrances',
+      href: '/categories/fragrances',
+      icon: '🌺',
+      color: 'from-amber-400 to-orange-500',
+      description: 'Perfumes, Body Sprays'
+    },
+    {
+      id: 7,
+      name: 'Nails',
+      href: '/categories/nails',
+      icon: '�',
+      color: 'from-violet-400 to-purple-500',
+      description: 'Polish, Care, Art'
+    },
+    {
+      id: 8,
+      name: 'Combo Sets',
+      href: '/categories/combo-sets',
+      icon: '🎁',
+      color: 'from-green-400 to-emerald-500',
+      description: 'Gift Sets, Bundles'
     }
   ]
 

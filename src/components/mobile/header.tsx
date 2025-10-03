@@ -12,13 +12,15 @@ export function MobileHeader() {
   const toggleSearch = () => setIsSearchOpen(!isSearchOpen)
 
   const categories = [
-    { name: 'Makeup', href: '/makeup' },
-    { name: 'Skincare', href: '/skincare' },
-    { name: 'Hair Care', href: '/hair' },
-    { name: 'Fragrance', href: '/fragrance' },
-    { name: 'Bath & Body', href: '/bath-body' },
-    { name: 'Men', href: '/men' },
-    { name: 'Tools & Accessories', href: '/tools' },
+    { name: 'About Us', href: '/about' },
+    { name: 'All Products', href: '/categories/all-products' },
+    { name: 'SkinCare', href: '/categories/skincare' },
+    { name: 'Lips', href: '/categories/lips' },
+    { name: 'Bath & Body', href: '/categories/bath-body' },
+    { name: 'Fragrances', href: '/categories/fragrances' },
+    { name: 'Eyes', href: '/categories/eyes' },
+    { name: 'Nails', href: '/categories/nails' },
+    { name: 'Combo Sets', href: '/categories/combo-sets' },
   ]
 
   return (
@@ -26,7 +28,7 @@ export function MobileHeader() {
       {/* Fixed Header */}
       <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
         {/* Top Bar */}
-        <div className="px-4 py-3">
+        <div className="px-4 py-4">
           <div className="flex items-center justify-between">
             {/* Menu Button */}
             <button
@@ -40,10 +42,28 @@ export function MobileHeader() {
 
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <div className="w-6 h-6 bg-gradient-to-br from-primary-500 to-primary-600 rounded-md flex items-center justify-center">
-                <span className="text-white font-bold text-sm">A</span>
+              <Image
+                src="/images/logo.png"
+                alt="AYN Beauty"
+                width={160}
+                height={55}
+                className="h-10 w-auto"
+                priority
+                onError={(e) => {
+                  // Fallback to text logo if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const fallback = target.nextElementSibling as HTMLElement;
+                  if (fallback) fallback.style.display = 'flex';
+                }}
+              />
+              {/* Fallback text logo */}
+              <div className="hidden items-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-md flex items-center justify-center">
+                  <span className="text-white font-bold text-base">A</span>
+                </div>
+                <span className="ml-2 text-xl font-bold gradient-text">AynBeauty</span>
               </div>
-              <span className="ml-2 text-lg font-bold gradient-text">AynBeauty</span>
             </Link>
 
             {/* Header Actions */}

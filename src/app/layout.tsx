@@ -1,9 +1,25 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Poppins, Playfair_Display } from 'next/font/google'
 import { Providers } from './providers'
+import { Header } from '@/components/layout/header'
+import { Footer } from '@/components/layout/footer'
 
-const inter = Inter({ subsets: ['latin'] })
+const poppins = Poppins({ 
+  subsets: ['latin'],
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-poppins',
+  display: 'swap',
+  fallback: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif']
+})
+
+const playfair = Playfair_Display({ 
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800', '900'],
+  variable: '--font-playfair',
+  display: 'swap',
+  fallback: ['Georgia', 'Times New Roman', 'serif']
+})
 
 export const metadata: Metadata = {
   title: 'AynBeauty - For every day, for every mood, for every you',
@@ -50,9 +66,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${poppins.variable} ${playfair.variable} font-sans`}>
         <Providers>
-          {children}
+          <Header />
+          <main>
+            {children}
+          </main>
+          <Footer />
         </Providers>
       </body>
     </html>

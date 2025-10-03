@@ -2,7 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+/* Beautiful Typography for Beauty Brand */
+@layer base {
+  html {
+    font-family: var(--font-poppins), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+  }
+  
+  .font-heading {
+    font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
+  }
+  
+  .font-body {
+    font-family: var(--font-poppins), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+}
+
+@layer components {
+  /* Beauty Brand Typography Components */
+  .heading-xl {
+    @apply font-heading text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight;
+  }
+  
+  .heading-lg {
+    @apply font-heading text-3xl md:text-4xl font-semibold tracking-tight;
+  }
+  
+  .heading-md {
+    @apply font-heading text-2xl md:text-3xl font-semibold;
+  }
+  
+  .heading-sm {
+    @apply font-heading text-xl md:text-2xl font-medium;
+  }
+  
+  .body-lg {
+    @apply font-body text-lg leading-relaxed;
+  }
+  
+  .body-md {
+    @apply font-body text-base leading-relaxed;
+  }
+  
+  .body-sm {
+    @apply font-body text-sm leading-relaxed;
+  }
+  
+  .elegant-text {
+    @apply font-heading font-medium tracking-wide;
+  }
+  
+  .luxury-heading {
+    @apply font-heading font-bold tracking-wider uppercase text-transparent bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text;
+  }
+}
 
 :root {
   --foreground-rgb: 0, 0, 0;
