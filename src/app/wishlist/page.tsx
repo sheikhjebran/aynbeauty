@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { TrashIcon, ShoppingBagIcon, StarIcon } from '@heroicons/react/24/outline'
 import { WishlistButton } from '@/components/wishlist/wishlist-button'
+import { useCart } from '@/contexts/CartContext'
 
 interface WishlistItem {
   id: number
@@ -28,6 +29,9 @@ export default function WishlistPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [removingItems, setRemovingItems] = useState<Set<number>>(new Set())
+  
+  // Cart context
+  const { addToCart: addToCartContext } = useCart()
 
   useEffect(() => {
     fetchWishlistItems()
@@ -100,6 +104,10 @@ export default function WishlistPage() {
   const addToCart = async (productId: number) => {
     try {
       const token = localStorage.getItem('token')
+      
+      // Find the product from wishlist items
+      const product = wishlistItems.find(item => item.product_id === productId)
+      
       const response = await fetch('/api/cart', {
         method: 'POST',
         headers: {
@@ -114,6 +122,17 @@ export default function WishlistPage() {
       })
 
       if (response.ok) {
+        // Update local cart context if we have product data
+        if (product) {
+          addToCartContext({
+            product_id: product.product_id,
+            name: product.product_name,
+            price: product.price,
+            discounted_price: product.original_price,
+            image: product.image_url || '',
+          }, 1)
+        }
+        
         // Show success message or update cart count
         console.log('Added to cart successfully')
       }

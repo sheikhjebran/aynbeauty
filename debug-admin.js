@@ -14,7 +14,7 @@ async function debugAdmin() {
 
     // Get admin user details
     const [rows] = await connection.execute(
-      "SELECT id, first_name, last_name, email, role, password FROM users WHERE email = ?",
+      "SELECT id, first_name, last_name, email, role, password, is_active, email_verified FROM users WHERE email = ?",
       ["admin@aynbeauty.com"]
     );
 
@@ -30,6 +30,8 @@ async function debugAdmin() {
     console.log("Name:", admin.first_name, admin.last_name);
     console.log("Email:", admin.email);
     console.log("Role:", admin.role);
+    console.log("Is Active:", admin.is_active);
+    console.log("Email Verified:", admin.email_verified);
     console.log("Password Hash:", admin.password.substring(0, 20) + "...");
 
     // Test password comparison

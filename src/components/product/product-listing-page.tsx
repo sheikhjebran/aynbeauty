@@ -17,7 +17,9 @@ interface Product {
   original_price?: number
   brand: string
   category: string
-  images: string[]
+  image_url?: string
+  primary_image?: string
+  images?: string[]
   rating: number
   review_count: number
   is_featured: boolean
@@ -128,23 +130,24 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
   }
 
   const formatPrice = (price: number) => {
+    const validPrice = Number(price) || 0
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
       minimumFractionDigits: 0
-    }).format(price)
+    }).format(validPrice)
   }
 
   const renderStars = (rating: number) => {
+    const validRating = Number(rating) || 0
     return (
       <div className="flex items-center">
         {[...Array(5)].map((_, i) => (
           <StarIcon
             key={i}
-            className={`h-4 w-4 ${i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300'}`}
+            className={`h-4 w-4 ${i < Math.floor(validRating) ? 'text-yellow-400' : 'text-gray-300'}`}
           />
         ))}
-        <span className="ml-1 text-sm text-gray-600">({rating})</span>
       </div>
     )
   }
@@ -368,10 +371,10 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
                       <WishlistButton productId={product.id} size="sm" />
                     </div>
 
-                    <Link href={`/product/${product.id}`}>
+                    <Link href={`/products/${product.id}`}>
                       <div className={`relative ${viewMode === 'list' ? 'w-48 h-48' : 'aspect-square'}`}>
                         <Image
-                          src={product.images[0] || `https://picsum.photos/300/300?random=${product.id}`}
+                          src={product.images?.[0] || product.primary_image || product.image_url || `https://picsum.photos/300/300?random=${product.id}`}
                           alt={product.name}
                           fill
                           className="object-cover"
@@ -390,14 +393,14 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
                     </Link>
                       
                     <div className={`p-4 ${viewMode === 'list' ? 'flex-1' : ''}`}>
-                      <Link href={`/product/${product.id}`}>
+                      <Link href={`/products/${product.id}`}>
                         <h3 className="font-medium text-gray-900 mb-1 line-clamp-2 hover:text-pink-600">{product.name}</h3>
                       </Link>
                       <p className="text-sm text-gray-600 mb-2">{product.brand}</p>
                       
                       <div className="flex items-center mb-2">
-                        {renderStars(product.rating)}
-                        <span className="ml-1 text-sm text-gray-600">({product.review_count})</span>
+                        {renderStars(product.rating || 0)}
+                        <span className="ml-1 text-sm text-gray-600">({product.review_count || 0})</span>
                       </div>
                       
                       <div className="flex items-center gap-2 mb-2">

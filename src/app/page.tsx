@@ -17,6 +17,7 @@ import { StarIcon as StarSolidIcon, HeartIcon as HeartSolidIcon } from '@heroico
 // Import Hero Section components
 import { DesktopHeroSection } from '@/components/desktop/hero-section'
 import { MobileHeroSection } from '@/components/mobile/hero-section'
+import { useCart } from '@/contexts/CartContext'
 
 interface Product {
   id: number
@@ -53,6 +54,9 @@ export default function HomePage() {
   const [loyaltyData, setLoyaltyData] = useState<LoyaltyData | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [loading, setLoading] = useState(true)
+  
+  // Cart context
+  const { addToCart: addToCartContext } = useCart()
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -134,6 +138,10 @@ export default function HomePage() {
         return
       }
 
+      // Find the product from our local state
+      const allProducts = [...featuredProducts, ...recommendedProducts, ...trendingProducts]
+      const product = allProducts.find(p => p.id === productId)
+
       const response = await fetch('/api/cart', {
         method: 'POST',
         headers: {
@@ -147,6 +155,17 @@ export default function HomePage() {
       })
 
       if (response.ok) {
+        // Update local cart context if we have product data
+        if (product) {
+          addToCartContext({
+            product_id: product.id,
+            name: product.name,
+            price: product.price,
+            discounted_price: product.discounted_price,
+            image: product.image_url || '',
+          }, 1)
+        }
+        
         alert('Product added to cart!')
       } else {
         const errorData = await response.json()
@@ -303,7 +322,7 @@ export default function HomePage() {
           <div className="flex items-center justify-between mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Top Categories</h2>
             <Link 
-              href="/categories" 
+              href="/products" 
               className="flex items-center text-gray-600 hover:text-black transition-colors group"
             >
               <span className="mr-2">View All</span>
@@ -434,7 +453,7 @@ export default function HomePage() {
             <div className="flex items-center justify-between mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Trending Now</h2>
               <Link 
-                href="/products?trending=true" 
+                href="/products" 
                 className="flex items-center text-gray-600 hover:text-black transition-colors group"
               >
                 <span className="mr-2">View All</span>
@@ -506,6 +525,15 @@ export default function HomePage() {
                 <SparklesIcon className="h-8 w-8 text-pink-600" />
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Just For You</h2>
               </div>
+              <Link 
+                href="/products" 
+                className="flex items-center text-gray-600 hover:text-black transition-colors group"
+              >
+                <span className="mr-2">View All</span>
+                <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
               {recommendedProducts.slice(0, 10).map((product) => (

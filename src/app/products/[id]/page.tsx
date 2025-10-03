@@ -17,6 +17,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { StarIcon as StarSolidIcon, HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid'
 import { useAuth } from '@/contexts/AuthContext'
+import { useCart } from '@/contexts/CartContext'
 
 interface ProductImage {
   id: number
@@ -60,6 +61,9 @@ export default function ProductDetailPage() {
   const router = useRouter()
   const { user, token } = useAuth()
   const productId = params?.id as string
+  
+  // Cart context
+  const { addToCart: addToCartContext } = useCart()
   
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
@@ -134,6 +138,8 @@ export default function ProductDetailPage() {
         return
       }
 
+      if (!product) return;
+
       const response = await fetch('/api/cart', {
         method: 'POST',
         headers: {
@@ -147,6 +153,15 @@ export default function ProductDetailPage() {
       })
 
       if (response.ok) {
+        // Update local cart context
+        addToCartContext({
+          product_id: product.id,
+          name: product.name,
+          price: product.price,
+          discounted_price: product.discounted_price,
+          image: product.images?.[0]?.image_url || '',
+        }, quantity)
+        
         alert('Product added to cart!')
       } else {
         throw new Error('Failed to add to cart')

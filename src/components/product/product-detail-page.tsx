@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Heart, Share2, ShoppingCart, Star, Plus, Minus, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useCart } from '@/contexts/CartContext'
 
 interface Product {
   id: number
@@ -61,6 +62,9 @@ export function ProductDetailPage({ productId }: ProductDetailPageProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isWishlisted, setIsWishlisted] = useState(false)
+  
+  // Cart context
+  const { addToCart: addToCartContext } = useCart()
 
   useEffect(() => {
     fetchProduct()
@@ -85,6 +89,8 @@ export function ProductDetailPage({ productId }: ProductDetailPageProps) {
   }
 
   const addToCart = async () => {
+    if (!product) return;
+
     try {
       const response = await fetch('/api/cart', {
         method: 'POST',
@@ -100,7 +106,17 @@ export function ProductDetailPage({ productId }: ProductDetailPageProps) {
       })
 
       if (response.ok) {
-        // Show success message or update cart UI
+        // Update local cart context
+        addToCartContext({
+          product_id: product.id,
+          name: product.name,
+          price: product.price,
+          discounted_price: product.sale_price,
+          image: product.images[0]?.image_url || '',
+          variant: selectedVariant ? product.variants.find(v => v.id === selectedVariant)?.variant_value : undefined
+        }, quantity)
+        
+        // Show success message
         alert('Product added to cart!')
       } else {
         const error = await response.json()
@@ -420,7 +436,7 @@ export function ProductDetailPage({ productId }: ProductDetailPageProps) {
                 {product.related_products.map((relatedProduct) => (
                   <Link
                     key={relatedProduct.id}
-                    href={`/product/${relatedProduct.id}`}
+                    href={`/products/${relatedProduct.id}`}
                     className="group"
                   >
                     <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-3">
