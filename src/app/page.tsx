@@ -19,6 +19,30 @@ import { DesktopHeroSection } from '@/components/desktop/hero-section'
 import { MobileHeroSection } from '@/components/mobile/hero-section'
 import { useCart } from '@/contexts/CartContext'
 
+// Category Image Component with Error Handling
+const CategoryImage = ({ src, alt, className }: { src: string, alt: string, className?: string }) => {
+  const [imgSrc, setImgSrc] = useState(src)
+  const [hasError, setHasError] = useState(false)
+
+  const handleError = () => {
+    if (!hasError) {
+      setHasError(true)
+      // Fallback to a default category image
+      setImgSrc('/images/categories/skincare.jpg')
+    }
+  }
+
+  return (
+    <Image
+      src={imgSrc}
+      alt={alt}
+      fill
+      className={className}
+      onError={handleError}
+    />
+  )
+}
+
 interface Product {
   id: number
   name: string
@@ -345,10 +369,9 @@ export default function HomePage() {
               <Link key={category.name} href={category.href}>
                 <div className="group text-center cursor-pointer">
                   <div className="relative overflow-hidden rounded-2xl mb-4 aspect-square">
-                    <Image
+                    <CategoryImage
                       src={category.image}
                       alt={category.name}
-                      fill
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors duration-300" />
