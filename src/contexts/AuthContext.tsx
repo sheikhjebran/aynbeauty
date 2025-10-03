@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json()
 
       if (response.ok) {
-        const { token: authToken, user: userData } = data
+        const { token: authToken, user: userData, isAdmin } = data
         
         // Save to localStorage with both keys for compatibility
         localStorage.setItem('auth_token', authToken)
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setToken(authToken)
         setUser(userData)
         
-        return { success: true }
+        return { success: true, isAdmin }
       } else {
         return { success: false, error: data.error || 'Login failed' }
       }
