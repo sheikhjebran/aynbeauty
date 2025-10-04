@@ -39,8 +39,14 @@ export function Footer() {
           {/* Brand Section */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
-                <span className="text-white font-bold text-xl">A</span>
+              <div className="w-10 h-10 mr-3">
+                <Image
+                  src="/images/logo.png"
+                  alt="AYN Beauty Logo"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-contain"
+                />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
                 AYN

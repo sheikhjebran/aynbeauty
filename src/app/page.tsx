@@ -46,6 +46,7 @@ const CategoryImage = ({ src, alt, className }: { src: string, alt: string, clas
 interface Product {
   id: number
   name: string
+  description: string
   brand: string
   price: number
   discounted_price: number
@@ -54,6 +55,9 @@ interface Product {
   rating: number
   rating_count: number
   recommendation_reason?: string
+  is_trending?: number
+  is_must_have?: number
+  is_new_arrival?: number
 }
 
 interface Campaign {
@@ -102,7 +106,10 @@ export default function HomePage() {
       rating: parseFloat(product.rating) || 0,
       rating_count: parseInt(product.rating_count) || 0,
       brand: product.category_name || '',
-      category: product.category_name || ''
+      category: product.category_name || '',
+      is_trending: product.is_trending || 0,
+      is_must_have: product.is_must_have || 0,
+      is_new_arrival: product.is_new_arrival || 0
     }))
   }
 
@@ -272,7 +279,39 @@ export default function HomePage() {
             {product.name}
           </h3>
         </Link>
-        <p className="text-sm text-gray-600 mt-1">{product.brand}</p>
+        
+        {/* Product Description */}
+        {product.description && (
+          <p className="text-xs text-gray-600 mt-2 leading-relaxed overflow-hidden" 
+             style={{
+               display: '-webkit-box',
+               WebkitLineClamp: 3,
+               WebkitBoxOrient: 'vertical'
+             }}>
+            {product.description}
+          </p>
+        )}
+        
+        <p className="text-sm text-gray-600 mt-2">{product.brand}</p>
+        
+        {/* Tags */}
+        <div className="flex flex-wrap gap-1 mt-2">
+          {product.is_trending === 1 && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+              🔥 Trending
+            </span>
+          )}
+          {product.is_must_have === 1 && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+              ⭐ Must Have
+            </span>
+          )}
+          {product.is_new_arrival === 1 && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+              ✨ New
+            </span>
+          )}
+        </div>
         
         <div className="flex items-center gap-1 mt-2">
           <div className="flex items-center">

@@ -81,7 +81,7 @@ export function DesktopFooter() {
               <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold">A</span>
               </div>
-              <span className="ml-2 text-xl font-bold gradient-text">AynBeauty</span>
+              <span className="ml-2 text-xl font-bold gradient-text"></span>
             </div>
             <p className="text-gray-400 text-sm mb-6">
               For every day, for every mood, for every you. Discover premium beauty products from top brands.
