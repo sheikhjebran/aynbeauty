@@ -8,14 +8,20 @@ interface Product {
   id: number
   name: string
   description: string
-  price: number
-  discounted_price?: number
+  price: number | string
+  discounted_price?: number | string
   image_url?: string
   primary_image?: string
   category_name: string
   brand_name?: string
-  avg_rating?: number
+  brand?: string
+  avg_rating?: number | string
+  rating?: number | string
   review_count?: number
+  rating_count?: number
+  is_trending?: number
+  is_must_have?: number
+  is_new_arrival?: number
 }
 
 export default function CategoryPage() {
@@ -168,37 +174,81 @@ export default function CategoryPage() {
                   <h3 className="text-sm font-medium text-gray-900 mb-2">{product.name}</h3>
                   <p className="text-xs text-gray-600 mb-3 line-clamp-2">{product.description}</p>
                   
-                  {/* Price Display */}
-                  <div className="flex items-center space-x-2 mb-3">
-                    {product.discounted_price && product.discounted_price < product.price ? (
-                      <>
-                        <span className="text-lg font-bold text-red-600">₹{product.discounted_price.toLocaleString()}</span>
-                        <span className="text-sm text-gray-500 line-through">₹{product.price.toLocaleString()}</span>
-                        <span className="text-xs text-green-600 font-medium">
-                          {Math.round((1 - product.discounted_price / product.price) * 100)}% OFF
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-lg font-bold text-gray-900">₹{product.price.toLocaleString()}</span>
+                  {/* Brand */}
+                  {(product.brand_name || product.brand) && (
+                    <p className="text-xs text-gray-500 mb-2">{product.brand_name || product.brand}</p>
+                  )}
+                  
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-1 mb-3">
+                    {product.is_trending === 1 && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                        🔥 Trending
+                      </span>
+                    )}
+                    {product.is_must_have === 1 && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                        ⭐ Must Have
+                      </span>
+                    )}
+                    {product.is_new_arrival === 1 && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                        ✨ New
+                      </span>
                     )}
                   </div>
 
+                  {/* Price Display */}
+                  <div className="flex items-center space-x-2 mb-3">
+                    {(() => {
+                      const price = typeof product.price === 'string' ? parseFloat(product.price) : product.price
+                      const discountedPrice = product.discounted_price 
+                        ? (typeof product.discounted_price === 'string' ? parseFloat(product.discounted_price) : product.discounted_price)
+                        : null
+                      
+                      return discountedPrice && discountedPrice < price ? (
+                        <>
+                          <span className="text-lg font-bold text-red-600">₹{discountedPrice.toLocaleString()}</span>
+                          <span className="text-sm text-gray-500 line-through">₹{price.toLocaleString()}</span>
+                          <span className="text-xs text-green-600 font-medium bg-green-100 px-2 py-1 rounded">
+                            {Math.round(((price - discountedPrice) / price) * 100)}% OFF
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-lg font-bold text-gray-900">₹{price.toLocaleString()}</span>
+                      )
+                    })()}
+                  </div>
+
                   {/* Rating */}
-                  {product.avg_rating && (
+                  {(product.avg_rating || product.rating) && (
                     <div className="flex items-center mb-3">
                       <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <svg
-                            key={i}
-                            className={`h-4 w-4 ${i < Math.floor(product.avg_rating!) ? 'text-yellow-400' : 'text-gray-300'}`}
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-                        ))}
+                        {(() => {
+                          const rating = product.avg_rating || product.rating
+                          const ratingNum = typeof rating === 'string' ? parseFloat(rating) : (rating || 0)
+                          return [...Array(5)].map((_, i) => (
+                            <svg
+                              key={i}
+                              className={`h-4 w-4 ${i < Math.floor(ratingNum) ? 'text-yellow-400' : 'text-gray-300'}`}
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                          ))
+                        })()}
                       </div>
-                      <span className="ml-1 text-sm text-gray-600">({product.review_count})</span>
+                      <span className="ml-2 text-sm text-gray-600">
+                        {(() => {
+                          const rating = product.avg_rating || product.rating || 0
+                          const ratingNum = typeof rating === 'string' ? parseFloat(rating) : rating
+                          return ratingNum.toFixed(1)
+                        })()}
+                      </span>
+                      <span className="ml-1 text-sm text-gray-600">
+                        ({product.review_count || product.rating_count || 0})
+                      </span>
                     </div>
                   )}
 
