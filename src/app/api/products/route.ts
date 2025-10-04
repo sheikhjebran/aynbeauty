@@ -21,10 +21,12 @@ export async function GET(request: NextRequest) {
         p.created_at, p.updated_at,
         c.name as category_name,
         c.slug as category_slug,
+        COALESCE(b.name, 'Unknown') as brand,
         COALESCE(AVG(pr.rating), 0) as rating,
         COUNT(pr.id) as rating_count
       FROM products p
       LEFT JOIN categories c ON p.category_id = c.id
+      LEFT JOIN brands b ON p.brand_id = b.id
       LEFT JOIN product_reviews pr ON p.id = pr.product_id AND pr.is_approved = TRUE
       WHERE 1=1
     `
@@ -51,7 +53,7 @@ export async function GET(request: NextRequest) {
 
     // Get total count for pagination
     const countQuery = query.replace(
-      'SELECT p.id, p.name, p.description, p.price, p.discounted_price, p.stock_quantity, p.image_url, p.primary_image, p.is_trending, p.is_must_have, p.is_new_arrival, p.created_at, p.updated_at, c.name as category_name, c.slug as category_slug, COALESCE(AVG(pr.rating), 0) as rating, COUNT(pr.id) as rating_count',
+      'SELECT p.id, p.name, p.description, p.price, p.discounted_price, p.stock_quantity, p.image_url, p.primary_image, p.is_trending, p.is_must_have, p.is_new_arrival, p.created_at, p.updated_at, c.name as category_name, c.slug as category_slug, COALESCE(b.name, \'Unknown\') as brand, COALESCE(AVG(pr.rating), 0) as rating, COUNT(pr.id) as rating_count',
       'SELECT COUNT(DISTINCT p.id) as total'
     )
 
@@ -59,7 +61,7 @@ export async function GET(request: NextRequest) {
     const total = countResult.total
 
     // Add GROUP BY and pagination
-    query += ` GROUP BY p.id, p.name, p.description, p.price, p.discounted_price, p.stock_quantity, p.image_url, p.primary_image, p.is_trending, p.is_must_have, p.is_new_arrival, p.created_at, p.updated_at, c.name, c.slug`
+    query += ` GROUP BY p.id, p.name, p.description, p.price, p.discounted_price, p.stock_quantity, p.image_url, p.primary_image, p.is_trending, p.is_must_have, p.is_new_arrival, p.created_at, p.updated_at, c.name, c.slug, b.name`
     query += ` ORDER BY p.created_at DESC LIMIT ? OFFSET ?`
     params.push(limit, offset)
 

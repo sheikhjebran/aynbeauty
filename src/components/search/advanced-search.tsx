@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { MagnifyingGlassIcon, XMarkIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline'
 
@@ -37,8 +37,9 @@ export function AdvancedSearch({ onFiltersChange, className = '' }: AdvancedSear
   const router = useRouter()
   const searchParams = useSearchParams()
   const [showAdvanced, setShowAdvanced] = useState(false)
-  const [categories, setCategories] = useState<string[]>([])
+  const [categories, setCategories] = useState<any[]>([])
   const [brands, setBrands] = useState<string[]>([])
+  const debounceRef = useRef<NodeJS.Timeout | null>(null)
   
   const [filters, setFilters] = useState<SearchFilters>({
     search: searchParams.get('search') || '',
@@ -53,6 +54,25 @@ export function AdvancedSearch({ onFiltersChange, className = '' }: AdvancedSear
     sortBy: searchParams.get('sort') || 'relevance'
   })
 
+  // Debounced update function
+  const debouncedUpdateURL = useCallback((newFilters: SearchFilters) => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
+    }
+    
+    debounceRef.current = setTimeout(() => {
+      const params = new URLSearchParams()
+      Object.entries(newFilters).forEach(([k, v]) => {
+        if (typeof v === 'boolean' ? v : v && v !== '') {
+          params.set(k === 'sortBy' ? 'sort' : k, v.toString())
+        }
+      })
+      
+      const newUrl = `${window.location.pathname}?${params.toString()}`
+      router.push(newUrl, { scroll: false })
+    }, 500) // 500ms debounce delay
+  }, [router])
+
   useEffect(() => {
     fetchFilterOptions()
   }, [])
@@ -61,12 +81,21 @@ export function AdvancedSearch({ onFiltersChange, className = '' }: AdvancedSear
     onFiltersChange?.(filters)
   }, [filters, onFiltersChange])
 
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current)
+      }
+    }
+  }, [])
+
   const fetchFilterOptions = async () => {
     try {
       const response = await fetch('/api/categories')
       if (response.ok) {
         const data = await response.json()
-        setCategories(data.categories || [])
+        setCategories(data.flat_categories || [])
         setBrands(data.brands || [])
       }
     } catch (error) {
@@ -78,16 +107,21 @@ export function AdvancedSearch({ onFiltersChange, className = '' }: AdvancedSear
     const newFilters = { ...filters, [key]: value }
     setFilters(newFilters)
     
-    // Update URL params
-    const params = new URLSearchParams()
-    Object.entries(newFilters).forEach(([k, v]) => {
-      if (typeof v === 'boolean' ? v : v && v !== '') {
-        params.set(k === 'sortBy' ? 'sort' : k, v.toString())
-      }
-    })
-    
-    const newUrl = `${window.location.pathname}?${params.toString()}`
-    router.push(newUrl, { scroll: false })
+    // Use debouncing for search input to prevent flickering
+    if (key === 'search') {
+      debouncedUpdateURL(newFilters)
+    } else {
+      // Immediate update for other filters like dropdowns, checkboxes
+      const params = new URLSearchParams()
+      Object.entries(newFilters).forEach(([k, v]) => {
+        if (typeof v === 'boolean' ? v : v && v !== '') {
+          params.set(k === 'sortBy' ? 'sort' : k, v.toString())
+        }
+      })
+      
+      const newUrl = `${window.location.pathname}?${params.toString()}`
+      router.push(newUrl, { scroll: false })
+    }
   }
 
   const clearFilters = () => {
@@ -190,8 +224,8 @@ export function AdvancedSearch({ onFiltersChange, className = '' }: AdvancedSear
                 >
                   <option value="">All Categories</option>
                   {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    <option key={category.id || category.name} value={category.name}>
+                      {category.name ? category.name.charAt(0).toUpperCase() + category.name.slice(1) : 'Unknown Category'}
                     </option>
                   ))}
                 </select>
