@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')
     const trending = searchParams.get('trending')
     const featured = searchParams.get('featured')
+    const newArrivals = searchParams.get('new_arrivals')
     const sort = searchParams.get('sort') || 'newest'
     const minPrice = searchParams.get('minPrice')
     const maxPrice = searchParams.get('maxPrice')
@@ -80,6 +81,10 @@ export async function GET(request: NextRequest) {
       query += ` AND p.is_must_have = 1`
     }
 
+    if (newArrivals === 'true') {
+      query += ` AND p.is_new_arrival = 1`
+    }
+
     // Get total count for pagination
     let countQuery = `
       SELECT COUNT(*) as total FROM (
@@ -132,6 +137,10 @@ export async function GET(request: NextRequest) {
 
     if (featured === 'true') {
       countQuery += ` AND p.is_must_have = 1`
+    }
+
+    if (newArrivals === 'true') {
+      countQuery += ` AND p.is_new_arrival = 1`
     }
     
     countQuery += ` GROUP BY p.id`
@@ -190,8 +199,11 @@ export async function GET(request: NextRequest) {
         break
     }
     
-    query += ` LIMIT ? OFFSET ?`
-    params.push(Number(limit), Number(offset))
+    // Validate limit and offset to prevent SQL injection
+    const validatedLimit = Math.min(Math.max(Number(limit), 1), 100); // Between 1 and 100
+    const validatedOffset = Math.max(Number(offset), 0); // Non-negative
+    
+    query += ` LIMIT ${validatedLimit} OFFSET ${validatedOffset}`
 
     const products = await executeQuery(query, params)
 
