@@ -59,32 +59,35 @@ export default function CartPage() {
 
   // Process WhatsApp checkout with delivery details  
   const processWhatsAppCheckout = async (deliveryDetails: any) => {
+    if (!user) return;
+    
     const confirm = window.confirm('This will send your order details to WhatsApp for processing. Do you want to continue?')
     if (!confirm) return
 
     try {
       setCheckoutLoading(true)
+      setShowDeliveryModal(false)
 
       // Create order in database first
       const token = localStorage.getItem('token')
       const orderData = {
         shipping_address: {
-          name: `${user.first_name} ${user.last_name}`,
-          email: user.email,
-          phone: user.phone || '',
-          address: 'To be provided',
-          city: 'To be provided',
-          state: 'To be provided',
-          pincode: 'To be provided'
+          name: deliveryDetails.name,
+          email: deliveryDetails.email,
+          phone: deliveryDetails.phone,
+          address: deliveryDetails.address,
+          city: deliveryDetails.city,
+          state: deliveryDetails.state,
+          pincode: deliveryDetails.pincode
         },
         billing_address: {
-          name: `${user.first_name} ${user.last_name}`,
-          email: user.email,
-          phone: user.phone || '',
-          address: 'To be provided',
-          city: 'To be provided',
-          state: 'To be provided',
-          pincode: 'To be provided'
+          name: deliveryDetails.name,
+          email: deliveryDetails.email,
+          phone: deliveryDetails.phone,
+          address: deliveryDetails.address,
+          city: deliveryDetails.city,
+          state: deliveryDetails.state,
+          pincode: deliveryDetails.pincode
         },
         payment_method: 'whatsapp_checkout',
         payment_reference: null, // Will be updated when payment is confirmed
@@ -116,13 +119,16 @@ export default function CartPage() {
       const shippingAmount = subtotal >= 299 ? 0 : 49
       const total = subtotal + shippingAmount
 
-      // Prepare WhatsApp message
+      // Prepare WhatsApp message with delivery details
       const customerDetails = `
-*Customer Details:*
-Name: ${user.first_name} ${user.last_name}
-Email: ${user.email}
-Phone: ${user.phone || 'Not provided'}
-Address: To be provided via WhatsApp
+📧 *Customer Information:*
+Name: ${deliveryDetails.name}
+Email: ${deliveryDetails.email}
+Phone: ${deliveryDetails.phone}
+
+📍 *Delivery Address:*
+${deliveryDetails.address}
+${deliveryDetails.city}, ${deliveryDetails.state} ${deliveryDetails.pincode}
       `.trim()
 
       const orderDetails = cartItems.map(item => 

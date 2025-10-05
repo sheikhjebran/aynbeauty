@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { executeQuery } from '@/lib/db'
+import { executeQuery, getMany, insert } from '@/lib/database'
 import jwt from 'jsonwebtoken'
 
 interface User {
@@ -55,8 +55,8 @@ export async function GET(request: NextRequest) {
       LIMIT ? OFFSET ?
     `
 
-    queryParams.push(limit, offset)
-    const orders = await executeQuery(ordersQuery, queryParams)
+    const finalQueryParams = [...queryParams, limit, offset]
+    const orders = await getMany(ordersQuery, finalQueryParams)
 
     // Get total count
     const countQuery = `
@@ -65,7 +65,8 @@ export async function GET(request: NextRequest) {
       ${whereClause}
     `
     
-    const [{ total }] = await executeQuery(countQuery, queryParams.slice(0, -2))
+    const countResult = await getMany(countQuery, queryParams)
+    const total = countResult[0]?.total || 0
 
     // Parse items JSON
     const formattedOrders = orders.map((order: any) => ({
@@ -118,19 +119,23 @@ export async function POST(request: NextRequest) {
 
     // Calculate totals
     let subtotal = 0
-    for (const item of items) {
-      const [product] = await executeQuery(
+    
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i]
+      
+      const products = await getMany(
         'SELECT price FROM products WHERE id = ? AND is_active = TRUE',
         [item.product_id]
       )
       
-      if (!product) {
+      if (!products || products.length === 0) {
         return NextResponse.json(
           { message: `Product ${item.product_id} not found` },
           { status: 404 }
         )
       }
       
+      const product = products[0]
       subtotal += product.price * item.quantity
     }
 
@@ -143,63 +148,60 @@ export async function POST(request: NextRequest) {
     const orderNumber = `AYN${Date.now()}${Math.random().toString(36).substr(2, 3).toUpperCase()}`
 
     // Create order
-    const [orderResult] = await executeQuery(
-      `INSERT INTO orders (
-        user_id, order_number, status, payment_status, payment_method, payment_reference,
-        subtotal, tax_amount, shipping_amount, discount_amount, total_amount,
-        shipping_address, billing_address
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        userId,
-        orderNumber,
-        'pending',
-        payment_reference ? 'paid' : 'pending',
-        payment_method,
-        payment_reference || null,
-        subtotal,
-        taxAmount,
-        shippingAmount,
-        discountAmount,
-        totalAmount,
-        JSON.stringify(shipping_address),
-        JSON.stringify(billing_address)
-      ]
-    )
+    const orderResult = await insert('orders', {
+      user_id: userId,
+      order_number: orderNumber,
+      status: 'pending',
+      payment_status: payment_reference ? 'paid' : 'pending',
+      payment_method: payment_method,
+      payment_reference: payment_reference || null,
+      subtotal: subtotal,
+      tax_amount: taxAmount,
+      shipping_amount: shippingAmount,
+      discount_amount: discountAmount,
+      total_amount: totalAmount,
+      shipping_address: JSON.stringify(shipping_address),
+      billing_address: JSON.stringify(billing_address)
+    })
 
-    const orderId = (orderResult as any).insertId
+    const orderId = orderResult.insertId
 
     // Create order items
-    for (const item of items) {
-      const [product] = await executeQuery(
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i]
+      
+      const products = await getMany(
         'SELECT name, price FROM products WHERE id = ?',
         [item.product_id]
       )
+      
+      if (!products || products.length === 0) {
+        continue // Skip if product not found
+      }
+      
+      const product = products[0]
 
       let variantName = null
       if (item.variant_id) {
-        const [variant] = await executeQuery(
+        const variants = await getMany(
           'SELECT name FROM product_variants WHERE id = ?',
           [item.variant_id]
         )
-        variantName = variant?.name
+        if (variants && variants.length > 0) {
+          variantName = variants[0].name
+        }
       }
 
-      await executeQuery(
-        `INSERT INTO order_items (
-          order_id, product_id, variant_id, product_name, variant_name,
-          quantity, unit_price, total_price
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          orderId,
-          item.product_id,
-          item.variant_id || null,
-          product.name,
-          variantName,
-          item.quantity,
-          product.price,
-          product.price * item.quantity
-        ]
-      )
+      await insert('order_items', {
+        order_id: orderId,
+        product_id: item.product_id,
+        variant_id: item.variant_id || null,
+        product_name: product.name,
+        variant_name: variantName,
+        quantity: item.quantity,
+        unit_price: product.price,
+        total_price: product.price * item.quantity
+      })
 
       // Update product stock
       await executeQuery(

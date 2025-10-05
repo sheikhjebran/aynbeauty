@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
         const [purchase] = await connection.execute(
           `SELECT 1 FROM order_items oi
            JOIN orders o ON oi.order_id = o.id
-           WHERE o.user_id = ? AND oi.product_id = ? AND o.order_status = 'delivered'`,
+           WHERE o.user_id = ? AND oi.product_id = ? AND o.status = 'delivered'`,
           [user.id, product_id]
         ) as [any[], any]
 

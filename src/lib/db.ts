@@ -46,6 +46,20 @@ export async function executeQuery<T = any>(
   }
 }
 
+export async function executeInsert(
+  query: string,
+  params: any[] = []
+): Promise<any> {
+  try {
+    const conn = await getConnection()
+    const [result] = await conn.execute(query, params)
+    return result
+  } catch (error) {
+    console.error('Database insert error:', error)
+    throw new Error('Database insert operation failed')
+  }
+}
+
 export async function closeConnection(): Promise<void> {
   if (connection) {
     await connection.end()

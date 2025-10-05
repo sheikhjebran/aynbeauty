@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getConnection } from '@/lib/db'
+import { executeQuery } from '@/lib/database'
 
 export async function POST(req: NextRequest) {
   try {
-    const connection = await getConnection()
-    
     // Create addresses table
     const createAddressesTable = `
       CREATE TABLE IF NOT EXISTS addresses (
@@ -28,12 +26,12 @@ export async function POST(req: NextRequest) {
       )
     `
     
-    await connection.execute(createAddressesTable)
+    await executeQuery(createAddressesTable)
     console.log('Addresses table created')
     
     // Add payment_method column to orders
     try {
-      await connection.execute('ALTER TABLE orders ADD COLUMN payment_method VARCHAR(50)')
+      await executeQuery('ALTER TABLE orders ADD COLUMN payment_method VARCHAR(50)')
       console.log('payment_method column added')
     } catch (error: any) {
       if (error.code !== 'ER_DUP_FIELDNAME') {
@@ -44,7 +42,7 @@ export async function POST(req: NextRequest) {
     
     // Add payment_reference column to orders
     try {
-      await connection.execute('ALTER TABLE orders ADD COLUMN payment_reference VARCHAR(200)')
+      await executeQuery('ALTER TABLE orders ADD COLUMN payment_reference VARCHAR(200)')
       console.log('payment_reference column added')
     } catch (error: any) {
       if (error.code !== 'ER_DUP_FIELDNAME') {
@@ -53,14 +51,60 @@ export async function POST(req: NextRequest) {
       console.log('payment_reference column already exists')
     }
     
-    await connection.end()
+    // Add variant_id column to order_items
+    try {
+      await executeQuery('ALTER TABLE order_items ADD COLUMN variant_id INT NULL')
+      console.log('variant_id column added to order_items')
+    } catch (error: any) {
+      if (error.code !== 'ER_DUP_FIELDNAME') {
+        throw error
+      }
+      console.log('variant_id column already exists in order_items')
+    }
+    
+    // Add variant_name column to order_items
+    try {
+      await executeQuery('ALTER TABLE order_items ADD COLUMN variant_name VARCHAR(200) NULL')
+      console.log('variant_name column added to order_items')
+    } catch (error: any) {
+      if (error.code !== 'ER_DUP_FIELDNAME') {
+        throw error
+      }
+      console.log('variant_name column already exists in order_items')
+    }
+    
+    // Add unit_price column to order_items
+    try {
+      await executeQuery('ALTER TABLE order_items ADD COLUMN unit_price DECIMAL(10,2) NOT NULL DEFAULT 0')
+      console.log('unit_price column added to order_items')
+    } catch (error: any) {
+      if (error.code !== 'ER_DUP_FIELDNAME') {
+        throw error
+      }
+      console.log('unit_price column already exists in order_items')
+    }
+    
+    // Add total_price column to order_items
+    try {
+      await executeQuery('ALTER TABLE order_items ADD COLUMN total_price DECIMAL(10,2) NOT NULL DEFAULT 0')
+      console.log('total_price column added to order_items')
+    } catch (error: any) {
+      if (error.code !== 'ER_DUP_FIELDNAME') {
+        throw error
+      }
+      console.log('total_price column already exists in order_items')
+    }
     
     return NextResponse.json({ 
       message: 'Database schema updated successfully',
       details: [
         'addresses table created',
         'payment_method column added to orders',
-        'payment_reference column added to orders'
+        'payment_reference column added to orders',
+        'variant_id column added to order_items',
+        'variant_name column added to order_items',
+        'unit_price column added to order_items',
+        'total_price column added to order_items'
       ]
     })
     
