@@ -303,7 +303,33 @@ export default function AdminInventory() {
     
     try {
       const token = localStorage.getItem('token')
-      if (!token) return
+      if (!token) {
+        alert('No authentication token found. Please login again.')
+        return
+      }
+
+      // Check if token looks valid (basic validation)
+      try {
+        const tokenParts = token.split('.');
+        if (tokenParts.length !== 3) {
+          throw new Error('Invalid token format');
+        }
+        const payload = JSON.parse(atob(tokenParts[1]));
+        const currentTime = Math.floor(Date.now() / 1000);
+        if (payload.exp && payload.exp < currentTime) {
+          alert('Your session has expired. Please login again.');
+          localStorage.removeItem('token');
+          window.location.href = '/auth/login';
+          return;
+        }
+        console.log('🔐 Token payload:', payload);
+      } catch (tokenError) {
+        console.error('🔐 Token validation error:', tokenError);
+        alert('Invalid authentication token. Please login again.');
+        localStorage.removeItem('token');
+        window.location.href = '/auth/login';
+        return;
+      }
 
       setIsUploading(true)
       let imageUrls: UploadedImage[] = []
@@ -341,24 +367,39 @@ export default function AdminInventory() {
       
       const method = editingProduct ? 'PUT' : 'POST'
       
+      const requestPayload = {
+        ...formData,
+        image_urls: imageUrls.map(img => img.url),
+        primary_image_index: primaryImageIndex,
+        price: parseFloat(formData.price),
+        discounted_price: formData.discounted_price ? parseFloat(formData.discounted_price) : null,
+        stock_quantity: parseInt(formData.stock_quantity)
+      }
+
+      // Debug logging
+      console.log('🔍 Request Debug Info:');
+      console.log('URL:', url);
+      console.log('Method:', method);
+      console.log('Token present:', !!token);
+      console.log('Token preview:', token ? token.substring(0, 20) + '...' : 'None');
+      console.log('Payload:', requestPayload);
+      
       const response = await fetch(url, {
         method,
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          ...formData,
-          image_urls: imageUrls.map(img => img.url),
-          primary_image_index: primaryImageIndex,
-          price: parseFloat(formData.price),
-          discounted_price: formData.discounted_price ? parseFloat(formData.discounted_price) : null,
-          stock_quantity: parseInt(formData.stock_quantity)
-        })
+        body: JSON.stringify(requestPayload)
       })
 
+      console.log('📡 Response Status:', response.status);
+      console.log('📡 Response OK:', response.ok);
+
       if (!response.ok) {
-        throw new Error('Failed to save product')
+        const errorText = await response.text();
+        console.log('📡 Error Response:', errorText);
+        throw new Error(`Failed to save product: ${response.status} - ${errorText}`)
       }
 
       await fetchProducts()

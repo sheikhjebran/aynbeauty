@@ -53,6 +53,8 @@ jobs:
 
             # Copy production environment
             echo "📋 Setting up environment..."
+            rm -rf .env
+            rm -rf .env.local
             if [ -f ".env.prod" ]; then
               cp .env.prod .env.local
               echo "✅ Production environment file copied"
