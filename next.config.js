@@ -16,7 +16,7 @@ const nextConfig = {
         port: "3000",
       },
       {
-        protocol: "http", 
+        protocol: "http",
         hostname: "66.116.199.206",
         port: "3000",
       },
@@ -30,7 +30,7 @@ const nextConfig = {
     // Allow local uploads directory
     domains: [],
     // Specify image loader for local images
-    loader: 'default',
+    loader: "default",
     // Unoptimized for local development/testing
     unoptimized: false,
   },
@@ -38,15 +38,15 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/uploads/:path*',
+        source: "/uploads/:path*",
         headers: [
           {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },
-    ]
+    ];
   },
 };
 
