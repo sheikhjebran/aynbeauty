@@ -197,10 +197,10 @@ export function AdvancedSearch({ onFiltersChange, className = '' }: AdvancedSear
             <select
               value={filters.sortBy}
               onChange={(e) => updateFilter('sortBy', e.target.value)}
-              className="px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-pink-500 bg-white"
+              className="px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-pink-500 bg-white text-gray-900 font-medium hover:border-pink-400 transition-colors"
             >
               {sortOptions.map((option) => (
-                <option key={option.value} value={option.value}>
+                <option key={option.value} value={option.value} className="text-gray-900">
                   {option.label}
                 </option>
               ))}
@@ -220,11 +220,11 @@ export function AdvancedSearch({ onFiltersChange, className = '' }: AdvancedSear
                 <select
                   value={filters.category}
                   onChange={(e) => updateFilter('category', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-pink-500 bg-white text-gray-900 hover:border-pink-400 transition-colors"
                 >
-                  <option value="">All Categories</option>
+                  <option value="" className="text-gray-900">All Categories</option>
                   {categories.map((category) => (
-                    <option key={category.id || category.name} value={category.name}>
+                    <option key={category.id || category.name} value={category.name} className="text-gray-900">
                       {category.name ? category.name.charAt(0).toUpperCase() + category.name.slice(1) : 'Unknown Category'}
                     </option>
                   ))}
@@ -239,11 +239,11 @@ export function AdvancedSearch({ onFiltersChange, className = '' }: AdvancedSear
                 <select
                   value={filters.brand}
                   onChange={(e) => updateFilter('brand', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-pink-500 bg-white text-gray-900 hover:border-pink-400 transition-colors"
                 >
-                  <option value="">All Brands</option>
+                  <option value="" className="text-gray-900">All Brands</option>
                   {brands.map((brand) => (
-                    <option key={brand} value={brand}>
+                    <option key={brand} value={brand} className="text-gray-900">
                       {brand}
                     </option>
                   ))}

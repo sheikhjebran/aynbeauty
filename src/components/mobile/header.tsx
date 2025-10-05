@@ -105,7 +105,7 @@ export function MobileHeader() {
               <input
                 type="text"
                 placeholder="Search for products, brands..."
-                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-500"
                 autoFocus
               />
               <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">

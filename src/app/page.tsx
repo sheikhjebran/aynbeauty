@@ -536,21 +536,46 @@ export default function HomePage() {
       {/* Special Offer Banner */}
       <section className="py-16 bg-gradient-to-r from-pink-50 to-purple-50">
         <div className="container mx-auto px-4">
-          <div className="bg-white rounded-3xl p-8 md:p-12 text-center max-w-4xl mx-auto shadow-lg">
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
-              Beauty Club Membership
-            </h2>
-            <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-              Join our exclusive beauty club and get access to member-only deals, early access to sales, and personalized beauty recommendations.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-black text-white px-8 py-4 rounded-full font-semibold hover:bg-gray-800 transition-all duration-300 transform hover:scale-105">
-                Join for Free
-              </button>
-              <button className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-full font-semibold hover:border-gray-400 transition-colors">
-                Learn More
-              </button>
+          <div className="relative overflow-hidden rounded-3xl max-w-6xl mx-auto shadow-2xl">
+            {/* Background Image */}
+            <div className="absolute inset-0">
+              <Image
+                src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1200&h=600&fit=crop"
+                alt="Beauty Banner"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-pink-900/80 to-purple-900/70"></div>
             </div>
+            
+            {/* Content */}
+            <div className="relative z-10 px-8 py-16 md:px-16 md:py-24 text-center">
+              <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+                Discover Your
+                <span className="block text-pink-300">Perfect Look</span>
+              </h2>
+              <p className="text-xl md:text-2xl text-pink-100 mb-10 max-w-3xl mx-auto leading-relaxed">
+                Explore our curated collection of premium beauty products and transform your skincare routine with expert-recommended essentials.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link 
+                  href="/products"
+                  className="bg-white text-pink-900 px-10 py-4 rounded-full font-bold text-lg hover:bg-pink-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                >
+                  Shop Collection
+                </Link>
+                <Link 
+                  href="/categories"
+                  className="border-2 border-white text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-white/10 transition-all duration-300"
+                >
+                  Browse Categories
+                </Link>
+              </div>
+            </div>
+            
+            {/* Decorative Elements */}
+            <div className="absolute top-10 right-10 w-20 h-20 bg-pink-400/20 rounded-full blur-xl"></div>
+            <div className="absolute bottom-10 left-10 w-32 h-32 bg-purple-400/20 rounded-full blur-xl"></div>
           </div>
         </div>
       </section>

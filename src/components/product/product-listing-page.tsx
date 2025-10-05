@@ -43,14 +43,6 @@ const sortOptions = [
   { value: 'popularity', label: 'Most Popular' },
 ]
 
-const priceRanges = [
-  { value: '0-500', label: 'Under ₹500' },
-  { value: '500-1000', label: '₹500 - ₹1,000' },
-  { value: '1000-2000', label: '₹1,000 - ₹2,000' },
-  { value: '2000-5000', label: '₹2,000 - ₹5,000' },
-  { value: '5000+', label: 'Above ₹5,000' },
-]
-
 export function ProductListingPage({ category, searchParams }: ProductListingPageProps) {
   const router = useRouter()
   const urlSearchParams = useSearchParams()
@@ -67,11 +59,15 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Get current filters from URL
-  const currentSort = urlSearchParams.get('sort') || 'best-match'
+  const currentSort = urlSearchParams.get('sort') || 'newest'
   const currentSearch = urlSearchParams.get('search') || ''
   const currentBrand = urlSearchParams.get('brand') || ''
-  const currentPriceRange = urlSearchParams.get('price') || ''
+  const currentMinPrice = urlSearchParams.get('minPrice') || ''
+  const currentMaxPrice = urlSearchParams.get('maxPrice') || ''
   const currentRating = urlSearchParams.get('rating') || ''
+  const currentInStock = urlSearchParams.get('inStock') === 'true'
+  const currentOnSale = urlSearchParams.get('onSale') === 'true'
+  const currentFeatured = urlSearchParams.get('featured') === 'true'
 
   // Debounce search parameter
   useEffect(() => {
@@ -93,7 +89,7 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
   // Fetch products when debounced search or other parameters change
   useEffect(() => {
     fetchProducts()
-  }, [category, debouncedSearch, currentBrand, currentSort, currentPriceRange, currentRating, currentPage])
+  }, [category, debouncedSearch, currentBrand, currentSort, currentMinPrice, currentMaxPrice, currentRating, currentInStock, currentOnSale, currentFeatured, currentPage])
 
   // Fetch filters on mount
   useEffect(() => {
@@ -109,8 +105,12 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
       if (debouncedSearch) params.append('search', debouncedSearch)
       if (currentBrand) params.append('brand', currentBrand)
       if (currentSort) params.append('sort', currentSort)
-      if (currentPriceRange) params.append('price_range', currentPriceRange)
-      if (currentRating) params.append('min_rating', currentRating)
+      if (currentMinPrice) params.append('minPrice', currentMinPrice)
+      if (currentMaxPrice) params.append('maxPrice', currentMaxPrice)
+      if (currentRating) params.append('rating', currentRating)
+      if (currentInStock) params.append('inStock', 'true')
+      if (currentOnSale) params.append('onSale', 'true')
+      if (currentFeatured) params.append('featured', 'true')
       params.append('page', currentPage.toString())
       params.append('limit', '20')
 
@@ -179,14 +179,6 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
     return Math.round(((originalPrice - discountedPrice) / originalPrice) * 100)
   }
 
-  const getProductTags = (product: Product) => {
-    const tags = []
-    if (product.is_new_arrival) tags.push({ label: 'NEW', color: 'bg-green-500' })
-    if (product.is_trending) tags.push({ label: 'TRENDING', color: 'bg-orange-500' })
-    if (product.is_must_have) tags.push({ label: 'MUST HAVE', color: 'bg-purple-500' })
-    return tags
-  }
-
   const renderStars = (rating: number) => {
     const validRating = Number(rating) || 0
     return (
@@ -249,12 +241,7 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
 
       {/* Advanced Search */}
       <div className="mb-6">
-        <AdvancedSearch 
-          onFiltersChange={(filters) => {
-            // Handle filter changes - this would trigger a new search
-            console.log('Filters changed:', filters)
-          }}
-        />
+        <AdvancedSearch />
       </div>
 
       {/* Filters and Sorting */}
@@ -360,26 +347,6 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
               </div>
             )}
 
-            {/* Price Range Filter */}
-            <div className="mb-6">
-              <h4 className="font-medium text-gray-900 mb-3">Price Range</h4>
-              <div className="space-y-2">
-                {priceRanges.map((range) => (
-                  <label key={range.value} className="flex items-center">
-                    <input
-                      type="radio"
-                      name="price"
-                      value={range.value}
-                      checked={currentPriceRange === range.value}
-                      onChange={(e) => updateFilters('price', e.target.checked ? e.target.value : '')}
-                      className="text-pink-600 focus:ring-pink-500"
-                    />
-                    <span className="ml-2 text-sm text-gray-700">{range.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
             {/* Rating Filter */}
             <div className="mb-6">
               <h4 className="font-medium text-gray-900 mb-3">Rating</h4>
@@ -437,18 +404,6 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
                           className="object-cover"
                         />
                         
-                        {/* Product Tags */}
-                        <div className="absolute top-2 left-2 flex flex-col gap-1">
-                          {getProductTags(product).map((tag, index) => (
-                            <span
-                              key={index}
-                              className={`${tag.color} text-white px-2 py-1 text-xs rounded font-medium`}
-                            >
-                              {tag.label}
-                            </span>
-                          ))}
-                        </div>
-
                         {/* Discount Badge */}
                         {product.discounted_price && product.discounted_price < product.price && (
                           <div className="absolute top-2 right-12 bg-red-500 text-white px-2 py-1 text-xs rounded font-medium">
@@ -468,9 +423,41 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
                       <Link href={`/products/${product.id}`}>
                         <h3 className="font-medium text-gray-900 mb-1 line-clamp-2 hover:text-pink-600">{product.name}</h3>
                       </Link>
+                      
+                      {/* Product Description */}
+                      {product.description && (
+                        <p className="text-xs text-gray-600 mt-2 mb-2 leading-relaxed overflow-hidden" 
+                           style={{
+                             display: '-webkit-box',
+                             WebkitLineClamp: 3,
+                             WebkitBoxOrient: 'vertical'
+                           }}>
+                          {product.description}
+                        </p>
+                      )}
+                      
                       <p className="text-sm text-gray-600 mb-2">{product.brand}</p>
                       
-                      <div className="flex items-center mb-2">
+                      {/* Tags - moved below description to match home page */}
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {product.is_trending && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                            🔥 Trending
+                          </span>
+                        )}
+                        {product.is_must_have && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                            ⭐ Must Have
+                          </span>
+                        )}
+                        {product.is_new_arrival && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                            ✨ New
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center gap-1 mb-2">
                         <div className="flex items-center">
                           {[...Array(5)].map((_, i) => (
                             <StarIcon
@@ -479,28 +466,24 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
                             />
                           ))}
                         </div>
-                        <span className="ml-1 text-sm text-gray-600">
-                          {formatRating(product.rating)} ({product.rating_count || 0} reviews)
+                        <span className="text-sm text-gray-600">
+                          ({product.rating_count || 0})
                         </span>
                       </div>
                       
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2 mb-3">
                         {product.discounted_price && product.discounted_price < product.price ? (
                           <>
-                            <span className="font-bold text-red-600">{formatPrice(product.discounted_price)}</span>
-                            <span className="text-sm text-gray-500 line-through">{formatPrice(product.price)}</span>
-                            <span className="text-xs text-red-600 font-medium">
-                              {calculateDiscountPercentage(product.price, product.discounted_price)}% OFF
+                            <span className="text-lg font-bold text-pink-600">₹{product.discounted_price}</span>
+                            <span className="text-sm text-gray-500 line-through">₹{product.price}</span>
+                            <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">
+                              {Math.round(((product.price - product.discounted_price) / product.price) * 100)}% OFF
                             </span>
                           </>
                         ) : (
-                          <span className="font-bold text-gray-900">{formatPrice(product.price)}</span>
+                          <span className="text-lg font-bold text-gray-900">₹{product.price}</span>
                         )}
                       </div>
-
-                      {viewMode === 'list' && (
-                        <p className="text-sm text-gray-600 line-clamp-2 mb-3">{product.description}</p>
-                      )}
 
                       <button
                         disabled={product.stock_quantity === 0}
