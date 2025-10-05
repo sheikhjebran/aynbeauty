@@ -14,7 +14,10 @@
     "migrate:status": "node scripts/migrate.js status",
     "migrate:fresh": "node scripts/migrate.js fresh",
     "make:migration": "node scripts/make-migration.js",
-    "migrate:production": "node scripts/migrate-database.js"
+    "migrate:production": "node scripts/migrate-database.js",
+    "migrate:up": "node scripts/migration-runner.js migrate",
+    "migrate:down": "node scripts/migration-runner.js rollback",
+    "migrate:check": "node scripts/migration-runner.js status"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
