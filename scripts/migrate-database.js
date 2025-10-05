@@ -55,6 +55,7 @@ class DatabaseMigrator {
       console.log(`   Database: ${this.config.database}`);
       console.log(`   User: ${this.config.user}`);
 
+      // First connect without specifying a database to test credentials
       this.connection = await mysql.createConnection({
         host: this.config.host,
         port: this.config.port,
@@ -64,6 +65,50 @@ class DatabaseMigrator {
       });
 
       console.log("✅ Connected to MySQL successfully");
+
+      // Test if we can access the target database
+      try {
+        await this.connection.execute(`USE \`${this.config.database}\``);
+        console.log(`✅ Using existing database '${this.config.database}'`);
+      } catch (useError) {
+        console.log(
+          `⚠️  Database '${this.config.database}' doesn't exist or not accessible`
+        );
+
+        // List available databases that user can access
+        try {
+          const [databases] = await this.connection.execute("SHOW DATABASES");
+          const dbNames = databases
+            .map((row) => row.Database)
+            .filter(
+              (name) =>
+                ![
+                  "information_schema",
+                  "performance_schema",
+                  "mysql",
+                  "sys",
+                ].includes(name)
+            );
+
+          if (dbNames.length > 0) {
+            console.log(
+              `📋 Available databases for user '${this.config.user}':`
+            );
+            dbNames.forEach((name) => console.log(`   - ${name}`));
+            console.log();
+            console.log(
+              `💡 You can use one of these databases by updating DB_NAME in .env.local`
+            );
+            console.log(`   For example: DB_NAME=${dbNames[0]}`);
+          }
+        } catch (showError) {
+          console.log(`   Cannot list databases: ${showError.message}`);
+        }
+
+        throw new Error(
+          `Cannot access database '${this.config.database}'. Please check database name or ask your hosting provider to create it.`
+        );
+      }
     } catch (error) {
       console.error("❌ Failed to connect to MySQL:", error.message);
       throw error;
@@ -274,7 +319,8 @@ class DatabaseMigrator {
       console.log();
 
       await this.connect();
-      await this.createDatabase();
+      // Skip createDatabase() since user doesn't have CREATE privileges
+      // Database connection already verified in connect()
       await this.executeSQLFile();
       await this.verifyMigration();
 
