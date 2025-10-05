@@ -1,3 +1,12 @@
+#!/bin/bash
+
+# Quick Fix Script for Build Issues
+# Run this on your server to fix the current build error
+
+echo "🔧 Fixing build issues..."
+
+# Fix the corrupted loyalty route file
+cat > src/app/api/loyalty/route.ts << 'EOF'
 import { NextRequest, NextResponse } from 'next/server'
 import { executeQuery } from '@/lib/database'
 
@@ -69,3 +78,16 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+EOF
+
+echo "✅ Fixed loyalty route file"
+
+# Try building again
+echo "🏗️ Attempting to build..."
+npm run build
+
+if [ $? -eq 0 ]; then
+    echo "✅ Build successful!"
+else
+    echo "❌ Build still failing. Check for other syntax errors."
+fi
