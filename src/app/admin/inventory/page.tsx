@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import AdminLayout from '@/components/AdminLayout'
+import { useImageCache } from '@/contexts/ImageCacheContext'
 import {
   MagnifyingGlassIcon,
   PlusIcon,
@@ -62,6 +63,7 @@ interface UploadedImage {
 }
 
 export default function AdminInventory() {
+  const { refreshImages } = useImageCache()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -360,6 +362,7 @@ export default function AdminInventory() {
       }
 
       await fetchProducts()
+      refreshImages() // Refresh image cache to show newly uploaded images
       closeModal()
     } catch (error) {
       console.error('Save product error:', error)

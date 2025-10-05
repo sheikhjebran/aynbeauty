@@ -1,5 +1,6 @@
 import React from 'react'
 import Image from 'next/image'
+import { useImageCache } from '@/contexts/ImageCacheContext'
 
 interface ProductImageProps {
   src: string
@@ -20,14 +21,18 @@ export function ProductImage({
   fill = false,
   priority = false 
 }: ProductImageProps) {
+  const { getImageUrl } = useImageCache()
+  
   // Check if this is an uploaded image (starts with /uploads)
   const isUploadedImage = src.startsWith('/uploads/')
   
-  // For uploaded images, use regular img tag to bypass Next.js optimization
+  // For uploaded images, add cache-busting parameter and use regular img tag
   if (isUploadedImage) {
+    const cacheBustSrc = getImageUrl(src)
+    
     return (
       <img
-        src={src}
+        src={cacheBustSrc}
         alt={alt}
         width={width}
         height={height}

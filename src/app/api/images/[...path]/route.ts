@@ -45,7 +45,8 @@ export async function GET(
     return new NextResponse(imageBuffer as any, {
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=31536000, immutable',
+        'Cache-Control': 'public, max-age=300, must-revalidate',
+        'ETag': `"${Date.now()}"`,
       },
     })
 

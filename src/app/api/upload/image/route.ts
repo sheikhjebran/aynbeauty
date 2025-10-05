@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { writeFile, mkdir } from 'fs/promises'
+import { revalidatePath } from 'next/cache'
 import path from 'path'
 
 export async function POST(request: NextRequest) {
@@ -83,11 +84,17 @@ export async function POST(request: NextRequest) {
       })
     }
     
+    // Revalidate paths to refresh cached images
+    revalidatePath('/')
+    revalidatePath('/products')
+    revalidatePath('/admin/inventory')
+    
     return NextResponse.json({
       success: true,
       images: uploadedImages,
       count: uploadedImages.length,
-      message: `${uploadedImages.length} image(s) uploaded successfully`
+      message: `${uploadedImages.length} image(s) uploaded successfully`,
+      timestamp: Date.now() // For cache busting
     })
 
   } catch (error) {
