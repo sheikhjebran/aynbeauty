@@ -1,6 +1,5 @@
 import React from 'react'
 import Image from 'next/image'
-import { useImageCache } from '@/contexts/ImageCacheContext'
 
 interface ProductImageProps {
   src: string
@@ -21,14 +20,14 @@ export function ProductImage({
   fill = false,
   priority = false 
 }: ProductImageProps) {
-  const { getImageUrl } = useImageCache()
+  // Check if this is an uploaded image (starts with /uploads or /api/images)
+  const isUploadedImage = src.startsWith('/uploads/') || src.startsWith('/api/images/')
   
-  // Check if this is an uploaded image (starts with /uploads)
-  const isUploadedImage = src.startsWith('/uploads/')
-  
-  // For uploaded images, add cache-busting parameter and use regular img tag
+  // For uploaded images, always use regular img tag with aggressive cache busting
   if (isUploadedImage) {
-    const cacheBustSrc = getImageUrl(src)
+    // Use current timestamp for aggressive cache busting
+    const separator = src.includes('?') ? '&' : '?'
+    const cacheBustSrc = `${src}${separator}cb=${Date.now()}`
     
     return (
       <img

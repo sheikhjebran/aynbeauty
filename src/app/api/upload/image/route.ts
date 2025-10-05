@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       
       // Add to uploaded images array
       uploadedImages.push({
-        url: `/uploads/products/${filename}`,
+        url: `/api/images/products/${filename}`,
         filename: filename,
         originalName: file.name,
         size: file.size
