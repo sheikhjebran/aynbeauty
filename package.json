@@ -14,7 +14,7 @@
     "migrate:status": "node scripts/migrate.js status",
     "migrate:fresh": "node scripts/migrate.js fresh",
     "make:migration": "node scripts/make-migration.js",
-    "migrate:production": "tsx scripts/migrate-database.ts"
+    "migrate:production": "node scripts/migrate-database.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
