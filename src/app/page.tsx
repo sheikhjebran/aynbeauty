@@ -18,6 +18,7 @@ import { StarIcon as StarSolidIcon, HeartIcon as HeartSolidIcon } from '@heroico
 import { DesktopHeroSection } from '@/components/desktop/hero-section'
 import { MobileHeroSection } from '@/components/mobile/hero-section'
 import { useCart } from '@/contexts/CartContext'
+import { ProductImage } from '@/components/ui/ProductImage'
 
 // Category Image Component with Error Handling
 const CategoryImage = ({ src, alt, className }: { src: string, alt: string, className?: string }) => {
@@ -249,7 +250,7 @@ export default function HomePage() {
       <div className="relative">
         <Link href={`/products/${product.id}`}>
           <div className="aspect-square overflow-hidden">
-            <Image
+            <ProductImage
               src={product.image_url || '/placeholder-product.jpg'}
               alt={product.name}
               width={300}

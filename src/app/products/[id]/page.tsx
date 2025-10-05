@@ -18,6 +18,7 @@ import {
 import { StarIcon as StarSolidIcon, HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
+import { ProductImage } from '@/components/ui/ProductImage'
 
 interface ProductImage {
   id: number
@@ -378,7 +379,7 @@ export default function ProductDetailPage() {
           {/* Product Images */}
           <div className="space-y-4">
             <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
-              <Image
+              <ProductImage
                 src={displayImages[selectedImageIndex]?.image_url || '/placeholder-product.jpg'}
                 alt={product.name}
                 width={600}
@@ -397,7 +398,7 @@ export default function ProductDetailPage() {
                       selectedImageIndex === index ? 'border-pink-600' : 'border-gray-200'
                     }`}
                   >
-                    <Image
+                    <ProductImage
                       src={image.image_url}
                       alt={`${product.name} ${index + 1}`}
                       width={80}

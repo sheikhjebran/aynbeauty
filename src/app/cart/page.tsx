@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
 import { TrashIcon, MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
+import { ProductImage } from '@/components/ui/ProductImage'
 
 interface CartItem {
   id: number
@@ -233,7 +234,7 @@ export default function CartPage() {
               <div key={item.id} className="bg-white border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center space-x-4">
                   <div className="flex-shrink-0">
-                    <Image
+                    <ProductImage
                       src={item.image_url || '/placeholder-product.jpg'}
                       alt={item.product_name}
                       width={80}
