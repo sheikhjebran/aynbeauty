@@ -1,6 +1,6 @@
 {
   "database": "aynbeauty",
-  "timestamp": "2025-10-05T19:33:49.152Z",
+  "timestamp": "2025-10-05T19:54:08.111Z",
   "tables": {
     "addresses": {
       "name": "addresses",
@@ -408,7 +408,7 @@
       ],
       "foreignKeys": [],
       "createSQL": "CREATE TABLE `brands` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(255) NOT NULL,\n  `slug` varchar(255) NOT NULL,\n  `description` text DEFAULT NULL,\n  `logo_url` varchar(500) DEFAULT NULL,\n  `website_url` varchar(500) DEFAULT NULL,\n  `is_active` tinyint(1) DEFAULT 1,\n  `sort_order` int(11) DEFAULT 0,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `slug` (`slug`),\n  KEY `idx_brands_slug` (`slug`),\n  KEY `idx_brands_active` (`is_active`)\n) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
-      "rowCount": 6,
+      "rowCount": 0,
       "engine": "InnoDB",
       "charset": "utf8mb4",
       "collation": "utf8mb4_general_ci"
@@ -762,7 +762,7 @@
         }
       ],
       "createSQL": "CREATE TABLE `campaigns` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `title` varchar(255) NOT NULL,\n  `description` text DEFAULT NULL,\n  `image_url` varchar(500) DEFAULT NULL,\n  `banner_url` varchar(500) DEFAULT NULL,\n  `type` enum('banner','offer','promotion','sale') DEFAULT 'banner',\n  `status` enum('draft','active','paused','completed','cancelled') DEFAULT 'draft',\n  `target_audience` enum('all','new_customers','existing_customers','vip','segment') DEFAULT 'all',\n  `discount_type` enum('percentage','fixed','bogo','free_shipping') DEFAULT NULL,\n  `discount_value` decimal(10,2) DEFAULT NULL,\n  `minimum_amount` decimal(10,2) DEFAULT NULL,\n  `maximum_discount` decimal(10,2) DEFAULT NULL,\n  `coupon_code` varchar(50) DEFAULT NULL,\n  `priority` int(11) DEFAULT 0,\n  `click_count` int(11) DEFAULT 0,\n  `view_count` int(11) DEFAULT 0,\n  `conversion_count` int(11) DEFAULT 0,\n  `start_date` timestamp NULL DEFAULT NULL,\n  `end_date` timestamp NULL DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  `created_by` int(11) DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  KEY `idx_campaigns_status` (`status`),\n  KEY `idx_campaigns_type` (`type`),\n  KEY `idx_campaigns_dates` (`start_date`,`end_date`),\n  KEY `idx_campaigns_priority` (`priority`),\n  KEY `created_by` (`created_by`),\n  CONSTRAINT `campaigns_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL\n) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
-      "rowCount": 5,
+      "rowCount": 0,
       "engine": "InnoDB",
       "charset": "utf8mb4",
       "collation": "utf8mb4_general_ci"
@@ -1123,7 +1123,7 @@
         }
       ],
       "createSQL": "CREATE TABLE `categories` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(255) NOT NULL,\n  `slug` varchar(255) NOT NULL,\n  `description` text DEFAULT NULL,\n  `image_url` varchar(500) DEFAULT NULL,\n  `parent_id` int(11) DEFAULT NULL,\n  `is_active` tinyint(1) DEFAULT 1,\n  `sort_order` int(11) DEFAULT 0,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `slug` (`slug`),\n  KEY `idx_categories_slug` (`slug`),\n  KEY `idx_categories_parent` (`parent_id`),\n  KEY `idx_categories_active` (`is_active`),\n  CONSTRAINT `categories_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL\n) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
-      "rowCount": 7,
+      "rowCount": 0,
       "engine": "InnoDB",
       "charset": "utf8mb4",
       "collation": "utf8mb4_general_ci"
@@ -1352,7 +1352,7 @@
       ],
       "foreignKeys": [],
       "createSQL": "CREATE TABLE `content_blocks` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `title` varchar(255) NOT NULL,\n  `content` text DEFAULT NULL,\n  `page_location` varchar(100) NOT NULL,\n  `display_order` int(11) DEFAULT 0,\n  `is_active` tinyint(1) DEFAULT 1,\n  `start_date` timestamp NULL DEFAULT NULL,\n  `end_date` timestamp NULL DEFAULT NULL,\n  `link_url` varchar(500) DEFAULT NULL,\n  `link_text` varchar(100) DEFAULT NULL,\n  `image_url` varchar(500) DEFAULT NULL,\n  `button_color` varchar(7) DEFAULT '#ec4899',\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`id`),\n  KEY `idx_content_blocks_location` (`page_location`),\n  KEY `idx_content_blocks_active` (`is_active`),\n  KEY `idx_content_blocks_dates` (`start_date`,`end_date`)\n) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
-      "rowCount": 5,
+      "rowCount": 0,
       "engine": "InnoDB",
       "charset": "utf8mb4",
       "collation": "utf8mb4_general_ci"
@@ -1604,7 +1604,7 @@
       ],
       "foreignKeys": [],
       "createSQL": "CREATE TABLE `coupons` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `code` varchar(50) NOT NULL,\n  `name` varchar(255) NOT NULL,\n  `description` text DEFAULT NULL,\n  `type` enum('fixed','percentage') NOT NULL,\n  `value` decimal(10,2) NOT NULL,\n  `minimum_amount` decimal(10,2) DEFAULT 0.00,\n  `maximum_discount` decimal(10,2) DEFAULT NULL,\n  `usage_limit` int(11) DEFAULT NULL,\n  `used_count` int(11) DEFAULT 0,\n  `is_active` tinyint(1) DEFAULT 1,\n  `starts_at` timestamp NULL DEFAULT NULL,\n  `expires_at` timestamp NULL DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `code` (`code`),\n  KEY `idx_coupons_code` (`code`),\n  KEY `idx_coupons_active` (`is_active`),\n  KEY `idx_coupons_dates` (`starts_at`,`expires_at`)\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
-      "rowCount": 3,
+      "rowCount": 0,
       "engine": "InnoDB",
       "charset": "utf8mb4",
       "collation": "utf8mb4_general_ci"
@@ -2084,8 +2084,8 @@
         }
       ],
       "foreignKeys": [],
-      "createSQL": "CREATE TABLE `migrations` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `filename` varchar(255) NOT NULL,\n  `batch` int(11) NOT NULL,\n  `executed_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `filename` (`filename`)\n) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
-      "rowCount": 5,
+      "createSQL": "CREATE TABLE `migrations` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `filename` varchar(255) NOT NULL,\n  `batch` int(11) NOT NULL,\n  `executed_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `filename` (`filename`)\n) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
+      "rowCount": 0,
       "engine": "InnoDB",
       "charset": "utf8mb4",
       "collation": "utf8mb4_general_ci"
@@ -2431,7 +2431,7 @@
         }
       ],
       "createSQL": "CREATE TABLE `order_items` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `order_id` int(11) NOT NULL,\n  `product_id` int(11) NOT NULL,\n  `product_name` varchar(255) NOT NULL,\n  `product_sku` varchar(100) DEFAULT NULL,\n  `quantity` int(11) NOT NULL,\n  `price` decimal(10,2) NOT NULL,\n  `total` decimal(10,2) NOT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `variant_id` int(11) DEFAULT NULL,\n  `variant_name` varchar(200) DEFAULT NULL,\n  `unit_price` decimal(10,2) NOT NULL DEFAULT 0.00,\n  `total_price` decimal(10,2) NOT NULL DEFAULT 0.00,\n  PRIMARY KEY (`id`),\n  KEY `idx_order_items_order` (`order_id`),\n  KEY `idx_order_items_product` (`product_id`),\n  CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,\n  CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
-      "rowCount": 2,
+      "rowCount": 0,
       "engine": "InnoDB",
       "charset": "utf8mb4",
       "collation": "utf8mb4_general_ci"
@@ -2757,7 +2757,7 @@
         }
       ],
       "createSQL": "CREATE TABLE `orders` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `order_number` varchar(50) NOT NULL,\n  `user_id` int(11) DEFAULT NULL,\n  `status` enum('pending','confirmed','processing','shipped','delivered','cancelled','refunded') DEFAULT 'pending',\n  `payment_status` enum('pending','paid','failed','refunded','partially_refunded') DEFAULT 'pending',\n  `subtotal` decimal(10,2) NOT NULL,\n  `tax_amount` decimal(10,2) DEFAULT 0.00,\n  `shipping_amount` decimal(10,2) DEFAULT 0.00,\n  `discount_amount` decimal(10,2) DEFAULT 0.00,\n  `total_amount` decimal(10,2) NOT NULL,\n  `currency` varchar(3) DEFAULT 'INR',\n  `billing_address` longtext DEFAULT NULL,\n  `shipping_address` longtext DEFAULT NULL,\n  `notes` text DEFAULT NULL,\n  `shipped_at` timestamp NULL DEFAULT NULL,\n  `delivered_at` timestamp NULL DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  `payment_method` varchar(50) DEFAULT NULL,\n  `payment_reference` varchar(200) DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `order_number` (`order_number`),\n  KEY `idx_orders_user` (`user_id`),\n  KEY `idx_orders_status` (`status`),\n  KEY `idx_orders_payment_status` (`payment_status`),\n  KEY `idx_orders_number` (`order_number`),\n  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL\n) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
-      "rowCount": 7,
+      "rowCount": 0,
       "engine": "InnoDB",
       "charset": "utf8mb4",
       "collation": "utf8mb4_general_ci"
@@ -3227,7 +3227,7 @@
         }
       ],
       "createSQL": "CREATE TABLE `product_images` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `product_id` int(11) NOT NULL,\n  `image_url` varchar(500) NOT NULL,\n  `alt_text` varchar(255) DEFAULT NULL,\n  `sort_order` int(11) DEFAULT 0,\n  `is_primary` tinyint(1) DEFAULT 0,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  PRIMARY KEY (`id`),\n  KEY `idx_product_images_product` (`product_id`),\n  KEY `idx_product_images_primary` (`is_primary`),\n  CONSTRAINT `product_images_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
-      "rowCount": 1,
+      "rowCount": 0,
       "engine": "InnoDB",
       "charset": "utf8mb4",
       "collation": "utf8mb4_general_ci"
@@ -3481,7 +3481,7 @@
         }
       ],
       "createSQL": "CREATE TABLE `product_reviews` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `product_id` int(11) NOT NULL,\n  `user_id` int(11) NOT NULL,\n  `order_id` int(11) DEFAULT NULL,\n  `rating` int(11) NOT NULL,\n  `title` varchar(255) DEFAULT NULL,\n  `comment` text DEFAULT NULL,\n  `review_text` text DEFAULT NULL,\n  `is_verified_purchase` tinyint(1) DEFAULT 0,\n  `is_approved` tinyint(1) DEFAULT 1,\n  `helpful_count` int(11) DEFAULT 0,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`id`),\n  KEY `idx_product_reviews_product` (`product_id`),\n  KEY `idx_product_reviews_user` (`user_id`),\n  KEY `idx_product_reviews_rating` (`rating`),\n  KEY `idx_product_reviews_approved` (`is_approved`),\n  KEY `order_id` (`order_id`),\n  CONSTRAINT `product_reviews_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,\n  CONSTRAINT `product_reviews_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,\n  CONSTRAINT `product_reviews_ibfk_3` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE SET NULL\n) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
-      "rowCount": 1,
+      "rowCount": 0,
       "engine": "InnoDB",
       "charset": "utf8mb4",
       "collation": "utf8mb4_general_ci"
@@ -3965,7 +3965,7 @@
         }
       ],
       "createSQL": "CREATE TABLE `products` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `name` varchar(255) NOT NULL,\n  `slug` varchar(255) NOT NULL,\n  `description` text DEFAULT NULL,\n  `short_description` varchar(500) DEFAULT NULL,\n  `sku` varchar(100) DEFAULT NULL,\n  `price` decimal(10,2) NOT NULL,\n  `discounted_price` decimal(10,2) DEFAULT NULL,\n  `cost_price` decimal(10,2) DEFAULT NULL,\n  `category_id` int(11) DEFAULT NULL,\n  `brand_id` int(11) DEFAULT NULL,\n  `stock_quantity` int(11) DEFAULT 0,\n  `min_stock_level` int(11) DEFAULT 5,\n  `weight` decimal(8,2) DEFAULT NULL,\n  `dimensions` varchar(100) DEFAULT NULL,\n  `is_active` tinyint(1) DEFAULT 1,\n  `is_featured` tinyint(1) DEFAULT 0,\n  `is_digital` tinyint(1) DEFAULT 0,\n  `meta_title` varchar(255) DEFAULT NULL,\n  `meta_description` text DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  `is_trending` tinyint(1) DEFAULT 0,\n  `is_must_have` tinyint(1) DEFAULT 0,\n  `is_new_arrival` tinyint(1) DEFAULT 0,\n  `image_url` varchar(500) DEFAULT NULL,\n  `primary_image` varchar(255) DEFAULT NULL,\n  `rating` decimal(3,2) DEFAULT 0.00,\n  `rating_count` int(11) DEFAULT 0,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `slug` (`slug`),\n  UNIQUE KEY `sku` (`sku`),\n  KEY `idx_products_slug` (`slug`),\n  KEY `idx_products_sku` (`sku`),\n  KEY `idx_products_category` (`category_id`),\n  KEY `idx_products_brand` (`brand_id`),\n  KEY `idx_products_featured` (`is_featured`),\n  KEY `idx_products_active` (`is_active`),\n  KEY `idx_products_price` (`price`),\n  CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL,\n  CONSTRAINT `products_ibfk_2` FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`) ON DELETE SET NULL\n) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
-      "rowCount": 1,
+      "rowCount": 0,
       "engine": "InnoDB",
       "charset": "utf8mb4",
       "collation": "utf8mb4_general_ci"
@@ -4530,7 +4530,7 @@
       ],
       "foreignKeys": [],
       "createSQL": "CREATE TABLE `users` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `email` varchar(255) NOT NULL,\n  `password` varchar(255) NOT NULL,\n  `first_name` varchar(100) DEFAULT NULL,\n  `last_name` varchar(100) DEFAULT NULL,\n  `mobile` varchar(20) DEFAULT NULL,\n  `date_of_birth` date DEFAULT NULL,\n  `gender` enum('male','female','other') DEFAULT NULL,\n  `avatar_url` varchar(500) DEFAULT NULL,\n  `is_active` tinyint(1) DEFAULT 1,\n  `is_verified` tinyint(1) DEFAULT 0,\n  `email_verified_at` timestamp NULL DEFAULT NULL,\n  `role` enum('customer','admin','staff') DEFAULT 'customer',\n  `last_login_at` timestamp NULL DEFAULT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  `email_verification_token` varchar(10) DEFAULT NULL,\n  `email_verification_expires` timestamp NULL DEFAULT NULL,\n  `last_login` timestamp NULL DEFAULT NULL,\n  `email_verified` tinyint(1) DEFAULT 0,\n  `phone` varchar(20) DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `email` (`email`),\n  KEY `idx_users_email` (`email`),\n  KEY `idx_users_role` (`role`),\n  KEY `idx_users_active` (`is_active`)\n) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
-      "rowCount": 2,
+      "rowCount": 0,
       "engine": "InnoDB",
       "charset": "utf8mb4",
       "collation": "utf8mb4_general_ci"
@@ -4664,7 +4664,7 @@
         }
       ],
       "createSQL": "CREATE TABLE `wishlist_items` (\n  `id` int(11) NOT NULL AUTO_INCREMENT,\n  `user_id` int(11) NOT NULL,\n  `product_id` int(11) NOT NULL,\n  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),\n  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `unique_user_product` (`user_id`,`product_id`),\n  KEY `idx_user_id` (`user_id`),\n  KEY `idx_product_id` (`product_id`),\n  CONSTRAINT `wishlist_items_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,\n  CONSTRAINT `wishlist_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE\n) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci",
-      "rowCount": 1,
+      "rowCount": 0,
       "engine": "InnoDB",
       "charset": "utf8mb4",
       "collation": "utf8mb4_general_ci"
@@ -4797,6 +4797,6 @@
     "totalColumns": 277,
     "totalIndexes": 92,
     "totalForeignKeys": 24,
-    "totalRows": 46
+    "totalRows": 0
   }
 }
