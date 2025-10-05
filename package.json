@@ -17,6 +17,8 @@
     "db:generate-migrations": "node scripts/generate-fresh-migrations.js",
     "db:validate": "node scripts/validate-schema.js validate",
     "db:repair": "node scripts/validate-schema.js repair",
+    "db:seed-categories": "node scripts/seed-categories.js",
+    "db:debug-inventory": "node scripts/debug-inventory.js",
     "admin:reset": "node scripts/reset-admin.js reset",
     "admin:info": "node scripts/reset-admin.js info"
   },
