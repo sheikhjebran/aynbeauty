@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { executeQuery } from '@/lib/database'
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic'
+
 // GET /api/categories - Get all categories
 export async function GET(request: NextRequest) {
   try {

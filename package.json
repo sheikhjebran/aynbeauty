@@ -13,7 +13,8 @@
     "migrate:rollback": "node scripts/migrate.js rollback",
     "migrate:status": "node scripts/migrate.js status",
     "migrate:fresh": "node scripts/migrate.js fresh",
-    "make:migration": "node scripts/make-migration.js"
+    "make:migration": "node scripts/make-migration.js",
+    "migrate:production": "tsx scripts/migrate-database.ts"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -51,6 +52,7 @@
     "eslint-config-next": "14.2.5",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }

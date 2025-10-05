@@ -1,7 +1,19 @@
 import twilio from 'twilio';
 
-// Initialize Twilio client
-const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+// Initialize Twilio client with environment check
+function createTwilioClient() {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  
+  if (!accountSid || !authToken) {
+    console.warn('Twilio credentials not configured');
+    return null;
+  }
+  
+  return twilio(accountSid, authToken);
+}
+
+const client = createTwilioClient();
 
 // WhatsApp message templates
 export const whatsappTemplates = {
@@ -37,6 +49,10 @@ Thank you for joining AynBeauty! 💄✨`
 // Send WhatsApp message function
 export async function sendWhatsAppMessage(to: string, message: string) {
   try {
+    if (!client) {
+      throw new Error('Twilio client not configured');
+    }
+    
     // Ensure the phone number is in international format
     const formattedPhone = formatPhoneNumber(to);
     
@@ -96,6 +112,10 @@ function formatPhoneNumber(phone: string): string {
 // Test WhatsApp connection
 export async function testWhatsAppConnection() {
   try {
+    if (!client) {
+      throw new Error('Twilio client not configured');
+    }
+    
     if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
       throw new Error('Twilio credentials not configured');
     }

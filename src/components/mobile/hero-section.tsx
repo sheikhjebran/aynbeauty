@@ -23,7 +23,7 @@ export function MobileHeroSection() {
       video: '/images/banners/welcome-banner.mp4',
       title: 'New Beauty Arrivals',
       subtitle: 'Discover the latest in makeup & skincare',
-      // gradient: 'from-pink-500/60 to-purple-600/60'
+      gradient: 'from-pink-500/60 to-purple-600/60'
     },
     {
       id: 2,
@@ -31,7 +31,7 @@ export function MobileHeroSection() {
       title: 'Premium Skincare',
       subtitle: 'Glow with our bestselling products',
       cta: 'Explore',
-      // gradient: 'from-blue-500/60 to-teal-600/60',
+      gradient: 'from-blue-500/60 to-teal-600/60',
       imageFit: 'cover' // Shows full image
     },
     {
@@ -40,7 +40,7 @@ export function MobileHeroSection() {
       title: 'Makeup Essentials',
       subtitle: 'Create your perfect look',
       cta: 'Get Started',
-      // gradient: 'from-orange-500/60 to-red-600/60',
+      gradient: 'from-orange-500/60 to-red-600/60',
       imageFit: 'contain' // Shows full image
     }
   ]
