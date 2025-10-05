@@ -1,330 +1,240 @@
-#!/usr/bin/env node
-
-const mysql = require("mysql2/promise");
-const fs = require("fs");
-const path = require("path");
-require("dotenv").config({ path: ".env.local" });
+require('dotenv').config({ path: '.env.local' });
+const mysql = require('mysql2/promise');
+const fs = require('fs').promises;
+const path = require('path');
 
 class MigrationRunner {
   constructor() {
-    this.dbConfig = {
-      host: process.env.DB_HOST || "localhost",
-      port: parseInt(process.env.DB_PORT || "3306"),
-      user: process.env.DB_USER || "root",
-      password: process.env.DB_PASSWORD || "",
-      database: process.env.DB_NAME || "aynbeauty",
-      charset: "utf8mb4",
-      multipleStatements: true,
-    };
     this.connection = null;
-    this.migrationsPath = path.join(__dirname, "../database/migrations");
+    this.config = {
+      host: process.env.DB_HOST || 'localhost',
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || '',
+      database: process.env.DB_NAME || 'aynbeauty',
+      port: parseInt(process.env.DB_PORT || '3306')
+    };
   }
 
   async connect() {
-    try {
-      this.connection = await mysql.createConnection(this.dbConfig);
-      console.log("✅ Connected to database");
-    } catch (error) {
-      console.error("❌ Database connection failed:", error);
-      throw error;
-    }
+    this.connection = await mysql.createConnection(this.config);
+    console.log('✅ Connected to database');
   }
 
-  async disconnect() {
-    if (this.connection) {
-      await this.connection.end();
-      console.log("✅ Disconnected from database");
-    }
-  }
-
-  async createMigrationsTable() {
-    const createTableQuery = `
+  async ensureMigrationsTable() {
+    await this.connection.execute(`
       CREATE TABLE IF NOT EXISTS migrations (
         id INT AUTO_INCREMENT PRIMARY KEY,
         filename VARCHAR(255) NOT NULL UNIQUE,
         batch INT NOT NULL,
         executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
-    `;
-
-    await this.connection.execute(createTableQuery);
-    console.log("✅ Migrations table ready");
+    `);
   }
 
   async getExecutedMigrations() {
-    const [rows] = await this.connection.execute(
-      "SELECT filename FROM migrations ORDER BY id"
-    );
-    return rows.map((row) => row.filename);
+    const [rows] = await this.connection.execute('SELECT filename FROM migrations ORDER BY batch, executed_at');
+    return rows.map(row => row.filename);
   }
 
-  async getNextBatchNumber() {
-    const [rows] = await this.connection.execute(
-      "SELECT COALESCE(MAX(batch), 0) + 1 as next_batch FROM migrations"
-    );
-    return rows[0].next_batch;
-  }
-
-  async getAllMigrationFiles() {
-    if (!fs.existsSync(this.migrationsPath)) {
-      fs.mkdirSync(this.migrationsPath, { recursive: true });
-    }
-
-    const files = fs
-      .readdirSync(this.migrationsPath)
-      .filter(
-        (file) => file.endsWith(".sql") && !file.endsWith(".rollback.sql")
-      )
+  async getAvailableMigrations() {
+    const migrationsDir = path.join(__dirname, '..', 'migrations');
+    const files = await fs.readdir(migrationsDir);
+    return files
+      .filter(file => file.endsWith('.sql') && !file.includes('_rollback'))
       .sort();
-
-    return files;
   }
 
-  async runMigration(filename, batchNumber) {
-    const filePath = path.join(this.migrationsPath, filename);
-    const sql = fs.readFileSync(filePath, "utf8");
+  async executeMigrationFile(filename) {
+    const migrationPath = path.join(__dirname, '..', 'migrations', filename);
+    const migrationSQL = await fs.readFile(migrationPath, 'utf8');
+    
+    // Split SQL into statements and execute
+    const statements = migrationSQL
+      .split(';')
+      .map(stmt => stmt.trim())
+      .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'));
 
-    console.log(`📄 Running migration: ${filename}`);
+    for (const statement of statements) {
+      if (statement.trim()) {
+        await this.connection.execute(statement);
+      }
+    }
+  }
 
+  async validateTableSchema(tableName, expectedSchema) {
     try {
-      // Split SQL into individual statements
-      const statements = sql.split(";").filter((stmt) => stmt.trim());
+      // Get current table structure
+      const [currentColumns] = await this.connection.execute(`
+        SELECT COLUMN_NAME, COLUMN_TYPE, IS_NULLABLE, COLUMN_DEFAULT, EXTRA
+        FROM INFORMATION_SCHEMA.COLUMNS 
+        WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?
+        ORDER BY ORDINAL_POSITION
+      `, [this.config.database, tableName]);
 
-      for (const statement of statements) {
-        if (statement.trim()) {
-          await this.connection.execute(statement);
-        }
+      // Compare with expected schema
+      if (currentColumns.length !== expectedSchema.columns.length) {
+        console.log(`⚠️  Column count mismatch for ${tableName}: expected ${expectedSchema.columns.length}, got ${currentColumns.length}`);
+        return false;
       }
 
-      // Record migration as executed
-      await this.connection.execute(
-        "INSERT INTO migrations (filename, batch) VALUES (?, ?)",
-        [filename, batchNumber]
-      );
-
-      console.log(`✅ Migration completed: ${filename}`);
+      console.log(`✅ Table ${tableName} schema matches migration`);
+      return true;
     } catch (error) {
-      console.error(`❌ Migration failed: ${filename}`, error);
-      throw error;
+      console.log(`❌ Table ${tableName} does not exist or has validation errors`);
+      return false;
     }
   }
 
-  async migrate() {
-    await this.connect();
-    await this.createMigrationsTable();
+  async runMigrations() {
+    console.log('🚀 Running migrations...');
+    
+    await this.ensureMigrationsTable();
+    
+    const executed = await this.getExecutedMigrations();
+    const available = await this.getAvailableMigrations();
+    const pending = available.filter(migration => !executed.includes(migration));
 
-    const allMigrations = await this.getAllMigrationFiles();
-    const executedMigrations = await this.getExecutedMigrations();
-    const pendingMigrations = allMigrations.filter(
-      (migration) => !executedMigrations.includes(migration)
-    );
-
-    if (pendingMigrations.length === 0) {
-      console.log("✅ No pending migrations");
-      await this.disconnect();
+    if (pending.length === 0) {
+      console.log('✅ No pending migrations');
       return;
     }
 
-    console.log(`📋 Found ${pendingMigrations.length} pending migrations:`);
-    pendingMigrations.forEach((migration) => console.log(`  - ${migration}`));
-    console.log("");
+    console.log(`📋 Found ${pending.length} pending migrations:`);
+    pending.forEach(migration => console.log(`   - ${migration}`));
 
-    const batchNumber = await this.getNextBatchNumber();
-
-    for (const migration of pendingMigrations) {
-      await this.runMigration(migration, batchNumber);
+    let batch = 1;
+    if (executed.length > 0) {
+      const [batchResult] = await this.connection.execute('SELECT MAX(batch) as max_batch FROM migrations');
+      batch = (batchResult[0].max_batch || 0) + 1;
     }
 
-    console.log(
-      `\n🎉 Successfully ran ${pendingMigrations.length} migrations!`
-    );
-    await this.disconnect();
-  }
-
-  async rollback(steps = 1) {
-    await this.connect();
-    await this.createMigrationsTable();
-
-    // Get migrations to rollback
-    const [rows] = await this.connection.execute(
-      `
-      SELECT filename, batch FROM migrations 
-      ORDER BY batch DESC, id DESC 
-      LIMIT ?
-    `,
-      [steps]
-    );
-
-    if (rows.length === 0) {
-      console.log("✅ No migrations to rollback");
-      await this.disconnect();
-      return;
-    }
-
-    console.log(`📋 Rolling back ${rows.length} migrations:`);
-    rows.forEach((row) => console.log(`  - ${row.filename}`));
-    console.log("");
-
-    for (const row of rows) {
-      await this.runRollback(row.filename);
-    }
-
-    console.log(`\n🎉 Successfully rolled back ${rows.length} migrations!`);
-    await this.disconnect();
-  }
-
-  async runRollback(filename) {
-    // Look for rollback file
-    const rollbackFilename = filename.replace(".sql", ".rollback.sql");
-    const rollbackPath = path.join(this.migrationsPath, rollbackFilename);
-
-    if (!fs.existsSync(rollbackPath)) {
-      console.log(`⚠️ No rollback file found for: ${filename}`);
-      // Just remove from migrations table
-      await this.connection.execute(
-        "DELETE FROM migrations WHERE filename = ?",
-        [filename]
-      );
-      return;
-    }
-
-    console.log(`📄 Rolling back: ${filename}`);
-
-    try {
-      const sql = fs.readFileSync(rollbackPath, "utf8");
-      const statements = sql.split(";").filter((stmt) => stmt.trim());
-
-      for (const statement of statements) {
-        if (statement.trim()) {
-          await this.connection.execute(statement);
-        }
+    for (const migration of pending) {
+      console.log(`\n⚡ Executing: ${migration}`);
+      
+      try {
+        await this.executeMigrationFile(migration);
+        
+        // Record migration
+        await this.connection.execute(
+          'INSERT INTO migrations (filename, batch) VALUES (?, ?)',
+          [migration, batch]
+        );
+        
+        console.log(`✅ Completed: ${migration}`);
+      } catch (error) {
+        console.error(`❌ Failed to execute ${migration}:`, error.message);
+        throw error;
       }
-
-      // Remove migration record
-      await this.connection.execute(
-        "DELETE FROM migrations WHERE filename = ?",
-        [filename]
-      );
-
-      console.log(`✅ Rollback completed: ${filename}`);
-    } catch (error) {
-      console.error(`❌ Rollback failed: ${filename}`, error);
-      throw error;
     }
+
+    console.log(`\n🎉 All migrations completed successfully!`);
   }
 
-  async status() {
-    await this.connect();
-    await this.createMigrationsTable();
-
-    const allMigrations = await this.getAllMigrationFiles();
-    const executedMigrations = await this.getExecutedMigrations();
-
-    console.log("📊 Migration Status:\n");
-
-    if (allMigrations.length === 0) {
-      console.log("No migration files found");
-      await this.disconnect();
+  async rollbackLastBatch() {
+    console.log('🔄 Rolling back last migration batch...');
+    
+    const [batchResult] = await this.connection.execute('SELECT MAX(batch) as max_batch FROM migrations');
+    const lastBatch = batchResult[0].max_batch;
+    
+    if (!lastBatch) {
+      console.log('✅ No migrations to rollback');
       return;
     }
 
-    allMigrations.forEach((migration) => {
-      const status = executedMigrations.includes(migration)
-        ? "✅ Executed"
-        : "⏳ Pending";
-      console.log(`  ${status} - ${migration}`);
-    });
-
-    console.log(
-      `\nTotal: ${allMigrations.length} migrations, ${
-        executedMigrations.length
-      } executed, ${allMigrations.length - executedMigrations.length} pending`
+    const [migrations] = await this.connection.execute(
+      'SELECT filename FROM migrations WHERE batch = ? ORDER BY executed_at DESC',
+      [lastBatch]
     );
 
-    await this.disconnect();
+    for (const migration of migrations) {
+      const rollbackFile = migration.filename.replace('.sql', '_rollback.sql');
+      console.log(`🔄 Rolling back: ${migration.filename}`);
+      
+      try {
+        await this.executeMigrationFile(rollbackFile);
+        await this.connection.execute('DELETE FROM migrations WHERE filename = ?', [migration.filename]);
+        console.log(`✅ Rolled back: ${migration.filename}`);
+      } catch (error) {
+        console.error(`❌ Failed to rollback ${migration.filename}:`, error.message);
+        throw error;
+      }
+    }
+
+    console.log('🎉 Rollback completed successfully!');
   }
 
-  async fresh() {
-    await this.connect();
+  async freshMigration() {
+    console.log('🆕 Running fresh migration (drop all tables)...');
+    
+    // Get all tables except migrations
+    const [tables] = await this.connection.execute(`
+      SELECT TABLE_NAME 
+      FROM information_schema.tables 
+      WHERE table_schema = ? AND TABLE_NAME != 'migrations'
+      ORDER BY TABLE_NAME
+    `, [this.config.database]);
 
     // Drop all tables
-    console.log("🗑️ Dropping all tables...");
-    const [tables] = await this.connection.execute(
-      "SELECT table_name FROM information_schema.tables WHERE table_schema = ?",
-      [this.dbConfig.database]
-    );
-
-    if (tables.length > 0) {
-      await this.connection.execute("SET FOREIGN_KEY_CHECKS = 0");
-      for (const table of tables) {
-        await this.connection.execute(
-          `DROP TABLE IF EXISTS \`${table.table_name}\``
-        );
-      }
-      await this.connection.execute("SET FOREIGN_KEY_CHECKS = 1");
-      console.log(`✅ Dropped ${tables.length} tables`);
+    await this.connection.execute('SET FOREIGN_KEY_CHECKS = 0');
+    for (const table of tables) {
+      await this.connection.execute(`DROP TABLE IF EXISTS \`${table.TABLE_NAME}\``);
+      console.log(`🗑️  Dropped table: ${table.TABLE_NAME}`);
     }
+    await this.connection.execute('SET FOREIGN_KEY_CHECKS = 1');
 
-    await this.disconnect();
+    // Clear migrations table
+    await this.connection.execute('DELETE FROM migrations');
+    
+    // Run all migrations
+    await this.runMigrations();
+  }
 
-    // Run all migrations fresh
-    console.log("🚀 Running fresh migrations...");
-    await this.migrate();
+  async disconnect() {
+    if (this.connection) {
+      await this.connection.end();
+      console.log('✅ Disconnected from database');
+    }
   }
 }
 
-// CLI Commands
-async function main() {
-  const command = process.argv[2];
-  const arg = process.argv[3];
+// CLI interface
+const command = process.argv[2];
+
+(async () => {
   const runner = new MigrationRunner();
-
+  
   try {
+    await runner.connect();
+    
     switch (command) {
-      case "migrate":
-        await runner.migrate();
+      case 'up':
+        await runner.runMigrations();
         break;
-
-      case "rollback":
-        const steps = parseInt(arg) || 1;
-        await runner.rollback(steps);
+      case 'down':
+        await runner.rollbackLastBatch();
         break;
-
-      case "status":
-        await runner.status();
+      case 'fresh':
+        await runner.freshMigration();
         break;
-
-      case "fresh":
-        await runner.fresh();
+      case 'reset':
+        await runner.rollbackLastBatch();
+        await runner.runMigrations();
         break;
-
       default:
-        console.log(`
-🗄️ AYN Beauty Migration System
-
-Usage:
-  npm run migrate        - Run pending migrations
-  npm run migrate:rollback [steps] - Rollback migrations (default: 1)
-  npm run migrate:status - Show migration status
-  npm run migrate:fresh  - Drop all tables and run fresh migrations
-
-Examples:
-  npm run migrate               # Run all pending migrations
-  npm run migrate:rollback      # Rollback last migration
-  npm run migrate:rollback 3    # Rollback last 3 migrations
-  npm run migrate:status        # Show current status
-  npm run migrate:fresh         # Fresh install
-        `);
+        console.log('Available commands:');
+        console.log('  node scripts/migrate.js up     - Run pending migrations');
+        console.log('  node scripts/migrate.js down   - Rollback last batch');
+        console.log('  node scripts/migrate.js fresh  - Drop all tables and re-run');
+        console.log('  node scripts/migrate.js reset  - Rollback all and re-run');
         break;
     }
+    
+    await runner.disconnect();
   } catch (error) {
-    console.error("❌ Migration command failed:", error);
+    console.error('❌ Migration failed:', error);
+    await runner.disconnect();
     process.exit(1);
   }
-}
-
-if (require.main === module) {
-  main();
-}
+})();
 
 module.exports = MigrationRunner;
