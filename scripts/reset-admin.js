@@ -28,6 +28,8 @@ class AdminPasswordReset {
     };
 
     this.connection = null;
+    this.tableColumns = null;
+    this.verificationColumn = null;
   }
 
   async connect() {
@@ -43,8 +45,37 @@ class AdminPasswordReset {
       });
 
       console.log("✅ Connected to MySQL successfully");
+
+      // Get table structure to check available columns
+      await this.checkTableStructure();
     } catch (error) {
       console.error("❌ Failed to connect to MySQL:", error.message);
+      throw error;
+    }
+  }
+
+  async checkTableStructure() {
+    try {
+      const [columns] = await this.connection.execute("DESCRIBE users");
+      this.tableColumns = columns.map((col) => col.Field);
+
+      console.log("📋 Available columns:", this.tableColumns.join(", "));
+
+      // Check which verification column exists
+      if (this.tableColumns.includes("email_verified")) {
+        this.verificationColumn = "email_verified";
+      } else if (this.tableColumns.includes("is_verified")) {
+        this.verificationColumn = "is_verified";
+      } else {
+        this.verificationColumn = null;
+        console.log("⚠️  No verification column found");
+      }
+
+      if (this.verificationColumn) {
+        console.log(`✅ Using verification column: ${this.verificationColumn}`);
+      }
+    } catch (error) {
+      console.error("❌ Failed to check table structure:", error.message);
       throw error;
     }
   }
@@ -99,20 +130,28 @@ class AdminPasswordReset {
     const adminPassword = "admin123";
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
-    await this.connection.execute(
-      `
-      INSERT INTO users (
-        email, 
-        password, 
-        first_name, 
-        last_name, 
-        role, 
-        email_verified
-      ) VALUES (?, ?, ?, ?, ?, ?)
-    `,
-      ["admin@aynbeauty.com", hashedPassword, "Admin", "User", "admin", true]
-    );
+    // Build dynamic query based on available columns
+    let columns = ["email", "password", "first_name", "last_name", "role"];
+    let values = [
+      "admin@aynbeauty.com",
+      hashedPassword,
+      "Admin",
+      "User",
+      "admin",
+    ];
 
+    if (this.verificationColumn) {
+      columns.push(this.verificationColumn);
+      values.push(true);
+    }
+
+    const query = `
+      INSERT INTO users (
+        ${columns.join(", ")}
+      ) VALUES (${columns.map(() => "?").join(", ")})
+    `;
+
+    await this.connection.execute(query, values);
     console.log("✅ New admin user created");
   }
 
@@ -120,19 +159,33 @@ class AdminPasswordReset {
     const adminPassword = "admin123";
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
-    await this.connection.execute(
-      `
+    // Build dynamic update query based on available columns
+    let updates = [
+      "password = ?",
+      "role = 'admin'",
+      "first_name = COALESCE(first_name, 'Admin')",
+      "last_name = COALESCE(last_name, 'User')",
+    ];
+    let values = [hashedPassword];
+
+    if (this.verificationColumn) {
+      updates.push(`${this.verificationColumn} = ?`);
+      values.push(true);
+    }
+
+    if (this.tableColumns.includes("updated_at")) {
+      updates.push("updated_at = CURRENT_TIMESTAMP");
+    }
+
+    values.push(userId); // WHERE clause parameter
+
+    const query = `
       UPDATE users 
-      SET password = ?, 
-          role = 'admin',
-          email_verified = true,
-          first_name = COALESCE(first_name, 'Admin'),
-          last_name = COALESCE(last_name, 'User'),
-          updated_at = CURRENT_TIMESTAMP
+      SET ${updates.join(", ")}
       WHERE id = ?
-    `,
-      [hashedPassword, userId]
-    );
+    `;
+
+    await this.connection.execute(query, values);
 
     console.log("✅ Admin password updated");
   }
