@@ -1,0 +1,108 @@
+name: Deploy to Production Server
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Copy production environment file
+      run: cp .env.prod .env.local
+      
+    - name: Build application
+      run: npm run build
+      
+    - name: Deploy to server
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: 22
+        script: |
+          echo "🚀 Starting deployment..."
+          
+          # Navigate to project directory
+          cd /var/www/aynbeauty
+          
+          # Stop the application
+          echo "⏹️ Stopping application..."
+          pm2 stop aynbeauty || true
+          
+          # Backup current deployment
+          echo "💾 Creating backup..."
+          cp -r /var/www/aynbeauty /var/www/aynbeauty-backup-$(date +%Y%m%d-%H%M%S) || true
+          
+          # Pull latest changes
+          echo "📥 Pulling latest changes..."
+          git fetch origin
+          git reset --hard origin/main
+          
+          # Copy production environment
+          echo "📋 Setting up environment..."
+          cp .env.prod .env.local
+          
+          # Install dependencies
+          echo "📦 Installing dependencies..."
+          npm ci --production=false
+          
+          # Build the application
+          echo "🔨 Building application..."
+          npm run build
+          
+          # Update database schema (if migration exists)
+          echo "🗄️ Updating database..."
+          if [ -f "migrate-image-urls.sql" ]; then
+            mysql -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} ${{ secrets.DB_NAME }} < migrate-image-urls.sql || true
+          fi
+          
+          # Set proper permissions
+          echo "🔐 Setting permissions..."
+          chown -R www-data:www-data /var/www/aynbeauty
+          chmod -R 755 /var/www/aynbeauty
+          
+          # Ensure uploads directory exists with proper permissions
+          mkdir -p /var/www/aynbeauty/public/uploads/products
+          chown -R www-data:www-data /var/www/aynbeauty/public/uploads
+          chmod -R 755 /var/www/aynbeauty/public/uploads
+          
+          # Restart the application
+          echo "🔄 Restarting application..."
+          pm2 start aynbeauty || pm2 restart aynbeauty
+          
+          # Show status
+          echo "📊 Application status:"
+          pm2 status
+          
+          # Test the application
+          echo "🧪 Testing application..."
+          sleep 5
+          curl -f http://localhost:3000/api/health || echo "Health check failed"
+          
+          echo "✅ Deployment completed successfully!"
+          echo "🌐 Application is running at: http://66.116.199.206:3000"
+          
+    - name: Notify deployment status
+      if: always()
+      run: |
+        if [ ${{ job.status }} == 'success' ]; then
+          echo "✅ Deployment successful!"
+        else
+          echo "❌ Deployment failed!"
+        fi
