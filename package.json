@@ -19,7 +19,9 @@
     "migrate:down": "node scripts/migration-runner.js rollback",
     "migrate:check": "node scripts/migration-runner.js status",
     "admin:reset": "node scripts/reset-admin.js reset",
-    "admin:info": "node scripts/reset-admin.js info"
+    "admin:info": "node scripts/reset-admin.js info",
+    "fresh:migrate": "node scripts/fresh-migrate.js reset",
+    "fresh:status": "node scripts/fresh-migrate.js status"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
