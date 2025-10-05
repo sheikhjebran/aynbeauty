@@ -8,12 +8,25 @@ dotenv.config({ path: ".env.local" });
 
 class DatabaseMigrator {
   constructor() {
+    // Extract database name from DB_NAME if it's a connection string
+    let dbName = process.env.DB_NAME || "aynbeauty";
+
+    // If DB_NAME looks like a connection string, extract just the database name
+    if (dbName.includes("mysql://") || dbName.includes("@")) {
+      const match = dbName.match(/\/([^?\/]+)(\?|$)/);
+      if (match) {
+        dbName = match[1];
+      } else {
+        dbName = "aynbeauty"; // fallback
+      }
+    }
+
     this.config = {
       host: process.env.DB_HOST || "localhost",
       port: parseInt(process.env.DB_PORT || "3306"),
       user: process.env.DB_USER || "",
       password: process.env.DB_PASSWORD || "",
-      database: process.env.DB_NAME || "aynbeauty",
+      database: dbName,
     };
 
     this.connection = null;
@@ -72,15 +85,56 @@ class DatabaseMigrator {
         `🗄️  Creating database '${this.config.database}' if it doesn't exist...`
       );
 
-      await this.connection.execute(
-        `CREATE DATABASE IF NOT EXISTS \`${this.config.database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
+      // First check if database already exists
+      const [databases] = await this.connection.execute(
+        "SHOW DATABASES LIKE ?",
+        [this.config.database]
       );
+
+      if (databases.length > 0) {
+        console.log(`✅ Database '${this.config.database}' already exists`);
+      } else {
+        // Try to create database
+        try {
+          await this.connection.execute(
+            `CREATE DATABASE IF NOT EXISTS \`${this.config.database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
+          );
+          console.log(
+            `✅ Database '${this.config.database}' created successfully`
+          );
+        } catch (createError) {
+          if (createError.message.includes("Access denied")) {
+            console.log(
+              `⚠️  Cannot create database '${this.config.database}' - using existing database`
+            );
+            console.log(
+              `   This is normal if the database already exists or you don't have CREATE privileges`
+            );
+          } else {
+            throw createError;
+          }
+        }
+      }
 
       await this.connection.execute(`USE \`${this.config.database}\``);
 
-      console.log(`✅ Database '${this.config.database}' is ready`);
+      console.log(`✅ Using database '${this.config.database}'`);
     } catch (error) {
-      console.error("❌ Failed to create database:", error.message);
+      console.error("❌ Failed to access database:", error.message);
+
+      if (error.message.includes("Access denied")) {
+        console.error("\n🔧 Database Permission Issue:");
+        console.error(
+          "   The user 'ayn' may not have CREATE DATABASE privileges."
+        );
+        console.error("   Please ask your hosting provider to:");
+        console.error("   1. Create the 'aynbeauty' database manually, OR");
+        console.error("   2. Grant CREATE privileges to user 'ayn'");
+        console.error(
+          "\n   Alternative: Use an existing database name that 'ayn' can access"
+        );
+      }
+
       throw error;
     }
   }
