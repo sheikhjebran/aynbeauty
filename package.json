@@ -17,7 +17,9 @@
     "migrate:production": "node scripts/migrate-database.js",
     "migrate:up": "node scripts/migration-runner.js migrate",
     "migrate:down": "node scripts/migration-runner.js rollback",
-    "migrate:check": "node scripts/migration-runner.js status"
+    "migrate:check": "node scripts/migration-runner.js status",
+    "admin:reset": "node scripts/reset-admin.js reset",
+    "admin:info": "node scripts/reset-admin.js info"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
