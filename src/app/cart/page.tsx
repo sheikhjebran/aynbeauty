@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { TrashIcon, MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
 import { ProductImage } from '@/components/ui/ProductImage'
+import DeliveryDetailsModal from '@/components/ui/DeliveryDetailsModal'
 
 interface CartItem {
   id: number
@@ -31,6 +32,7 @@ export default function CartPage() {
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [showDeliveryModal, setShowDeliveryModal] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -51,6 +53,12 @@ export default function CartPage() {
       return
     }
 
+    // Show delivery details modal instead of processing directly
+    setShowDeliveryModal(true)
+  }
+
+  // Process WhatsApp checkout with delivery details  
+  const processWhatsAppCheckout = async (deliveryDetails: any) => {
     const confirm = window.confirm('This will send your order details to WhatsApp for processing. Do you want to continue?')
     if (!confirm) return
 
@@ -507,6 +515,16 @@ Thank you for choosing AYN Beauty! 💄✨
         </div>
       </div>
       </div>
+      
+      {/* Delivery Details Modal */}
+      <DeliveryDetailsModal
+        isOpen={showDeliveryModal}
+        onClose={() => setShowDeliveryModal(false)}
+        onConfirm={processWhatsAppCheckout}
+        userEmail={user?.email || ''}
+        userName={user ? `${user.first_name} ${user.last_name}` : ''}
+        userPhone={user?.phone}
+      />
     </div>
   )
 }
