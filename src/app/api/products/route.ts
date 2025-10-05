@@ -191,7 +191,7 @@ export async function GET(request: NextRequest) {
     }
     
     query += ` LIMIT ? OFFSET ?`
-    params.push(limit, offset)
+    params.push(Number(limit), Number(offset))
 
     const products = await executeQuery(query, params)
 
