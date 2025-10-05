@@ -1,12 +1,28 @@
 import mysql from 'mysql2/promise';
 
+// Extract database name from DB_NAME if it's a connection string
+function getDatabaseName(): string {
+  let dbName = process.env.DB_NAME || "aynbeauty";
+
+  if (dbName.includes("mysql://") || dbName.includes("@")) {
+    const match = dbName.match(/\/([^?\/]+)(\?|$)/);
+    if (match) {
+      dbName = match[1];
+    } else {
+      dbName = "aynbeauty";
+    }
+  }
+
+  return dbName;
+}
+
 // Database configuration
 const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '3306'),
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'aynbeauty',
+  database: getDatabaseName(),
   charset: 'utf8mb4',
   timezone: '+00:00',
   connectTimeout: 60000,
