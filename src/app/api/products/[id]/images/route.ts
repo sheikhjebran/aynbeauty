@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { executeQuery } from '@/lib/db'
+import { executeQuery } from '@/lib/database'
 
 // GET product images
 export async function GET(
@@ -7,30 +7,45 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const productId = params.id
+    const productId = parseInt(params.id)
+    
+    if (isNaN(productId)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid product ID' },
+        { status: 400 }
+      )
+    }
+
+    console.log(`🔍 Fetching images for product ID: ${productId}`)
 
     // First check if product_images table exists and has data
     const images = await executeQuery(
-      'SELECT * FROM product_images WHERE product_id = ? ORDER BY sort_order, id',
+      'SELECT id, product_id, image_url, alt_text, sort_order, is_primary, created_at FROM product_images WHERE product_id = ? ORDER BY sort_order ASC, id ASC',
       [productId]
     ) as any[]
 
+    console.log(`📸 Found ${images.length} images in product_images table`)
+
     // If no images in product_images table, check main products table
     if (images.length === 0) {
+      console.log(`🔍 No images in product_images, checking products table...`)
+      
       const product = await executeQuery(
         'SELECT image_url, primary_image FROM products WHERE id = ?',
         [productId]
       ) as any[]
 
       if (product.length > 0 && product[0].image_url) {
+        console.log(`📸 Found fallback image: ${product[0].image_url}`)
         return NextResponse.json({
           success: true,
           images: [{
             id: null,
             product_id: productId,
             image_url: product[0].image_url,
-            is_primary: true,
-            sort_order: 0
+            alt_text: `Product ${productId} Image`,
+            sort_order: 0,
+            is_primary: true
           }]
         })
       }
@@ -42,9 +57,15 @@ export async function GET(
     })
 
   } catch (error) {
-    console.error('Error fetching product images:', error)
+    console.error('❌ Error fetching product images:', error)
+    console.error('❌ Product ID:', params.id)
+    console.error('❌ Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    })
+    
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch product images' },
+      { success: false, error: 'Database operation failed' },
       { status: 500 }
     )
   }

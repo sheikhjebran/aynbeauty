@@ -11,7 +11,6 @@ import {
   UserIcon,
   Bars3Icon,
   XMarkIcon,
-  ChevronDownIcon,
 } from '@heroicons/react/24/outline'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
@@ -42,37 +41,37 @@ export function Header() {
     { 
       name: 'SkinCare', 
       href: '/categories/skincare',
-      subcategories: ['Cleansers', 'Moisturizers', 'Serums', 'Masks', 'Sunscreen']
+      subcategories: []
     },
     { 
       name: 'Lips', 
       href: '/categories/lips',
-      subcategories: ['Lipstick', 'Lip Gloss', 'Lip Balm', 'Lip Liner', 'Lip Sets']
+      subcategories: []
     },
     { 
       name: 'Bath & Body', 
       href: '/categories/bath-body',
-      subcategories: ['Body Wash', 'Lotions', 'Scrubs', 'Oils', 'Bath Bombs']
+      subcategories: []
     },
     { 
       name: 'Fragrances', 
       href: '/categories/fragrances',
-      subcategories: ['Perfume', 'Body Spray', 'Candles', 'Diffusers', 'Gift Sets']
+      subcategories: []
     },
     { 
       name: 'Eyes', 
       href: '/categories/eyes',
-      subcategories: ['Mascara', 'Eyeshadow', 'Eyeliner', 'Eyebrows', 'Eye Care']
+      subcategories: []
     },
     { 
       name: 'Nails', 
       href: '/categories/nails',
-      subcategories: ['Nail Polish', 'Nail Care', 'Nail Tools', 'Nail Art', 'Base & Top Coats']
+      subcategories: []
     },
     { 
       name: 'Combo Sets', 
       href: '/categories/combo-sets',
-      subcategories: ['Gift Sets', 'Travel Kits', 'Value Packs', 'Bundles', 'Limited Edition']
+      subcategories: []
     },
   ]
 
@@ -154,33 +153,13 @@ export function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {categories.map((category) => (
-              <div key={category.name} className="relative group">
+              <div key={category.name} className="relative">
                 <Link
                   href={category.href}
-                  className="flex items-center text-gray-700 hover:text-pink-600 font-medium transition-colors"
+                  className="text-gray-700 hover:text-pink-600 font-medium transition-colors"
                 >
                   {category.name}
-                  {category.subcategories.length > 0 && (
-                    <ChevronDownIcon className="h-4 w-4 ml-1 group-hover:rotate-180 transition-transform" />
-                  )}
                 </Link>
-                
-                {/* Dropdown Menu - Only show if subcategories exist */}
-                {category.subcategories.length > 0 && (
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                    <div className="py-2">
-                      {category.subcategories.map((sub) => (
-                        <Link
-                          key={sub}
-                          href={`${category.href}/${sub.toLowerCase().replace(/\s+/g, '-')}`}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors"
-                        >
-                          {sub}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             ))}
           </nav>
@@ -337,20 +316,6 @@ export function Header() {
                   >
                     {category.name}
                   </Link>
-                  {category.subcategories.length > 0 && (
-                    <div className="ml-4 mt-2 space-y-2">
-                      {category.subcategories.slice(0, 3).map((sub) => (
-                        <Link
-                          key={sub}
-                          href={`${category.href}/${sub.toLowerCase().replace(/\s+/g, '-')}`}
-                          className="block text-sm text-gray-600 hover:text-pink-600 transition-colors"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          {sub}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
                 </div>
               ))}
             </nav>
