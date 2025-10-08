@@ -19,6 +19,8 @@
     "db:repair": "node scripts/validate-schema.js repair",
     "db:seed-categories": "node scripts/seed-categories.js",
     "db:debug-inventory": "node scripts/debug-inventory.js",
+    "cleanup:images": "node scripts/automatic-cleanup.js",
+    "cleanup:images:dry-run": "node scripts/automatic-cleanup.js --dry-run",
     "admin:reset": "node scripts/reset-admin.js reset",
     "admin:info": "node scripts/reset-admin.js info"
   },

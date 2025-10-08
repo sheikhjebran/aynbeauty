@@ -79,6 +79,16 @@ CREATE TABLE `categories` (
   CONSTRAINT `categories_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Insert default categories
+INSERT INTO `categories` (`name`, `slug`, `description`, `is_active`, `sort_order`, `created_at`, `updated_at`) VALUES
+('Skincare', 'skincare', 'Skincare products for all skin types', 1, 1, NOW(), NOW()),
+('Bath and Body', 'bath-and-body', 'Bath and body products', 1, 2, NOW(), NOW()),
+('Lips', 'lips', 'Lip care and color products', 1, 3, NOW(), NOW()),
+('Fragrances', 'fragrance', 'Perfumes and fragrances', 1, 4, NOW(), NOW()),
+('Eyes', 'eyes', 'Eye makeup and care products', 1, 5, NOW(), NOW()),
+('Nails', 'nails', 'Nail care and color products', 1, 6, NOW(), NOW()),
+('Combo Sets', 'combo-sets', 'Combo sets for a complete look', 1, 7, NOW(), NOW());
+
 -- Create migrations table
 DROP TABLE IF EXISTS `migrations`;
 

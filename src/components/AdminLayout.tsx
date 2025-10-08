@@ -8,7 +8,8 @@ import {
   CubeIcon, 
   ArrowRightOnRectangleIcon,
   Bars3Icon,
-  XMarkIcon
+  XMarkIcon,
+  TrashIcon
 } from '@heroicons/react/24/outline'
 
 interface AdminLayoutProps {
@@ -49,6 +50,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: ChartBarIcon, current: pathname === '/admin' },
     { name: 'Inventory', href: '/admin/inventory', icon: CubeIcon, current: pathname === '/admin/inventory' },
+    { name: 'Cleanup Images', href: '/admin/cleanup-images', icon: TrashIcon, current: pathname === '/admin/cleanup-images' },
   ]
 
   if (!user) {
