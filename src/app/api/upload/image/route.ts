@@ -105,3 +105,12 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+
+// Configure API route for larger file uploads
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '50mb',
+    },
+  },
+}

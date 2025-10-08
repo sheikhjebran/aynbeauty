@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Configure body size limits for file uploads
+  experimental: {
+    // Increase body size limit for API routes
+    serverActions: {
+      bodySizeLimit: "50mb",
+    },
+  },
+
   images: {
     remotePatterns: [
       {
