@@ -1,5 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Configure larger request body limits for file uploads
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "100mb",
+    },
+  },
+
+  // Configure output for production deployment
+  output: "standalone",
+
   images: {
     remotePatterns: [
       {

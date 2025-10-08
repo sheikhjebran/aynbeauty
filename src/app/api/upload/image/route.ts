@@ -5,8 +5,16 @@ import path from 'path'
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('Upload request received, parsing form data...')
+    
+    // Log request size for debugging
+    const contentLength = request.headers.get('content-length')
+    console.log('Request content-length:', contentLength)
+    
     const formData = await request.formData()
     const files = formData.getAll('images') as File[]
+    
+    console.log(`Received ${files.length} files for upload`)
     
     if (!files || files.length === 0) {
       return NextResponse.json(
@@ -99,6 +107,23 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Upload error:', error)
+    
+    // Check if this is a payload too large error
+    if (error instanceof Error) {
+      if (error.message.includes('PayloadTooLargeError') || 
+          error.message.includes('request entity too large') ||
+          error.message.includes('413')) {
+        return NextResponse.json(
+          { 
+            error: 'File(s) too large. Server configuration limits request size. Please contact administrator.',
+            code: 'PAYLOAD_TOO_LARGE',
+            details: 'This is a server configuration issue, not an application limit.'
+          },
+          { status: 413 }
+        )
+      }
+    }
+    
     return NextResponse.json(
       { error: 'Failed to upload images' },
       { status: 500 }
