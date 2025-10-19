@@ -91,10 +91,11 @@ export default function AdminInventory() {
   const [isUploading, setIsUploading] = useState(false)
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
 
+  // Categories must match database category names exactly
   const categories = [
     'Skincare',
     'Lips', 
-    'Bath and Body',
+    'Bath & Body',  // Changed from "Bath and Body"
     'Fragrances',
     'Eyes',
     'Nails',

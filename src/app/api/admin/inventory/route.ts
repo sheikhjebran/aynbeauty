@@ -116,15 +116,28 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get category ID
+    // Map admin category names to database category names
+    const categoryMapping: { [key: string]: string } = {
+      'Skincare': 'Skincare',
+      'Lips': 'Lips',
+      'Bath & Body': 'Bath & Body',
+      'Fragrances': 'Fragrances',
+      'Eyes': 'Eyes', 
+      'Nails': 'Nails',
+      'Combo Sets': 'Combo Sets'
+    }
+
+    const dbCategoryName = categoryMapping[category] || category
+
+    // Get category ID using mapped name
     const categoryResult = await executeQuery(
       'SELECT id FROM categories WHERE name = ?',
-      [category]
+      [dbCategoryName]
     ) as any[]
 
     if (categoryResult.length === 0) {
       return NextResponse.json(
-        { error: 'Invalid category' },
+        { error: `Invalid category: ${category} (mapped to: ${dbCategoryName})` },
         { status: 400 }
       )
     }
@@ -226,15 +239,28 @@ export async function PUT(request: NextRequest) {
       is_new_arrival
     } = await request.json()
 
-    // Get category ID
+    // Map admin category names to database category names (same as POST method)
+    const categoryMapping: { [key: string]: string } = {
+      'Skincare': 'Skincare',
+      'Lips': 'Lips',
+      'Bath & Body': 'Bath & Body',
+      'Fragrances': 'Fragrances',
+      'Eyes': 'Eyes', 
+      'Nails': 'Nails',
+      'Combo Sets': 'Combo Sets'
+    }
+
+    const dbCategoryName = categoryMapping[category] || category
+
+    // Get category ID using mapped name
     const categoryResult = await executeQuery(
       'SELECT id FROM categories WHERE name = ?',
-      [category]
+      [dbCategoryName]
     ) as any[]
 
     if (categoryResult.length === 0) {
       return NextResponse.json(
-        { error: 'Invalid category' },
+        { error: `Invalid category: ${category} (mapped to: ${dbCategoryName})` },
         { status: 400 }
       )
     }
