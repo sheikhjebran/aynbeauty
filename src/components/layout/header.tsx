@@ -50,7 +50,7 @@ export function Header() {
     },
     { 
       name: 'Bath & Body', 
-      href: '/categories/bath-body',
+      href: '/categories/bath-and-body',
       subcategories: []
     },
     { 

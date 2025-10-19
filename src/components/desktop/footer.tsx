@@ -33,7 +33,7 @@ export function DesktopFooter() {
         { name: 'Skincare', href: '/skincare' },
         { name: 'Hair Care', href: '/hair' },
         { name: 'Fragrance', href: '/fragrance' },
-        { name: 'Bath & Body', href: '/bath-body' }
+        { name: 'Bath & Body', href: '/categories/bath-and-body' }
       ]
     },
     {

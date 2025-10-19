@@ -31,7 +31,7 @@ export function MobileCategories() {
     {
       id: 4,
       name: 'Bath & Body',
-      href: '/categories/bath-body',
+      href: '/categories/bath-and-body',
       icon: '🛁',
       color: 'from-teal-400 to-emerald-500',
       description: 'Body Care, Shower'

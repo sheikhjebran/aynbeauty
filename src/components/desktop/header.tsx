@@ -19,7 +19,7 @@ export function DesktopHeader() {
     },
     { 
       name: 'Bath & Body', 
-      href: '/categories/bath-body'
+      href: '/categories/bath-and-body'
     },
     { 
       name: 'Fragrances', 

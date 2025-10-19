@@ -34,7 +34,7 @@ export default function CategoryPage() {
   const categoryNames: { [key: string]: string } = {
     'skincare': 'Skincare',
     'lips': 'Lips',
-    'bath-body': 'Bath & Body',  // Updated to match database
+    'bath-and-body': 'Bath and Body',  // Updated to match database
     'fragrance': 'Fragrances',
     'eyes': 'Eyes',
     'nails': 'Nails',

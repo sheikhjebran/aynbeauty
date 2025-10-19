@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
     const categoryMapping: { [key: string]: string } = {
       'Skincare': 'Skincare',
       'Lips': 'Lips',
-      'Bath & Body': 'Bath & Body',
+      'Bath & Body': 'Bath and Body',  // Map to actual database name
       'Fragrances': 'Fragrances',
       'Eyes': 'Eyes', 
       'Nails': 'Nails',
@@ -243,7 +243,7 @@ export async function PUT(request: NextRequest) {
     const categoryMapping: { [key: string]: string } = {
       'Skincare': 'Skincare',
       'Lips': 'Lips',
-      'Bath & Body': 'Bath & Body',
+      'Bath & Body': 'Bath and Body',  // Map to actual database name
       'Fragrances': 'Fragrances',
       'Eyes': 'Eyes', 
       'Nails': 'Nails',

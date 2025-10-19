@@ -15,7 +15,7 @@ export function MobileFooter() {
   const categories = [
     { name: 'Skincare', href: '/categories/skincare' },
     { name: 'Lips', href: '/categories/lips' },
-    { name: 'Bath & Body', href: '/categories/bath-body' },
+    { name: 'Bath & Body', href: '/categories/bath-and-body' },
     { name: 'Fragrances', href: '/categories/fragrance' },
     { name: 'Eyes', href: '/categories/eyes' },
     { name: 'Nails', href: '/categories/nails' },

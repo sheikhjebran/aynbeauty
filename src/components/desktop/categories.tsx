@@ -30,7 +30,7 @@ export function DesktopCategories() {
     {
       id: 3,
       name: 'Bath & Body',
-      slug: 'bath-body',
+      slug: 'bath-and-body',
       image: 'https://picsum.photos/300/300?random=3',
       productCount: 567
     },
