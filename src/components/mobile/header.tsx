@@ -13,10 +13,10 @@ export function MobileHeader() {
   const toggleSearch = () => setIsSearchOpen(!isSearchOpen)
 
   const categories = [
-    { name: 'SkinCare', href: '/categories/skincare' },
+    { name: 'Skincare', href: '/categories/skincare' },
     { name: 'Lips', href: '/categories/lips' },
     { name: 'Bath & Body', href: '/categories/bath-body' },
-    { name: 'Fragrances', href: '/categories/fragrances' },
+    { name: 'Fragrances', href: '/categories/fragrance' },
     { name: 'Eyes', href: '/categories/eyes' },
     { name: 'Nails', href: '/categories/nails' },
     { name: 'Combo Sets', href: '/categories/combo-sets' },

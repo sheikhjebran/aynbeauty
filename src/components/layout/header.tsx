@@ -55,7 +55,7 @@ export function Header() {
     },
     { 
       name: 'Fragrances', 
-      href: '/categories/fragrances',
+      href: '/categories/fragrance',
       subcategories: []
     },
     { 

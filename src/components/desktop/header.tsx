@@ -10,66 +10,33 @@ export function DesktopHeader() {
 
   const navigationItems = [
     { 
-      name: 'What\'s New', 
-      href: '/whats-new',
-      submenu: [
-        { name: 'New Arrivals', href: '/new-arrivals' },
-        { name: 'Trending', href: '/trending' },
-        { name: 'Limited Edition', href: '/limited-edition' }
-      ]
+      name: 'Skincare', 
+      href: '/categories/skincare'
     },
     { 
-      name: 'Makeup', 
-      href: '/makeup',
-      submenu: [
-        { name: 'Face', href: '/makeup/face' },
-        { name: 'Eyes', href: '/makeup/eyes' },
-        { name: 'Lips', href: '/makeup/lips' },
-        { name: 'Cheeks', href: '/makeup/cheeks' },
-        { name: 'Nails', href: '/makeup/nails' }
-      ]
-    },
-    { 
-      name: 'Skin', 
-      href: '/skincare',
-      submenu: [
-        { name: 'Cleansers', href: '/skincare/cleansers' },
-        { name: 'Moisturizers', href: '/skincare/moisturizers' },
-        { name: 'Serums', href: '/skincare/serums' },
-        { name: 'Sunscreen', href: '/skincare/sunscreen' },
-        { name: 'Masks', href: '/skincare/masks' }
-      ]
-    },
-    { 
-      name: 'Hair', 
-      href: '/hair',
-      submenu: [
-        { name: 'Shampoo', href: '/hair/shampoo' },
-        { name: 'Conditioner', href: '/hair/conditioner' },
-        { name: 'Hair Oil', href: '/hair/oil' },
-        { name: 'Styling', href: '/hair/styling' }
-      ]
-    },
-    { 
-      name: 'Fragrance', 
-      href: '/fragrance',
-      submenu: [
-        { name: 'Perfumes', href: '/fragrance/perfumes' },
-        { name: 'Body Mist', href: '/fragrance/body-mist' },
-        { name: 'Deodorants', href: '/fragrance/deodorants' }
-      ]
+      name: 'Lips', 
+      href: '/categories/lips'
     },
     { 
       name: 'Bath & Body', 
-      href: '/bath-body',
-      submenu: [
-        { name: 'Body Wash', href: '/bath-body/body-wash' },
-        { name: 'Body Lotion', href: '/bath-body/body-lotion' },
-        { name: 'Scrubs', href: '/bath-body/scrubs' }
-      ]
+      href: '/categories/bath-body'
     },
-    { name: 'Tools', href: '/tools' },
-    { name: 'Brands', href: '/brands' }
+    { 
+      name: 'Fragrances', 
+      href: '/categories/fragrance'
+    },
+    { 
+      name: 'Eyes', 
+      href: '/categories/eyes'
+    },
+    { 
+      name: 'Nails', 
+      href: '/categories/nails'
+    },
+    { 
+      name: 'Combo Sets', 
+      href: '/categories/combo-sets'
+    }
   ]
 
   return (
@@ -152,23 +119,6 @@ export function DesktopHeader() {
                 >
                   {item.name}
                 </Link>
-                
-                {/* Submenu */}
-                {item.submenu && (
-                  <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                    <div className="py-1">
-                      {item.submenu.map((subitem) => (
-                        <Link
-                          key={subitem.name}
-                          href={subitem.href}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-500"
-                        >
-                          {subitem.name}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             ))}
           </div>

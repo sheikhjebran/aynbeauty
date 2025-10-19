@@ -176,8 +176,17 @@ export async function POST(request: NextRequest) {
       productId: productId
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Add product error:', error)
+    
+    // Check for duplicate entry error
+    if (error.code === 'ER_DUP_ENTRY' && error.sqlMessage?.includes('slug')) {
+      return NextResponse.json(
+        { error: 'Product already exists', message: 'A product with this name already exists. Please use a different name.' },
+        { status: 409 }
+      )
+    }
+    
     return NextResponse.json(
       { error: 'Failed to add product' },
       { status: 500 }
@@ -279,8 +288,17 @@ export async function PUT(request: NextRequest) {
       message: 'Product updated successfully'
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Update product error:', error)
+    
+    // Check for duplicate entry error
+    if (error.code === 'ER_DUP_ENTRY' && error.sqlMessage?.includes('slug')) {
+      return NextResponse.json(
+        { error: 'Product already exists', message: 'A product with this name already exists. Please use a different name.' },
+        { status: 409 }
+      )
+    }
+    
     return NextResponse.json(
       { error: 'Failed to update product' },
       { status: 500 }

@@ -13,10 +13,13 @@ export function MobileFooter() {
   ]
 
   const categories = [
-    { name: 'Makeup', href: '/makeup' },
-    { name: 'Skincare', href: '/skincare' },
-    { name: 'Hair Care', href: '/hair' },
-    { name: 'Fragrance', href: '/fragrance' }
+    { name: 'Skincare', href: '/categories/skincare' },
+    { name: 'Lips', href: '/categories/lips' },
+    { name: 'Bath & Body', href: '/categories/bath-body' },
+    { name: 'Fragrances', href: '/categories/fragrance' },
+    { name: 'Eyes', href: '/categories/eyes' },
+    { name: 'Nails', href: '/categories/nails' },
+    { name: 'Combo Sets', href: '/categories/combo-sets' }
   ]
 
   return (

@@ -6,7 +6,7 @@ export function MobileCategories() {
   const categories = [
     {
       id: 1,
-      name: 'SkinCare',
+      name: 'Skincare',
       href: '/categories/skincare',
       icon: '✨',
       color: 'from-blue-400 to-cyan-500',
@@ -39,7 +39,7 @@ export function MobileCategories() {
     {
       id: 5,
       name: 'Fragrances',
-      href: '/categories/fragrances',
+      href: '/categories/fragrance',
       icon: '🌺',
       color: 'from-amber-400 to-orange-500',
       description: 'Perfumes, Body Sprays'

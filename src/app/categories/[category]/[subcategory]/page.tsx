@@ -36,13 +36,19 @@ export default function SubcategoryPage() {
     'skincare': 'Skincare',
     'lips': 'Lips',
     'bath-body': 'Bath & Body',
-    'fragrances': 'Fragrances',
+    'fragrance': 'Fragrances',
     'eyes': 'Eyes',
     'nails': 'Nails',
     'combo-sets': 'Combo Sets'
   }
 
   const categoryName = categoryNames[categorySlug] || 'Products'
+  
+  // Normalize category slug for API calls - no need to change anything since we should match database slugs
+  const normalizeCategory = (slug: string): string => {
+    // The URL slug should match database slug exactly
+    return slug
+  }
   const subcategoryName = subcategorySlug?.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || ''
 
   useEffect(() => {
@@ -52,8 +58,10 @@ export default function SubcategoryPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true)
+      const normalizedCategory = normalizeCategory(categorySlug)
+      console.log(`Fetching products for subcategory: ${categorySlug}/${subcategorySlug} -> ${normalizedCategory}/${subcategorySlug}`)
       // Fetch ALL products from the main category first
-      const response = await fetch(`/api/products?category=${categorySlug}`)
+      const response = await fetch(`/api/products?category=${normalizedCategory}`)
       
       if (!response.ok) {
         throw new Error('Failed to fetch products')

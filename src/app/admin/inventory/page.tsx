@@ -226,6 +226,28 @@ export default function AdminInventory() {
       return
     }
 
+    // Check file sizes (warn if files are large but don't block)
+    const maxSizeBytes = 5 * 1024 * 1024 // 5MB recommended limit
+    const largeFiles = files.filter(file => file.size > maxSizeBytes)
+    
+    if (largeFiles.length > 0) {
+      const fileNames = largeFiles.map(f => `${f.name} (${(f.size / 1024 / 1024).toFixed(1)}MB)`).join('\n')
+      const confirmed = confirm(`Warning: These files are large and may fail to upload due to server limits:\n\n${fileNames}\n\nRecommended: Use images under 5MB each.\n\nContinue anyway?`)
+      
+      if (!confirmed) {
+        e.target.value = '' // Clear the file input
+        return
+      }
+    }
+
+    // Check for very large files (likely to fail)
+    const veryLargeFiles = files.filter(file => file.size > 50 * 1024 * 1024) // 50MB
+    if (veryLargeFiles.length > 0) {
+      alert('Some files are extremely large (>50MB) and will likely fail to upload. Please compress or resize these images.')
+      e.target.value = '' // Clear the file input
+      return
+    }
+
     setSelectedFiles(files)
     const previews = files.map(file => URL.createObjectURL(file))
     setImagePreviews(previews)
@@ -357,7 +379,22 @@ export default function AdminInventory() {
           imageUrls = uploadResult.images
           setUploadedImages(imageUrls)
         } else {
-          throw new Error('Failed to upload images')
+          const errorData = await uploadResponse.json().catch(() => ({ error: 'Upload failed' }));
+          
+          // Handle specific upload errors
+          if (uploadResponse.status === 413) {
+            alert('File(s) too large! Server configuration limits the upload size to 1MB. Please:\n\n1. Use smaller images (under 1MB each)\n2. Compress your images\n3. Or contact administrator to increase server limits');
+            setIsUploading(false);
+            return;
+          }
+          
+          if (errorData.code === 'PAYLOAD_TOO_LARGE') {
+            alert(`Upload Error: ${errorData.error}\n\nDetails: ${errorData.details}`);
+            setIsUploading(false);
+            return;
+          }
+          
+          throw new Error(errorData.error || 'Failed to upload images')
         }
       }
 
@@ -397,9 +434,15 @@ export default function AdminInventory() {
       console.log('📡 Response OK:', response.ok);
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.log('📡 Error Response:', errorText);
-        throw new Error(`Failed to save product: ${response.status} - ${errorText}`)
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.log('📡 Error Response:', errorData);
+        
+        if (response.status === 409 && errorData.error === 'Product already exists') {
+          alert(errorData.message || 'A product with this name already exists. Please use a different name.');
+          return;
+        }
+        
+        throw new Error(errorData.error || `Failed to save product: ${response.status}`)
       }
 
       await fetchProducts()
@@ -407,7 +450,8 @@ export default function AdminInventory() {
       closeModal()
     } catch (error) {
       console.error('Save product error:', error)
-      alert('Failed to save product')
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save product';
+      alert(errorMessage);
     } finally {
       setIsUploading(false)
     }

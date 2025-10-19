@@ -86,8 +86,8 @@ export function Footer() {
             <ul className="space-y-2">
               <li><Link href="/categories/skincare" className="text-gray-400 hover:text-white transition-colors">Skincare</Link></li>
               <li><Link href="/categories/lips" className="text-gray-400 hover:text-white transition-colors">Lips</Link></li>
-              <li><Link href="/categories/bath-and-body" className="text-gray-400 hover:text-white transition-colors">Bath and Body</Link></li>
-              <li><Link href="/categories/fragrances" className="text-gray-400 hover:text-white transition-colors">Fragrances</Link></li>
+              <li><Link href="/categories/bath-body" className="text-gray-400 hover:text-white transition-colors">Bath and Body</Link></li>
+              <li><Link href="/categories/fragrance" className="text-gray-400 hover:text-white transition-colors">Fragrances</Link></li>
               <li><Link href="/categories/eyes" className="text-gray-400 hover:text-white transition-colors">Eyes</Link></li>
               <li><Link href="/categories/nails" className="text-gray-400 hover:text-white transition-colors">Nails</Link></li>
               <li><Link href="/categories/combo-sets" className="text-gray-400 hover:text-white transition-colors">Combo Sets</Link></li>

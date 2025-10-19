@@ -34,14 +34,20 @@ export default function CategoryPage() {
   const categoryNames: { [key: string]: string } = {
     'skincare': 'Skincare',
     'lips': 'Lips',
-    'bath-and-body': 'Bath and Body',
-    'fragrances': 'Fragrances',
+    'bath-body': 'Bath and Body',
+    'fragrance': 'Fragrances',
     'eyes': 'Eyes',
     'nails': 'Nails',
     'combo-sets': 'Combo Sets'
   }
 
   const categoryName = categoryNames[categorySlug] || 'Products'
+  
+  // Normalize category slug for API calls - no need to change anything since we should match database slugs
+  const normalizeCategory = (slug: string): string => {
+    // The URL slug should match database slug exactly
+    return slug
+  }
 
   useEffect(() => {
     fetchProducts()
@@ -50,13 +56,16 @@ export default function CategoryPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`/api/products?category=${categorySlug}`)
+      const normalizedCategory = normalizeCategory(categorySlug)
+      console.log(`Fetching products for category: ${categorySlug} -> ${normalizedCategory}`)
+      const response = await fetch(`/api/products?category=${normalizedCategory}`)
       
       if (!response.ok) {
         throw new Error('Failed to fetch products')
       }
 
       const data = await response.json()
+      console.log(`Received ${data.products?.length || 0} products for category ${normalizedCategory}`)
       setProducts(data.products || [])
     } catch (error) {
       console.error('Error fetching products:', error)
