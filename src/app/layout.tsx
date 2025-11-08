@@ -21,6 +21,7 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://aynbeauty.in'),
   title: 'AynBeauty - For every day, for every mood, for every you',
   description: 'Discover premium beauty products from top brands. Makeup, skincare, haircare, fragrance and more at AynBeauty.',
   keywords: 'beauty, makeup, skincare, cosmetics, fragrance, hair care, AynBeauty',
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://aynbeauty.com',
+    url: 'https://aynbeauty.in',
     title: 'AynBeauty - For every day, for every mood, for every you',
     description: 'Discover premium beauty products from top brands.',
     siteName: 'AynBeauty',
