@@ -236,18 +236,7 @@ function LoginForm() {
           </div>
         </div>
 
-        {/* Additional info */}
-        <div className="mt-6 bg-white rounded-lg shadow-lg p-6">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3">Demo Accounts:</h3>
-          <div className="space-y-2 text-xs text-gray-600">
-            <p>
-              <strong>Admin:</strong> admin@aynbeauty.com / password
-            </p>
-            <p>
-              <strong>Customer:</strong> customer@example.com / password
-            </p>
-          </div>
-        </div>
+        
       </div>
     </div>
   )
