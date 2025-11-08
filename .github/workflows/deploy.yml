@@ -72,6 +72,7 @@ jobs:
 
             # Pull latest changes
             echo "📥 Pulling latest changes from main..."
+            git config --global --add safe.directory /var/www/aynbeauty
             git fetch origin main
             git reset --hard origin/main
             echo "✅ Code updated"
