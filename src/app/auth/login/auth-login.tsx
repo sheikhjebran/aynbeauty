@@ -5,14 +5,14 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 /**
  * Redirect page for backward compatibility
- * /signin -> /login
+ * /auth/login -> /login
  */
-export default function SigninRedirectPage() {
+export default function AuthLoginRedirectPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    // Redirect /signin to /login with redirect parameter preserved
+    // Redirect /auth/login to /login with redirect parameter preserved
     const redirectUrl = searchParams?.get('redirect')
     if (redirectUrl) {
       router.push(`/login?redirect=${encodeURIComponent(redirectUrl)}`)

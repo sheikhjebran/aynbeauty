@@ -117,7 +117,7 @@ class AdminPasswordReset {
       console.log("   Email: admin@aynbeauty.com");
       console.log("   Password: admin123");
       console.log();
-      console.log("🚀 You can now login at: /auth/login");
+      console.log("🚀 You can now login at: /login");
     } catch (error) {
       console.error("❌ Failed to reset admin password:", error.message);
       throw error;

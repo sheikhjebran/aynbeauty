@@ -135,7 +135,7 @@ export default function ProductDetailPage() {
       setAddingToCart(true)
       
       if (!user || !token) {
-        router.push('/signin')
+        router.push('/login')
         return
       }
 
@@ -207,7 +207,7 @@ export default function ProductDetailPage() {
 
   const submitReview = async () => {
     if (!user || !token) {
-      router.push('/signin')
+      router.push('/login')
       return
     }
 
@@ -651,7 +651,7 @@ export default function ProductDetailPage() {
                   </button>
                 ) : (
                   <button 
-                    onClick={() => router.push('/signin')}
+                    onClick={() => router.push('/login')}
                     className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700 transition-colors"
                   >
                     Sign in to Write a Review

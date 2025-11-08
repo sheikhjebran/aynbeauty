@@ -242,7 +242,7 @@ export function Header() {
                     ) : (
                       <>
                         {/* Guest user menu */}
-                        <Link href="/signin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
+                        <Link href="/login" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">
                           Sign In
                         </Link>
                         <Link href="/signup" className="block px-4 py-2 text-sm text-gray-700 hover:bg-pink-50 hover:text-pink-600 transition-colors">

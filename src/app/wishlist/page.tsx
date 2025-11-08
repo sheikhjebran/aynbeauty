@@ -41,7 +41,7 @@ export default function WishlistPage() {
     try {
       const token = localStorage.getItem('token')
       if (!token) {
-        router.push('/auth/login?redirect=/wishlist')
+        router.push('/login?redirect=/wishlist')
         return
       }
 
@@ -55,7 +55,7 @@ export default function WishlistPage() {
         if (response.status === 401) {
           localStorage.removeItem('token')
           localStorage.removeItem('user')
-          router.push('/auth/login?redirect=/wishlist')
+          router.push('/login?redirect=/wishlist')
           return
         }
         throw new Error('Failed to fetch wishlist items')

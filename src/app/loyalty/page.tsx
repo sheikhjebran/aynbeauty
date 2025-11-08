@@ -69,7 +69,7 @@ export default function LoyaltyDashboard() {
     try {
       const token = localStorage.getItem('token')
       if (!token) {
-        router.push('/auth/login?redirect=/loyalty')
+        router.push('/login?redirect=/loyalty')
         return
       }
 

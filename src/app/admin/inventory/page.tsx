@@ -342,7 +342,7 @@ export default function AdminInventory() {
         if (payload.exp && payload.exp < currentTime) {
           alert('Your session has expired. Please login again.');
           localStorage.removeItem('token');
-          window.location.href = '/auth/login';
+          window.location.href = '/login';
           return;
         }
         console.log('🔐 Token payload:', payload);
@@ -350,7 +350,7 @@ export default function AdminInventory() {
         console.error('🔐 Token validation error:', tokenError);
         alert('Invalid authentication token. Please login again.');
         localStorage.removeItem('token');
-        window.location.href = '/auth/login';
+        window.location.href = '/login';
         return;
       }
 

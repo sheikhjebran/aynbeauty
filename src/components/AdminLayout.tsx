@@ -28,7 +28,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     const userData = localStorage.getItem('user')
     
     if (!token || !userData) {
-      router.push('/auth/login')
+      router.push('/login')
       return
     }
 

@@ -56,7 +56,7 @@ export function WishlistButton({
   const toggleWishlist = async () => {
     if (!isAuthenticated) {
       // Redirect to login
-      window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`
+      window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`
       return
     }
 

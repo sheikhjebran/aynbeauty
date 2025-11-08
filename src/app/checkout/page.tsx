@@ -93,7 +93,7 @@ export default function CheckoutPage() {
     try {
       const token = localStorage.getItem('token')
       if (!token) {
-        router.push('/auth/login?redirect=/checkout')
+        router.push('/login?redirect=/checkout')
         return
       }
 

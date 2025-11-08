@@ -42,7 +42,7 @@ export default function AccountDashboard() {
   useEffect(() => {
     const token = localStorage.getItem('token')
     if (!token) {
-      router.push('/auth/login?redirect=/account')
+      router.push('/login?redirect=/account')
       return
     }
 

@@ -1,53 +1,34 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline'
+import { useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function LoginPage() {
+/**
+ * Redirect page for backward compatibility
+ * /auth/login -> /login
+ */
+export default function AuthLoginRedirectPage() {
   const router = useRouter()
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const searchParams = useSearchParams()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+  useEffect(() => {
+    // Redirect /auth/login to /login with redirect parameter preserved
+    const redirectUrl = searchParams?.get('redirect')
+    if (redirectUrl) {
+      router.push(`/login?redirect=${encodeURIComponent(redirectUrl)}`)
+    } else {
+      router.push('/login')
+    }
+  }, [router, searchParams])
 
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-
-      const data = await response.json()
-      console.log('Login response:', data)
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed')
-      }
-
-      // Store token and user data
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify(data.user))
-
-      // Check if user is admin and redirect accordingly
-      if (data.isAdmin) {
-        console.log('Admin user detected, redirecting to admin dashboard')
-        router.push('/admin')
-      } else {
-        console.log('Regular user detected, redirecting to home')
-        const redirectTo = new URLSearchParams(window.location.search).get('redirect') || '/'
-        router.push(redirectTo)
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <p className="text-gray-600">Redirecting to sign in...</p>
+      </div>
+    </div>
+  )
+}
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')

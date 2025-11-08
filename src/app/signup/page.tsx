@@ -83,7 +83,7 @@ export default function SignUpPage() {
       if (response.ok) {
         setSuccess('Account created successfully!')
         setTimeout(() => {
-          router.push('/signin')
+          router.push('/login')
         }, 2000)
       } else {
         setError(data.error || 'Registration failed')
@@ -130,7 +130,7 @@ export default function SignUpPage() {
               </h2>
               <p className="mt-2 text-sm text-gray-600">
                 Already have an account?{' '}
-                <Link href="/signin" className="font-medium text-pink-600 hover:text-pink-500">
+                <Link href="/login" className="font-medium text-pink-600 hover:text-pink-500">
                   Sign in
                 </Link>
               </p>

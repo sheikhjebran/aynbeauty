@@ -40,7 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch('/api/auth/signin', {
+      const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ export function withAuth<P extends object>(Component: React.ComponentType<P>) {
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Authentication Required</h2>
             <p className="text-gray-600 mb-6">Please sign in to access this page.</p>
             <a
-              href="/signin"
+              href="/login"
               className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
             >
               Sign In

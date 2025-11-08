@@ -313,7 +313,7 @@ Thank you for choosing AYN Beauty! 💄✨
             <h1 className="text-2xl font-bold mb-4 text-gray-900">Your Cart</h1>
             <p className="text-gray-600 mb-4">Please login to view your cart</p>
             <Link
-              href="/auth/signin"
+              href="/login"
               className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700"
             >
               Login

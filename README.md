@@ -759,3 +759,19 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **Note**: Replace placeholder values (usernames, passwords, domains) with your actual BigRock hosting details before deployment.
 
+
+
+## website login
+Admin: admin@aynbeauty.com / admin123
+
+ADMIN TEST:
+     - Go to: https://aynbeauty.in/login
+     - Email: admin@aynbeauty.com
+     - Password: admin123
+     - Expected: Redirect to /admin ✅
+
+     USER TEST:
+     - Go to: https://aynbeauty.in/login
+     - Email: customer@example.com
+     - Password: password123
+     - Expected: Redirect to / ✅
