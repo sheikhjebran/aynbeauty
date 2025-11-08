@@ -600,11 +600,11 @@ export default function AdminInventory() {
                       <div className="flex flex-col">
                         {product.discounted_price ? (
                           <>
-                            <span className="line-through text-gray-500">${product.price}</span>
-                            <span className="text-pink-600 font-medium">${product.discounted_price}</span>
+                            <span className="line-through text-gray-500">₹{product.price}</span>
+                            <span className="text-pink-600 font-medium">₹{product.discounted_price}</span>
                           </>
                         ) : (
-                          <span>${product.price}</span>
+                          <span>₹{product.price}</span>
                         )}
                       </div>
                     </td>
@@ -717,7 +717,7 @@ export default function AdminInventory() {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Price ($)</label>
+                  <label className="block text-sm font-medium text-gray-700">Price (₹)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -730,7 +730,7 @@ export default function AdminInventory() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Discounted Price ($)</label>
+                  <label className="block text-sm font-medium text-gray-700">Discounted Price (₹)</label>
                   <input
                     type="number"
                     step="0.01"
