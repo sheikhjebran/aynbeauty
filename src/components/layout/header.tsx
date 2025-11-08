@@ -101,7 +101,7 @@ export function Header() {
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       {/* Top Banner */}
       <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white text-center py-4 text-sm">
-        <p>✨ Free shipping on orders above ₹499 | Beauty Club members get early access to sales!</p>
+        <p>✨ Beauty That Lasts | Quality Cosmetics at Great Prices</p>
       </div>
 
       {/* Main Header */}

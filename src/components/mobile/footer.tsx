@@ -161,7 +161,7 @@ export function MobileFooter() {
             <span className="ml-2 text-lg font-bold gradient-text">AynBeauty</span>
           </div>
           <p className="text-gray-400 text-xs mb-3">
-            © {currentYear} AynBeauty. All rights reserved.
+            © {currentYear} AynBeauty. All rights reserved.| developer: sheikhjebran@gmail.com
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-xs">
             <Link href="/privacy" className="text-gray-400 hover:text-white">

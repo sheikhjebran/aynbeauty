@@ -641,8 +641,8 @@ export default function HomePage() {
               <div className="w-20 h-20 bg-gradient-to-br from-pink-100 to-pink-200 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <GiftIcon className="h-10 w-10 text-pink-600" />
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900">Free Shipping</h3>
-              <p className="text-gray-600 leading-relaxed">Free shipping on orders above ₹499. Get your beauty essentials delivered to your doorstep.</p>
+              <h3 className="text-xl font-bold mb-4 text-gray-900">Delivery Across India</h3>
+              <p className="text-gray-600 leading-relaxed">Fast and reliable delivery across India. Get your beauty essentials delivered to your doorstep within 3-5 business days.</p>
             </div>
             
             <div className="text-center group">
@@ -657,8 +657,8 @@ export default function HomePage() {
               <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <TrophyIcon className="h-10 w-10 text-blue-600" />
               </div>
-              <h3 className="text-xl font-bold mb-4 text-gray-900">Expert Support</h3>
-              <p className="text-gray-600 leading-relaxed">Get personalized beauty advice from our experts. Your perfect look is just a message away.</p>
+              <h3 className="text-xl font-bold mb-4 text-gray-900">Quality Products</h3>
+              <p className="text-gray-600 leading-relaxed">Carefully curated selection of premium beauty products. Every item tested for quality and authenticity.</p>
             </div>
           </div>
         </div>

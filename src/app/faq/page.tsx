@@ -131,12 +131,7 @@ export default function FAQPage() {
       question: 'How should I store my beauty products?',
       answer: 'Store products in a cool, dry place away from direct sunlight. Keep skincare products sealed and follow expiry dates. Some products may require refrigeration - check individual product instructions. Avoid storing products in bathrooms with high humidity.'
     },
-    {
-      id: 18,
-      category: 'account',
-      question: 'What is the Beauty Club loyalty program?',
-      answer: 'Our Beauty Club rewards you with points for every purchase, review, and referral. Points can be redeemed for discounts on future orders. Members get early access to sales, exclusive offers, and complimentary beauty consultations.'
-    }
+    
   ]
 
   const filteredFAQs = faqs.filter(faq => {
