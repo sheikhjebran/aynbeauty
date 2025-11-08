@@ -431,22 +431,26 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">Only On AYN</h2>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {[
-              { name: 'Maybelline', discount: 'Up to 40% off' },
-              { name: 'L\'Oreal', discount: 'Buy 2, get 10% off' },
-              { name: 'Lakme', discount: 'Up to 35% off' },
-              { name: 'MAC', discount: 'Up to 25% off' },
-              { name: 'Nykaa', discount: 'Up to 30% off' },
-              { name: 'The Ordinary', discount: 'Up to 20% off' }
+              { name: 'Brand 1', discount: 'Up to 40% off', image: '/images/brands/brand.jpeg' },
+              { name: 'Brand 2', discount: 'Buy 2, get 10% off', image: '/images/brands/brand.jpeg' },
+              { name: 'Brand 3', discount: 'Up to 35% off', image: '/images/brands/brand.jpeg' },
+              { name: 'Brand 4', discount: 'Up to 25% off', image: '/images/brands/brand.jpeg' }
             ].map((brand) => (
               <div key={brand.name}>
-                <div className="group bg-white rounded-xl p-6 text-center hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <span className="text-xl font-bold text-gray-600">{brand.name.charAt(0)}</span>
+                <div className="group bg-white rounded-xl p-4 md:p-6 text-center hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
+                  <div className="w-14 h-14 md:w-16 md:h-16 bg-gray-100 rounded-full mx-auto mb-3 md:mb-4 flex items-center justify-center overflow-hidden">
+                    <Image
+                      src={brand.image}
+                      alt={brand.name}
+                      width={64}
+                      height={64}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  <h3 className="font-semibold text-gray-900 mb-2">{brand.name}</h3>
-                  <p className="text-sm text-pink-600 font-medium">{brand.discount}</p>
+                  <h3 className="font-semibold text-gray-900 mb-1 md:mb-2 text-sm md:text-base">{brand.name}</h3>
+                  <p className="text-xs md:text-sm text-pink-600 font-medium">{brand.discount}</p>
                 </div>
               </div>
             ))}
