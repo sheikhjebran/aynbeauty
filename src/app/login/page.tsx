@@ -145,7 +145,7 @@ function LoginForm() {
                 disabled={loading}
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed transition"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent disabled:bg-gray-700 disabled:cursor-not-allowed transition"
                 placeholder="you@example.com"
               />
             </div>
@@ -173,7 +173,7 @@ function LoginForm() {
                   disabled={loading}
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent pr-10 disabled:bg-gray-100 disabled:cursor-not-allowed transition"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent pr-10 disabled:bg-gray-700 disabled:cursor-not-allowed transition"
                   placeholder="••••••••"
                 />
                 <button
