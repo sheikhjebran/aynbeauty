@@ -152,17 +152,9 @@ function LoginForm() {
 
             {/* Password field */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-pink-600 hover:text-pink-500 font-medium"
-                >
-                  Forgot?
-                </Link>
-              </div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
               <div className="relative">
                 <input
                   id="password"
