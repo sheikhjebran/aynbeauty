@@ -178,7 +178,7 @@ export default function ProductDetailPage() {
   const addToWishlist = async () => {
     try {
       if (!user || !token) {
-        router.push('/signin')
+        router.push('/login')
         return
       }
 
