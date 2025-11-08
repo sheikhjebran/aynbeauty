@@ -6,7 +6,6 @@ export function MobileFooter() {
   const currentYear = new Date().getFullYear()
 
   const quickLinks = [
-    { name: 'Track Order', href: '/track-order' },
     { name: 'Help Center', href: '/help' },
     { name: 'Returns', href: '/returns' },
     { name: 'Shipping Info', href: '/shipping' }

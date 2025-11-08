@@ -11,7 +11,6 @@ export function DesktopFooter() {
       links: [
         { name: 'Who We Are', href: '/about' },
         { name: 'For You', href: '/for-you' },
-        { name: 'Careers', href: '/careers' },
         { name: 'Press', href: '/press' },
         { name: 'Contact', href: '/contact' }
       ]
@@ -21,7 +20,6 @@ export function DesktopFooter() {
       links: [
         { name: 'Help Centre', href: '/help' },
         { name: 'FAQs', href: '/faq' },
-        { name: 'Track Order', href: '/track-order' },
         { name: 'Returns & Exchanges', href: '/returns' },
         { name: 'Shipping Info', href: '/shipping' }
       ]
@@ -34,16 +32,6 @@ export function DesktopFooter() {
         { name: 'Hair Care', href: '/hair' },
         { name: 'Fragrance', href: '/fragrance' },
         { name: 'Bath & Body', href: '/categories/bath-and-body' }
-      ]
-    },
-    {
-      title: 'Top Brands',
-      links: [
-        { name: "L'Oreal Paris", href: '/brands/loreal-paris' },
-        { name: 'Maybelline', href: '/brands/maybelline' },
-        { name: 'FENTY BEAUTY', href: '/brands/fenty-beauty' },
-        { name: 'Huda Beauty', href: '/brands/huda-beauty' },
-        { name: 'MAC', href: '/brands/mac' }
       ]
     }
   ]

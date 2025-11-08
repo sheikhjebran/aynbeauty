@@ -37,24 +37,47 @@ jobs:
           port: 22
           script: |
             echo "🚀 Starting deployment..."
+            set -e  # Exit on error
 
             # Navigate to project directory
             cd /var/www/aynbeauty
+            PROJECT_DIR=$(pwd)
+            BACKUP_DIR="/var/backups/aynbeauty"
+            IMAGES_DIR="$PROJECT_DIR/public/uploads/products"
+            BACKUP_IMAGES_DIR="$BACKUP_DIR/product-images-$(date +%Y%m%d-%H%M%S)"
 
-            # Stop the application
+            # Create backup directory if it doesn't exist
+            mkdir -p "$BACKUP_DIR"
+            mkdir -p "$IMAGES_DIR"
+
+            echo "📸 Creating backup of product images..."
+            if [ -d "$IMAGES_DIR" ] && [ "$(ls -A $IMAGES_DIR)" ]; then
+              mkdir -p "$BACKUP_IMAGES_DIR"
+              cp -r "$IMAGES_DIR"/* "$BACKUP_IMAGES_DIR/" 2>/dev/null || echo "⚠️ No existing images to backup"
+              echo "✅ Product images backed up to: $BACKUP_IMAGES_DIR"
+              LATEST_BACKUP="$BACKUP_IMAGES_DIR"
+            else
+              echo "ℹ️ No existing product images found"
+            fi
+
+            # Stop the application gracefully
             echo "⏹️ Stopping application..."
-            pm2 stop aynbeauty || true
-
+            if pm2 desc aynbeauty > /dev/null 2>&1; then
+              pm2 stop aynbeauty --wait-ready
+              sleep 3
+              echo "✅ Application stopped"
+            else
+              echo "ℹ️ Application not running in PM2"
+            fi
 
             # Pull latest changes
-            echo "📥 Pulling latest changes..."
-            git fetch origin
+            echo "📥 Pulling latest changes from main..."
+            git fetch origin main
             git reset --hard origin/main
+            echo "✅ Code updated"
 
             # Copy production environment
-            echo "📋 Setting up environment..."
-            rm -rf .env
-            rm -rf .env.local
+            echo "📋 Setting up production environment..."
             if [ -f ".env.prod" ]; then
               cp .env.prod .env.local
               echo "✅ Production environment file copied"
@@ -65,47 +88,95 @@ jobs:
             # Install dependencies
             echo "📦 Installing dependencies..."
             npm ci --production=false
+            echo "✅ Dependencies installed"
 
             # Build the application
-            echo "🔨 Building application..."
+            echo "🔨 Building Next.js application..."
             npm run build
+            if [ $? -eq 0 ]; then
+              echo "✅ Build completed successfully"
+            else
+              echo "❌ Build failed! Rolling back..."
+              exit 1
+            fi
+
+            # Restore product images
+            echo "📸 Restoring product images..."
+            mkdir -p "$IMAGES_DIR"
+            if [ -d "$LATEST_BACKUP" ] && [ "$(ls -A $LATEST_BACKUP)" ]; then
+              cp -r "$LATEST_BACKUP"/* "$IMAGES_DIR/" 2>/dev/null
+              echo "✅ Product images restored"
+            else
+              echo "ℹ️ No backup images to restore"
+            fi
 
             # Update database schema (if migration exists)
-            echo "🗄️ Updating database..."
+            echo "🗄️ Updating database schema..."
             if [ -f "migrate-image-urls.sql" ]; then
-              mysql -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} ${{ secrets.DB_NAME }} < migrate-image-urls.sql || true
+              mysql -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} ${{ secrets.DB_NAME }} < migrate-image-urls.sql && echo "✅ Database migration completed" || echo "⚠️ Database migration skipped"
+            else
+              echo "ℹ️ No database migrations to run"
             fi
 
             # Set proper permissions
-            echo "🔐 Setting permissions..."
-            sudo chown -R www-data:www-data /var/www/aynbeauty || echo "⚠️ Permission setting skipped (no sudo access)"
-            sudo chmod -R 755 /var/www/aynbeauty || echo "⚠️ Permission setting skipped (no sudo access)"
+            echo "🔐 Setting file permissions..."
+            sudo chown -R www-data:www-data "$PROJECT_DIR" 2>/dev/null || chown -R nobody "$PROJECT_DIR"
+            sudo chmod -R 755 "$PROJECT_DIR" 2>/dev/null || chmod -R 755 "$PROJECT_DIR"
+            sudo chmod -R 775 "$IMAGES_DIR" 2>/dev/null || chmod -R 775 "$IMAGES_DIR"
+            echo "✅ Permissions set"
 
-            # Ensure uploads directory exists with proper permissions
-            mkdir -p /var/www/aynbeauty/public/uploads/products
-            sudo chown -R www-data:www-data /var/www/aynbeauty/public/uploads || echo "⚠️ Upload permission setting skipped (no sudo access)"
-            sudo chmod -R 755 /var/www/aynbeauty/public/uploads || echo "⚠️ Upload permission setting skipped (no sudo access)"
-
-            # Restart the application
-            echo "🔄 Restarting application..."
-            pm2 start aynbeauty || pm2 restart aynbeauty
-
-            # Show status
-            echo "📊 Application status:"
-            pm2 status
-
-            # Test the application
-            echo "🧪 Testing application..."
-            sleep 10
-            if curl -f http://localhost:3000/api/health --max-time 30 --silent; then
-              echo "✅ Health check passed"
+            # Start or restart the application with PM2
+            echo "🔄 Starting application with PM2..."
+            if pm2 desc aynbeauty > /dev/null 2>&1; then
+              pm2 restart aynbeauty --wait-ready
+              echo "✅ Application restarted"
             else
-              echo "⚠️ Health check failed, checking if app is running..."
-              pm2 describe aynbeauty || echo "App not running in PM2"
+              pm2 start ecosystem.config.js --name aynbeauty 2>/dev/null || pm2 start npm --name aynbeauty -- start
+              echo "✅ Application started"
             fi
 
+            # Wait for application to be ready
+            sleep 5
+
+            # Show PM2 status
+            echo "📊 PM2 Application status:"
+            pm2 status
+            echo ""
+            pm2 info aynbeauty || true
+
+            # Test the application health
+            echo "🧪 Testing application health..."
+            RETRY_COUNT=0
+            MAX_RETRIES=5
+            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+              if curl -f http://localhost:3000/api/health --max-time 30 --silent > /dev/null 2>&1; then
+                echo "✅ Health check passed - Application is healthy"
+                break
+              else
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                  echo "⚠️ Health check attempt $RETRY_COUNT failed, retrying..."
+                  sleep 3
+                else
+                  echo "⚠️ Health check failed after $MAX_RETRIES attempts"
+                  pm2 logs aynbeauty --lines 50 | head -20
+                fi
+              fi
+            done
+
+            # Verify backups are accessible
+            echo "📂 Backup information:"
+            echo "Backup directory: $BACKUP_DIR"
+            if [ -d "$BACKUP_DIR" ]; then
+              ls -lh "$BACKUP_DIR" | tail -5 || echo "No backups found"
+            fi
+
+            echo ""
             echo "✅ Deployment completed successfully!"
-            echo "🌐 Application is running at: http://66.116.199.206:3000"
+            echo "🌐 Application running at: http://66.116.199.206:3000"
+            echo "📊 To check logs: pm2 logs aynbeauty"
+            echo "🔄 To restart manually: pm2 restart aynbeauty"
+            echo "⏹️ To stop: pm2 stop aynbeauty"
 
       - name: Notify deployment success
         if: success()

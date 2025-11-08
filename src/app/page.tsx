@@ -440,15 +440,15 @@ export default function HomePage() {
               { name: 'Nykaa', discount: 'Up to 30% off' },
               { name: 'The Ordinary', discount: 'Up to 20% off' }
             ].map((brand) => (
-              <Link key={brand.name} href={`/brands/${brand.name.toLowerCase().replace(' ', '-').replace('\'', '')}`}>
-                <div className="group bg-white rounded-xl p-6 text-center hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+              <div key={brand.name}>
+                <div className="group bg-white rounded-xl p-6 text-center hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
                   <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
                     <span className="text-xl font-bold text-gray-600">{brand.name.charAt(0)}</span>
                   </div>
                   <h3 className="font-semibold text-gray-900 mb-2">{brand.name}</h3>
                   <p className="text-sm text-pink-600 font-medium">{brand.discount}</p>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </div>
