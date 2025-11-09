@@ -10,6 +10,7 @@ import { TrashIcon, MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
 import { ProductImage } from '@/components/ui/ProductImage'
 import DeliveryDetailsModal from '@/components/ui/DeliveryDetailsModal'
 import CartChoiceModal from '@/components/ui/CartChoiceModal'
+import GuestCheckoutDetailsModal from '@/components/ui/GuestCheckoutDetailsModal'
 
 interface CartItem {
   id: number
@@ -37,6 +38,7 @@ export default function CartPage() {
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [showDeliveryModal, setShowDeliveryModal] = useState(false)
   const [showCartChoiceModal, setShowCartChoiceModal] = useState(false)
+  const [showGuestCheckoutModal, setShowGuestCheckoutModal] = useState(false)
   const [isGuest, setIsGuest] = useState(false)
 
   useEffect(() => {
@@ -72,9 +74,8 @@ export default function CartPage() {
 
   // WhatsApp checkout function
   const handleWhatsAppCheckout = async () => {
-    if (!user) {
-      alert('Please log in to proceed with checkout. You will be redirected to the login page.')
-      router.push('/login')
+    if (!user && !isGuest) {
+      setShowCartChoiceModal(true)
       return
     }
 
@@ -83,8 +84,90 @@ export default function CartPage() {
       return
     }
 
-    // Show delivery details modal instead of processing directly
+    // Guest user - show guest checkout form
+    if (!user && isGuest) {
+      setShowGuestCheckoutModal(true)
+      return
+    }
+
+    // Logged-in user - show delivery details modal
     setShowDeliveryModal(true)
+  }
+
+  // Handle guest checkout form submission
+  const handleGuestCheckoutSubmit = async (guestDetails: { name: string; contact: string; address: string }) => {
+    if (cartItems.length === 0) {
+      alert('Your cart is empty')
+      return
+    }
+
+    const confirm = window.confirm('This will send your order details to WhatsApp for processing. Do you want to continue?')
+    if (!confirm) return
+
+    try {
+      setCheckoutLoading(true)
+      setShowGuestCheckoutModal(false)
+
+      // Calculate totals
+      const subtotal = cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0)
+      const shippingAmount = subtotal >= 299 ? 0 : 49
+      const total = subtotal + shippingAmount
+
+      // Prepare WhatsApp message with guest details
+      const customerDetails = `
+📧 *Guest Information:*
+Name: ${guestDetails.name}
+Phone: ${guestDetails.contact}
+
+📍 *Delivery Address:*
+${guestDetails.address}
+      `.trim()
+
+      const orderDetails = cartItems.map(item => 
+        `• ${item.product_name} (Qty: ${item.quantity}) - ₹${(parseFloat(item.price) * item.quantity).toFixed(2)}`
+      ).join('\n')
+
+      const totalDetails = `
+*Order Summary:*
+Subtotal: ₹${subtotal.toFixed(2)}
+Shipping: ₹${shippingAmount.toFixed(2)}
+*Total: ₹${total.toFixed(2)}*
+      `.trim()
+
+      const whatsappMessage = `
+🛍️ *New Order from AYN Beauty*
+
+${customerDetails}
+
+*Order Details:*
+${orderDetails}
+
+${totalDetails}
+
+*Payment Method:* WhatsApp Checkout
+
+Please confirm this order and provide payment instructions.
+
+Thank you for choosing AYN Beauty! 💄✨
+      `.trim()
+
+      // Send to WhatsApp
+      const whatsappUrl = `https://wa.me/917019449136?text=${encodeURIComponent(whatsappMessage)}`
+      window.open(whatsappUrl, '_blank')
+
+      // Show success message
+      alert('Your order details have been sent to WhatsApp! Please complete the checkout process there.')
+      
+      // Clear guest cart after successful order
+      clearCartContext()
+      setCartItems([])
+
+    } catch (error) {
+      console.error('Guest checkout error:', error)
+      alert('Failed to process order. Please try again.')
+    } finally {
+      setCheckoutLoading(false)
+    }
   }
 
   // Process WhatsApp checkout with delivery details  
@@ -611,6 +694,27 @@ Thank you for choosing AYN Beauty! 💄✨
         userEmail={user?.email || ''}
         userName={user ? `${user.first_name} ${user.last_name}` : ''}
         userPhone={user?.phone}
+      />
+
+      {/* Guest Checkout Details Modal */}
+      <GuestCheckoutDetailsModal
+        isOpen={showGuestCheckoutModal}
+        onClose={() => setShowGuestCheckoutModal(false)}
+        onSubmit={handleGuestCheckoutSubmit}
+        isLoading={checkoutLoading}
+      />
+
+      {/* Cart Choice Modal */}
+      <CartChoiceModal
+        isOpen={showCartChoiceModal}
+        onLogin={() => {
+          setShowCartChoiceModal(false)
+          router.push('/login')
+        }}
+        onContinueAsGuest={() => {
+          setShowCartChoiceModal(false)
+          setIsGuest(true)
+        }}
       />
     </div>
   )
