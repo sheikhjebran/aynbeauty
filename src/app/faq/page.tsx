@@ -336,10 +336,10 @@ export default function FAQPage() {
                 <svg className="h-8 w-8 mx-auto mb-3" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
                 </svg>
-                <h3 className="font-semibold mb-2">Call Us</h3>
-                <p className="text-sm opacity-90 mb-4">+91 1800-123-456</p>
+                <h3 className="font-semibold mb-2">WhatsApp</h3>
+                <p className="text-sm opacity-90 mb-4">+91 7019449136</p>
                 <button className="bg-white text-indigo-600 px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-colors">
-                  Call Now
+                  Chat Now
                 </button>
               </motion.div>
 

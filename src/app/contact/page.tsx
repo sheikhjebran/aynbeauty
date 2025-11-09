@@ -41,7 +41,7 @@ export default function ContactPage() {
                 <div className="flex items-start mb-8">
                   <PhoneIcon className="h-8 w-8 text-pink-600 mr-4 flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Call Us</h3>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">WhatsApp</h3>
                     <a
                       href="tel:+917019449136"
                       className="text-2xl font-bold text-pink-600 hover:text-pink-700 transition-colors"
@@ -57,7 +57,7 @@ export default function ContactPage() {
                     Whether you have questions about our products, need beauty advice, or want to partner with us – we're here to help!
                   </p>
                   <p className="text-gray-600">
-                    Feel free to reach out via phone call for the fastest response.
+                    Feel free to reach out via WhatsApp for the fastest response.
                   </p>
                 </div>
               </div>

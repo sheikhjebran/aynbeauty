@@ -22,7 +22,7 @@ export default function ShippingReturnsPage() {
   const shippingOptions = [
     {
       name: 'Standard Delivery',
-      duration: '3-5 business days',
+      duration: 'Free delivery',
       cost: 'Free on orders ₹499+',
       description: 'Regular delivery across India',
       icon: TruckIcon,
@@ -30,19 +30,11 @@ export default function ShippingReturnsPage() {
     },
     {
       name: 'Express Delivery',
-      duration: '1-2 business days',
+      duration: 'Available in Bangalore only',
       cost: '₹99',
-      description: 'Fast delivery to major cities',
+      description: 'Fast delivery to Bangalore',
       icon: ClockIcon,
       color: 'green'
-    },
-    {
-      name: 'Same Day Delivery',
-      duration: 'Within 24 hours',
-      cost: '₹199',
-      description: 'Available in Mumbai, Delhi, Bangalore',
-      icon: MapPinIcon,
-      color: 'purple'
     }
   ]
 
@@ -154,8 +146,7 @@ export default function ShippingReturnsPage() {
             <div className="bg-gray-100 rounded-lg p-1 inline-flex">
               {[
                 { id: 'shipping', label: 'Shipping Info', icon: TruckIcon },
-                { id: 'returns', label: 'Returns', icon: ArrowPathIcon },
-                { id: 'exchange', label: 'Exchange', icon: ArrowPathIcon }
+                { id: 'returns', label: 'Returns', icon: ArrowPathIcon }
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -209,30 +200,8 @@ export default function ShippingReturnsPage() {
                 </div>
               </div>
 
-              {/* Shipping Zones */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                <div className="bg-white rounded-2xl shadow-lg p-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-6">Delivery Areas</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                      <span className="font-medium">Metro Cities</span>
-                      <span className="text-green-600 font-semibold">1-2 days</span>
-                    </div>
-                    <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                      <span className="font-medium">Tier 1 Cities</span>
-                      <span className="text-blue-600 font-semibold">2-3 days</span>
-                    </div>
-                    <div className="flex items-center justify-between py-3 border-b border-gray-100">
-                      <span className="font-medium">Tier 2 Cities</span>
-                      <span className="text-purple-600 font-semibold">3-5 days</span>
-                    </div>
-                    <div className="flex items-center justify-between py-3">
-                      <span className="font-medium">Remote Areas</span>
-                      <span className="text-gray-600 font-semibold">5-7 days</span>
-                    </div>
-                  </div>
-                </div>
-
+              {/* Shipping Benefits */}
+              <div className="max-w-2xl mx-auto">
                 <div className="bg-white rounded-2xl shadow-lg p-8">
                   <h3 className="text-2xl font-bold text-gray-900 mb-6">Shipping Benefits</h3>
                   <div className="space-y-4">
@@ -347,85 +316,6 @@ export default function ShippingReturnsPage() {
             </motion.div>
           )}
 
-          {activeTab === 'exchange' && (
-            <motion.div
-              key="exchange"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <div className="max-w-4xl mx-auto">
-                <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Exchange Policy</h2>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                  <div className="bg-white rounded-2xl shadow-lg p-8">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-6">Exchange Options</h3>
-                    <div className="space-y-6">
-                      <div className="border-l-4 border-pink-500 pl-6">
-                        <h4 className="font-semibold text-gray-900 mb-2">Size Exchange</h4>
-                        <p className="text-gray-600">Wrong size? Exchange for the right fit within 15 days of delivery.</p>
-                      </div>
-                      <div className="border-l-4 border-blue-500 pl-6">
-                        <h4 className="font-semibold text-gray-900 mb-2">Color Exchange</h4>
-                        <p className="text-gray-600">Not the shade you expected? Exchange for a different color in the same product line.</p>
-                      </div>
-                      <div className="border-l-4 border-green-500 pl-6">
-                        <h4 className="font-semibold text-gray-900 mb-2">Product Exchange</h4>
-                        <p className="text-gray-600">Changed your mind? Exchange for a different product of equal or lesser value.</p>
-                      </div>
-                      <div className="border-l-4 border-purple-500 pl-6">
-                        <h4 className="font-semibold text-gray-900 mb-2">Defective Exchange</h4>
-                        <p className="text-gray-600">Received a damaged item? Immediate exchange with expedited shipping.</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-6">
-                    <div className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-6">
-                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Exchange Process</h4>
-                      <ol className="space-y-3 text-gray-700">
-                        <li className="flex">
-                          <span className="bg-pink-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-0.5">1</span>
-                          <span>Contact our support team within 15 days</span>
-                        </li>
-                        <li className="flex">
-                          <span className="bg-pink-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-0.5">2</span>
-                          <span>Choose your preferred replacement</span>
-                        </li>
-                        <li className="flex">
-                          <span className="bg-pink-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-0.5">3</span>
-                          <span>Schedule pickup of original item</span>
-                        </li>
-                        <li className="flex">
-                          <span className="bg-pink-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-0.5">4</span>
-                          <span>Receive replacement within 3-5 days</span>
-                        </li>
-                      </ol>
-                    </div>
-
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-                      <div className="flex items-center mb-3">
-                        <GiftIcon className="h-5 w-5 text-yellow-600 mr-2" />
-                        <h4 className="font-semibold text-yellow-900">Exchange Benefits</h4>
-                      </div>
-                      <ul className="text-yellow-800 space-y-1 text-sm">
-                        <li>• No additional shipping charges</li>
-                        <li>• Same-day processing for metro cities</li>
-                        <li>• Keep the original packaging until exchange</li>
-                        <li>• Quality guarantee on all exchanges</li>
-                      </ul>
-                    </div>
-
-                    <div className="text-center">
-                      <button className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:from-pink-600 hover:to-purple-700 transition-all duration-300">
-                        Start Exchange Request
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
         </div>
       </section>
 
