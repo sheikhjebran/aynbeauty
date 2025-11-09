@@ -5,9 +5,11 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import { useCart } from '@/contexts/CartContext'
 import { TrashIcon, MinusIcon, PlusIcon } from '@heroicons/react/24/outline'
 import { ProductImage } from '@/components/ui/ProductImage'
 import DeliveryDetailsModal from '@/components/ui/DeliveryDetailsModal'
+import CartChoiceModal from '@/components/ui/CartChoiceModal'
 
 interface CartItem {
   id: number
@@ -28,17 +30,45 @@ interface CartItem {
 export default function CartPage() {
   const { user } = useAuth()
   const router = useRouter()
+  const { items: contextCartItems } = useCart()
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [showDeliveryModal, setShowDeliveryModal] = useState(false)
+  const [showCartChoiceModal, setShowCartChoiceModal] = useState(false)
+  const [isGuest, setIsGuest] = useState(false)
 
   useEffect(() => {
     if (user) {
       fetchCart()
+    } else if (isGuest && contextCartItems.length > 0) {
+      // Transform context cart items to API format
+      const transformedItems: CartItem[] = contextCartItems.map((item: any, index: number) => ({
+        id: item.id || index,
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price: item.price.toString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        product_name: item.name,
+        product_slug: item.name.toLowerCase().replace(/\s+/g, '-'),
+        brand_name: item.brand || '',
+        image_url: item.image,
+        stock_quantity: 0,
+        original_price: item.discounted_price ? item.price.toString() : undefined
+      }))
+      setCartItems(transformedItems)
+      setLoading(false)
+    } else if (!user && !isGuest && contextCartItems.length > 0) {
+      // Show choice modal when not logged in and no items
+      setShowCartChoiceModal(true)
+      setLoading(false)
+    } else if (!user && !isGuest) {
+      setShowCartChoiceModal(true)
+      setLoading(false)
     }
-  }, [user])
+  }, [user, isGuest, contextCartItems])
 
   // WhatsApp checkout function
   const handleWhatsAppCheckout = async () => {
@@ -305,22 +335,20 @@ Thank you for choosing AYN Beauty! 💄✨
     return calculateOriginalTotal() - calculateTotal()
   }
 
-  if (!user) {
+  if (!user && !isGuest) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4 text-gray-900">Your Cart</h1>
-            <p className="text-gray-600 mb-4">Please login to view your cart</p>
-            <Link
-              href="/login"
-              className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700"
-            >
-              Login
-            </Link>
-          </div>
-        </div>
-      </div>
+      <>
+        <CartChoiceModal
+          isOpen={showCartChoiceModal}
+          onLogin={() => {
+            router.push('/login')
+          }}
+          onContinueAsGuest={() => {
+            setIsGuest(true)
+            setShowCartChoiceModal(false)
+          }}
+        />
+      </>
     )
   }
 
@@ -344,12 +372,25 @@ Thank you for choosing AYN Beauty! 💄✨
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4 text-gray-900">Your Cart</h1>
             <p className="text-gray-600 mb-4">Your cart is empty</p>
-            <Link
-              href="/"
-              className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700"
-            >
-              Continue Shopping
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/"
+                className="bg-pink-600 text-white px-6 py-2 rounded-lg hover:bg-pink-700"
+              >
+                Continue Shopping
+              </Link>
+              {isGuest && (
+                <button
+                  onClick={() => {
+                    setIsGuest(false)
+                    router.push('/login')
+                  }}
+                  className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700"
+                >
+                  Login to My Account
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -360,14 +401,21 @@ Thank you for choosing AYN Beauty! 💄✨
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Your Cart ({cartItems.length} items)</h1>
-          <button
-            onClick={clearCart}
-            disabled={updating}
-            className="text-red-600 hover:text-red-800 disabled:opacity-50"
-          >
-            Clear Cart
-          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Your Cart ({cartItems.length} items)</h1>
+            {isGuest && (
+              <p className="text-sm text-gray-600 mt-1">Shopping as Guest</p>
+            )}
+          </div>
+          {!isGuest && (
+            <button
+              onClick={clearCart}
+              disabled={updating}
+              className="text-red-600 hover:text-red-800 disabled:opacity-50"
+            >
+              Clear Cart
+            </button>
+          )}
         </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

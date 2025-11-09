@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useCart } from '@/contexts/CartContext'
+import { useToast } from '@/components/ui/Toast'
+import Toast from '@/components/ui/Toast'
 
 interface Product {
   id: number
@@ -30,6 +32,7 @@ export default function CategoryPage() {
   const router = useRouter()
   const categorySlug = params.category as string
   const { addToCart } = useCart()
+  const { toasts, addToast, removeToast } = useToast()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -102,6 +105,7 @@ export default function CategoryPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Toast toasts={toasts} onRemove={removeToast} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="flex mb-8" aria-label="Breadcrumb">
@@ -325,6 +329,7 @@ export default function CategoryPage() {
                         price: discountedPrice,
                         image: product.primary_image || product.image_url || '',
                       }, quantity)
+                      addToast(`${product.name} added to cart!`, 'success', 3000)
                       // Reset quantity after adding
                       setQuantities({ ...quantities, [product.id]: 1 })
                     }}
