@@ -70,7 +70,7 @@ export function AdvancedSearch({ onFiltersChange, className = '' }: AdvancedSear
       
       const newUrl = `${window.location.pathname}?${params.toString()}`
       router.push(newUrl, { scroll: false })
-    }, 500) // 500ms debounce delay
+    }, 200) // 200ms debounce delay - faster for smoother UX
   }, [router])
 
   useEffect(() => {

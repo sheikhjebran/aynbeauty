@@ -77,7 +77,7 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
     
     searchTimeoutRef.current = setTimeout(() => {
       setDebouncedSearch(currentSearch)
-    }, 300) // 300ms debounce
+    }, 150) // 150ms debounce - reduced for faster response
     
     return () => {
       if (searchTimeoutRef.current) {
