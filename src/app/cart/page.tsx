@@ -30,7 +30,7 @@ interface CartItem {
 export default function CartPage() {
   const { user } = useAuth()
   const router = useRouter()
-  const { items: contextCartItems } = useCart()
+  const { items: contextCartItems, updateQuantity: updateCartContext, removeFromCart: removeCartContext, clearCart: clearCartContext } = useCart()
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
@@ -243,7 +243,7 @@ Thank you for choosing AYN Beauty! 💄✨
         // For guest cart, use context
         const contextItem = contextCartItems.find((item: any) => item.id === itemId)
         if (contextItem) {
-          useCart().updateQuantity(itemId, newQuantity)
+          updateCartContext(itemId, newQuantity)
           // Update local state
           const updatedItems = cartItems.map(item => 
             item.id === itemId ? { ...item, quantity: newQuantity } : item
@@ -285,7 +285,7 @@ Thank you for choosing AYN Beauty! 💄✨
         // For guest cart, use context
         const contextItem = contextCartItems.find((item: any) => item.id === itemId)
         if (contextItem) {
-          useCart().removeFromCart(itemId)
+          removeCartContext(itemId)
           // Update local state
           const updatedItems = cartItems.filter(item => item.id !== itemId)
           setCartItems(updatedItems)
@@ -323,7 +323,7 @@ Thank you for choosing AYN Beauty! 💄✨
     try {
       if (isGuest) {
         // For guest cart, use context
-        useCart().clearCart()
+        clearCartContext()
         setCartItems([])
       } else {
         // For logged-in users, use API
