@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useCart } from '@/contexts/CartContext'
 
 interface Product {
   id: number
@@ -26,10 +27,13 @@ interface Product {
 
 export default function CategoryPage() {
   const params = useParams()
+  const router = useRouter()
   const categorySlug = params.category as string
+  const { addToCart } = useCart()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [quantities, setQuantities] = useState<{ [key: number]: number }>({})
 
   const categoryNames: { [key: string]: string } = {
     'skincare': 'Skincare',
@@ -163,14 +167,18 @@ export default function CategoryPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map((product) => (
-              <Link key={product.id} href={`/products/${product.id}`}>
-                <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full flex flex-col">
+              <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col">
+                {/* Product Image and Name - Clickable */}
+                <div 
+                  onClick={() => router.push(`/products/${product.id}`)}
+                  className="cursor-pointer flex-1 flex flex-col"
+                >
                   <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden bg-gray-200">
                     {(product.primary_image || product.image_url) ? (
                       <img
                         src={product.primary_image || product.image_url}
                         alt={product.name}
-                        className="h-48 w-full object-cover object-center group-hover:opacity-75"
+                        className="h-48 w-full object-cover object-center hover:opacity-75 transition-opacity"
                       />
                     ) : (
                       <div className="h-48 w-full flex items-center justify-center bg-gray-100">
@@ -180,94 +188,152 @@ export default function CategoryPage() {
                       </div>
                     )}
                   </div>
-                  <div className="p-4 flex-1 flex flex-col justify-between">
-                  <h3 className="text-sm font-medium text-gray-900 mb-2">{product.name}</h3>
-                  <p className="text-xs text-gray-600 mb-3 line-clamp-2">{product.description}</p>
-                  
-                  {/* Brand */}
-                  {(product.brand_name || product.brand) && (
-                    <p className="text-xs text-gray-500 mb-2">{product.brand_name || product.brand}</p>
-                  )}
-                  
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1 mb-3">
-                    {product.is_trending === 1 && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                        🔥 Trending
-                      </span>
+                  <div className="p-4 flex flex-col flex-grow">
+                    <h3 className="text-sm font-medium text-gray-900 mb-2">{product.name}</h3>
+                    <p className="text-xs text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                    
+                    {/* Brand */}
+                    {(product.brand_name || product.brand) && (
+                      <p className="text-xs text-gray-500 mb-2">{product.brand_name || product.brand}</p>
                     )}
-                    {product.is_must_have === 1 && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                        ⭐ Must Have
-                      </span>
-                    )}
-                    {product.is_new_arrival === 1 && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                        ✨ New
-                      </span>
+                    
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {product.is_trending === 1 && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                          🔥 Trending
+                        </span>
+                      )}
+                      {product.is_must_have === 1 && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                          ⭐ Must Have
+                        </span>
+                      )}
+                      {product.is_new_arrival === 1 && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                          ✨ New
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Price Display */}
+                    <div className="flex items-center space-x-2 mb-3">
+                      {(() => {
+                        const price = typeof product.price === 'string' ? parseFloat(product.price) : product.price
+                        const discountedPrice = product.discounted_price 
+                          ? (typeof product.discounted_price === 'string' ? parseFloat(product.discounted_price) : product.discounted_price)
+                          : null
+                        
+                        return discountedPrice && discountedPrice < price ? (
+                          <>
+                            <span className="text-lg font-bold text-red-600">₹{discountedPrice.toLocaleString()}</span>
+                            <span className="text-sm text-gray-500 line-through">₹{price.toLocaleString()}</span>
+                            <span className="text-xs text-green-600 font-medium bg-green-100 px-2 py-1 rounded">
+                              {Math.round(((price - discountedPrice) / price) * 100)}% OFF
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-lg font-bold text-gray-900">₹{price.toLocaleString()}</span>
+                        )
+                      })()}
+                    </div>
+
+                    {/* Rating */}
+                    {(product.avg_rating || product.rating) && (
+                      <div className="flex items-center mb-4">
+                        <div className="flex items-center">
+                          {(() => {
+                            const rating = product.avg_rating || product.rating
+                            const ratingNum = typeof rating === 'string' ? parseFloat(rating) : (rating || 0)
+                            return [...Array(5)].map((_, i) => (
+                              <svg
+                                key={i}
+                                className={`h-4 w-4 ${i < Math.floor(ratingNum) ? 'text-yellow-400' : 'text-gray-300'}`}
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                              </svg>
+                            ))
+                          })()}
+                        </div>
+                        <span className="ml-2 text-sm text-gray-600">
+                          {(() => {
+                            const rating = product.avg_rating || product.rating || 0
+                            const ratingNum = typeof rating === 'string' ? parseFloat(rating) : rating
+                            return ratingNum.toFixed(1)
+                          })()}
+                        </span>
+                        <span className="ml-1 text-sm text-gray-600">
+                          ({product.review_count || product.rating_count || 0})
+                        </span>
+                      </div>
                     )}
                   </div>
+                </div>
 
-                  {/* Price Display */}
-                  <div className="flex items-center space-x-2 mb-3">
-                    {(() => {
+                {/* Quantity Selector and Add to Cart Button */}
+                <div className="px-4 pb-4 border-t">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-medium text-gray-700">Qty:</span>
+                    <div className="flex items-center border border-gray-300 rounded-md">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setQuantities({
+                            ...quantities,
+                            [product.id]: Math.max(1, (quantities[product.id] || 1) - 1)
+                          })
+                        }}
+                        className="p-1 text-gray-600 hover:text-gray-900"
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                        </svg>
+                      </button>
+                      <span className="px-3 py-1 text-sm font-medium text-gray-900">
+                        {quantities[product.id] || 1}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setQuantities({
+                            ...quantities,
+                            [product.id]: (quantities[product.id] || 1) + 1
+                          })
+                        }}
+                        className="p-1 text-gray-600 hover:text-gray-900"
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      const quantity = quantities[product.id] || 1
                       const price = typeof product.price === 'string' ? parseFloat(product.price) : product.price
                       const discountedPrice = product.discounted_price 
                         ? (typeof product.discounted_price === 'string' ? parseFloat(product.discounted_price) : product.discounted_price)
-                        : null
-                      
-                      return discountedPrice && discountedPrice < price ? (
-                        <>
-                          <span className="text-lg font-bold text-red-600">₹{discountedPrice.toLocaleString()}</span>
-                          <span className="text-sm text-gray-500 line-through">₹{price.toLocaleString()}</span>
-                          <span className="text-xs text-green-600 font-medium bg-green-100 px-2 py-1 rounded">
-                            {Math.round(((price - discountedPrice) / price) * 100)}% OFF
-                          </span>
-                        </>
-                      ) : (
-                        <span className="text-lg font-bold text-gray-900">₹{price.toLocaleString()}</span>
-                      )
-                    })()}
-                  </div>
-
-                  {/* Rating */}
-                  {(product.avg_rating || product.rating) && (
-                    <div className="flex items-center mb-3">
-                      <div className="flex items-center">
-                        {(() => {
-                          const rating = product.avg_rating || product.rating
-                          const ratingNum = typeof rating === 'string' ? parseFloat(rating) : (rating || 0)
-                          return [...Array(5)].map((_, i) => (
-                            <svg
-                              key={i}
-                              className={`h-4 w-4 ${i < Math.floor(ratingNum) ? 'text-yellow-400' : 'text-gray-300'}`}
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                          ))
-                        })()}
-                      </div>
-                      <span className="ml-2 text-sm text-gray-600">
-                        {(() => {
-                          const rating = product.avg_rating || product.rating || 0
-                          const ratingNum = typeof rating === 'string' ? parseFloat(rating) : rating
-                          return ratingNum.toFixed(1)
-                        })()}
-                      </span>
-                      <span className="ml-1 text-sm text-gray-600">
-                        ({product.review_count || product.rating_count || 0})
-                      </span>
-                    </div>
-                  )}
-
-                  <button className="w-full bg-pink-600 text-white py-2 px-4 rounded-md hover:bg-pink-700 transition-colors text-sm font-medium">
+                        : price
+                      addToCart({
+                        product_id: product.id,
+                        name: product.name,
+                        price: discountedPrice,
+                        image: product.primary_image || product.image_url || '',
+                      }, quantity)
+                      // Reset quantity after adding
+                      setQuantities({ ...quantities, [product.id]: 1 })
+                    }}
+                    className="w-full bg-pink-600 text-white py-2 px-4 rounded-md hover:bg-pink-700 transition-colors text-sm font-medium"
+                  >
                     Add to Cart
                   </button>
                 </div>
               </div>
-              </Link>
             ))}
           </div>
         )}
