@@ -47,7 +47,8 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
   const router = useRouter()
   const urlSearchParams = useSearchParams()
   const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [initialLoading, setInitialLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [totalProducts, setTotalProducts] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
@@ -77,7 +78,7 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
     
     searchTimeoutRef.current = setTimeout(() => {
       setDebouncedSearch(currentSearch)
-    }, 150) // 150ms debounce - reduced for faster response
+    }, 100) // 100ms debounce - very fast for instant response
     
     return () => {
       if (searchTimeoutRef.current) {
@@ -94,6 +95,7 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
   // Fetch filters on mount
   useEffect(() => {
     fetchFilters()
+    setInitialLoading(false)
   }, [])
 
   const fetchProducts = async () => {
@@ -120,6 +122,7 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
       const data = await response.json()
       setProducts(data.products)
       setTotalProducts(data.total)
+      setError(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -198,7 +201,7 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
 
   const totalPages = Math.ceil(totalProducts / 20)
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-8">
@@ -215,7 +218,7 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
     )
   }
 
-  if (error) {
+  if (error && products.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-8 text-center">
@@ -374,18 +377,29 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
 
         {/* Products Grid/List */}
         <div className="flex-1">
-          {products.length === 0 ? (
+          {products.length === 0 && !loading ? (
             <div className="text-center py-12">
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
               <p className="text-gray-600">Try adjusting your filters or search terms.</p>
             </div>
           ) : (
             <>
-              <div className={`${
-                viewMode === 'grid' 
-                  ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
-                  : 'space-y-4'
-              }`}>
+              <div className="relative">
+                {/* Loading overlay - subtle and non-blocking */}
+                {loading && (
+                  <div className="absolute inset-0 bg-white bg-opacity-30 backdrop-blur-[0.5px] flex items-center justify-center z-10 rounded-lg">
+                    <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg shadow-md">
+                      <div className="w-5 h-5 border-3 border-pink-200 border-t-pink-600 rounded-full animate-spin"></div>
+                      <span className="text-sm text-gray-600 font-medium">Updating results...</span>
+                    </div>
+                  </div>
+                )}
+                
+                <div className={`${
+                  viewMode === 'grid' 
+                    ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'
+                    : 'space-y-4'
+                } ${loading ? 'opacity-60' : ''}`}>
                 {products.map((product) => (
                   <div key={product.id} className={`bg-white border-2 border-gray-300 rounded-lg overflow-hidden hover:shadow-lg hover:border-pink-300 transition-all relative ${
                     viewMode === 'list' ? 'flex' : ''
@@ -498,6 +512,7 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
                     </div>
                   </div>
                 ))}
+              </div>
               </div>
 
               {/* Pagination */}
