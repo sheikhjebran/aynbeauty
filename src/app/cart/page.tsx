@@ -239,22 +239,36 @@ Thank you for choosing AYN Beauty! 💄✨
 
     setUpdating(true)
     try {
-      const token = localStorage.getItem('token')
-      if (!token) return
-
-      const response = await fetch(`/api/cart/${itemId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ quantity: newQuantity })
-      })
-
-      if (response.ok) {
-        await fetchCart()
+      if (isGuest) {
+        // For guest cart, use context
+        const contextItem = contextCartItems.find((item: any) => item.id === itemId)
+        if (contextItem) {
+          useCart().updateQuantity(itemId, newQuantity)
+          // Update local state
+          const updatedItems = cartItems.map(item => 
+            item.id === itemId ? { ...item, quantity: newQuantity } : item
+          )
+          setCartItems(updatedItems)
+        }
       } else {
-        alert('Failed to update quantity')
+        // For logged-in users, use API
+        const token = localStorage.getItem('token')
+        if (!token) return
+
+        const response = await fetch(`/api/cart/${itemId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ quantity: newQuantity })
+        })
+
+        if (response.ok) {
+          await fetchCart()
+        } else {
+          alert('Failed to update quantity')
+        }
       }
     } catch (error) {
       console.error('Error updating quantity:', error)
@@ -267,20 +281,32 @@ Thank you for choosing AYN Beauty! 💄✨
   const removeFromCart = async (itemId: number) => {
     setUpdating(true)
     try {
-      const token = localStorage.getItem('token')
-      if (!token) return
-
-      const response = await fetch(`/api/cart/${itemId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
+      if (isGuest) {
+        // For guest cart, use context
+        const contextItem = contextCartItems.find((item: any) => item.id === itemId)
+        if (contextItem) {
+          useCart().removeFromCart(itemId)
+          // Update local state
+          const updatedItems = cartItems.filter(item => item.id !== itemId)
+          setCartItems(updatedItems)
         }
-      })
-
-      if (response.ok) {
-        await fetchCart()
       } else {
-        alert('Failed to remove item')
+        // For logged-in users, use API
+        const token = localStorage.getItem('token')
+        if (!token) return
+
+        const response = await fetch(`/api/cart/${itemId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+
+        if (response.ok) {
+          await fetchCart()
+        } else {
+          alert('Failed to remove item')
+        }
       }
     } catch (error) {
       console.error('Error removing item:', error)
@@ -295,20 +321,27 @@ Thank you for choosing AYN Beauty! 💄✨
 
     setUpdating(true)
     try {
-      const token = localStorage.getItem('token')
-      if (!token) return
-
-      const response = await fetch('/api/cart', {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (response.ok) {
+      if (isGuest) {
+        // For guest cart, use context
+        useCart().clearCart()
         setCartItems([])
       } else {
-        alert('Failed to clear cart')
+        // For logged-in users, use API
+        const token = localStorage.getItem('token')
+        if (!token) return
+
+        const response = await fetch('/api/cart', {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+
+        if (response.ok) {
+          setCartItems([])
+        } else {
+          alert('Failed to clear cart')
+        }
       }
     } catch (error) {
       console.error('Error clearing cart:', error)
