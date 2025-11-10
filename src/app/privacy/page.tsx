@@ -65,7 +65,7 @@ export default function PrivacyPolicyPage() {
       id: 'contact',
       title: 'Questions or Concerns?',
       icon: DocumentTextIcon,
-      content: `If you have any questions about your privacy or how we handle your information:\n\n� WhatsApp: +91 9876543210\n\nWe'll respond to your questions promptly and help resolve any concerns.`
+      content: `If you have any questions about your privacy or how we handle your information:\n\n� WhatsApp: +917019449136\n\nWe'll respond to your questions promptly and help resolve any concerns.`
     }
   ]
 
@@ -173,7 +173,7 @@ export default function PrivacyPolicyPage() {
             
             <div className="bg-white rounded-xl p-8 shadow-lg mb-8">
               <p className="text-lg text-gray-700 mb-2">
-                <span className="font-semibold">💬 WhatsApp:</span> +91 9876543210
+                <span className="font-semibold">💬 WhatsApp:</span> +917019449136
               </p>
               <p className="text-gray-600">We're available to help you anytime</p>
             </div>

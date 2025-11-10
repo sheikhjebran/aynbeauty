@@ -64,7 +64,7 @@ export default function TermsOfServicePage() {
       id: 'contact',
       title: 'Have Questions?',
       icon: DocumentTextIcon,
-      content: 'If you have questions about these terms or anything else, reach out to us on WhatsApp at +91 9876543210 or through our contact page. We\'re happy to help!'
+      content: 'If you have questions about these terms or anything else, reach out to us on WhatsApp at +917019449136 or through our contact page. We\'re happy to help!'
     }
   ]
 
@@ -147,7 +147,7 @@ export default function TermsOfServicePage() {
               <div className="bg-gray-50 rounded-lg p-6">
                 <p className="text-gray-800 font-semibold mb-2">� Contact Us on WhatsApp:</p>
                 <p className="text-gray-700">
-                  WhatsApp: <span className="font-medium">+91 9876543210</span>
+                  WhatsApp: <span className="font-medium">+917019449136</span>
                 </p>
                 <p className="text-gray-600 text-sm mt-3">
                   We're here to help and want to make sure everything is clear and fair for everyone.
