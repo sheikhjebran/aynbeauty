@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, memo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { 
@@ -168,7 +168,7 @@ export default function HomePage() {
   const [addingToCartIds, setAddingToCartIds] = useState<Set<number>>(new Set())
   const [addingToWishlistIds, setAddingToWishlistIds] = useState<Set<number>>(new Set())
 
-  const addToCart = async (e: React.MouseEvent, productId: number) => {
+  const addToCart = useCallback(async (e: React.MouseEvent, productId: number) => {
     e.preventDefault()
     e.stopPropagation()
     
@@ -240,9 +240,9 @@ export default function HomePage() {
         return newSet
       })
     }
-  }
+  }, [featuredProducts, recommendedProducts, trendingProducts, addToCartContext, addToast, addingToCartIds])
 
-  const addToWishlist = async (e: React.MouseEvent, productId: number) => {
+  const addToWishlist = useCallback(async (e: React.MouseEvent, productId: number) => {
     e.preventDefault()
     e.stopPropagation()
     
@@ -289,9 +289,15 @@ export default function HomePage() {
         return newSet
       })
     }
-  }
+  }, [addingToWishlistIds, addToast])
 
-  const ProductCard = ({ product }: { product: Product }) => (
+  const ProductCard = memo(({ product, onAddToCart, onAddToWishlist, isAddingToCart, isAddingToWishlist }: { 
+    product: Product
+    onAddToCart: (e: React.MouseEvent, productId: number) => void
+    onAddToWishlist: (e: React.MouseEvent, productId: number) => void
+    isAddingToCart: boolean
+    isAddingToWishlist: boolean
+  }) => (
     <div className="group relative bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative">
         <Link href={`/products/${product.id}`}>
@@ -307,11 +313,11 @@ export default function HomePage() {
         </Link>
         
         <button
-          onClick={(e) => addToWishlist(e, product.id)}
-          disabled={addingToWishlistIds.has(product.id)}
+          onClick={(e) => onAddToWishlist(e, product.id)}
+          disabled={isAddingToWishlist}
           className="absolute top-2 right-2 p-2 bg-white/80 rounded-full hover:bg-white transition-colors disabled:opacity-70"
         >
-          {addingToWishlistIds.has(product.id) ? (
+          {isAddingToWishlist ? (
             <div className="h-5 w-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
           ) : (
             <HeartIcon className="h-5 w-5 text-gray-600 hover:text-red-500" />
@@ -394,11 +400,11 @@ export default function HomePage() {
             )}
           </div>
           <button
-            onClick={(e) => addToCart(e, product.id)}
-            disabled={addingToCartIds.has(product.id)}
+            onClick={(e) => onAddToCart(e, product.id)}
+            disabled={isAddingToCart}
             className="bg-pink-600 text-white p-2 rounded-full hover:bg-pink-700 transition-colors disabled:bg-pink-400 disabled:cursor-not-allowed"
           >
-            {addingToCartIds.has(product.id) ? (
+            {isAddingToCart ? (
               <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <ShoppingBagIcon className="h-4 w-4" />
@@ -407,7 +413,14 @@ export default function HomePage() {
         </div>
       </div>
     </div>
-  )
+  ), (prevProps, nextProps) => {
+    // Custom comparison function for React.memo
+    return (
+      prevProps.product.id === nextProps.product.id &&
+      prevProps.isAddingToCart === nextProps.isAddingToCart &&
+      prevProps.isAddingToWishlist === nextProps.isAddingToWishlist
+    )
+  })
 
   if (loading) {
     return (
@@ -590,7 +603,14 @@ export default function HomePage() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
               {trendingProducts.slice(0, 10).map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  onAddToCart={addToCart}
+                  onAddToWishlist={addToWishlist}
+                  isAddingToCart={addingToCartIds.has(product.id)}
+                  isAddingToWishlist={addingToWishlistIds.has(product.id)}
+                />
               ))}
             </div>
           </div>
@@ -661,7 +681,14 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard 
+                key={product.id} 
+                product={product} 
+                onAddToCart={addToCart}
+                onAddToWishlist={addToWishlist}
+                isAddingToCart={addingToCartIds.has(product.id)}
+                isAddingToWishlist={addingToWishlistIds.has(product.id)}
+              />
             ))}
           </div>
         </div>
@@ -688,7 +715,14 @@ export default function HomePage() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
               {recommendedProducts.slice(0, 10).map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  onAddToCart={addToCart}
+                  onAddToWishlist={addToWishlist}
+                  isAddingToCart={addingToCartIds.has(product.id)}
+                  isAddingToWishlist={addingToWishlistIds.has(product.id)}
+                />
               ))}
             </div>
           </div>
