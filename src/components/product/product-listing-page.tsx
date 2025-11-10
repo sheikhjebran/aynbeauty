@@ -8,6 +8,9 @@ import { ChevronDownIcon, FunnelIcon, Squares2X2Icon, ListBulletIcon } from '@he
 import { StarIcon } from '@heroicons/react/20/solid'
 import { AdvancedSearch } from '@/components/search'
 import { WishlistButton } from '@/components/wishlist'
+import { useCart } from '@/contexts/CartContext'
+import { useToast } from '@/components/ui/Toast'
+import Toast from '@/components/ui/Toast'
 
 interface Product {
   id: number
@@ -46,6 +49,8 @@ const sortOptions = [
 export function ProductListingPage({ category, searchParams }: ProductListingPageProps) {
   const router = useRouter()
   const urlSearchParams = useSearchParams()
+  const { addToCart } = useCart()
+  const { toasts, addToast, removeToast } = useToast()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
@@ -57,6 +62,7 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
   const [categories, setCategories] = useState<any[]>([])
   const [brands, setBrands] = useState<string[]>([])
   const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [quantities, setQuantities] = useState<{ [key: number]: number }>({})
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   // Get current filters from URL
@@ -231,6 +237,7 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Toast toasts={toasts} onRemove={removeToast} />
       <div className="container mx-auto px-4 py-8">
       {/* Page Header */}
       <div className="mb-8">
@@ -499,16 +506,68 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
                         )}
                       </div>
 
-                      <button
-                        disabled={product.stock_quantity === 0}
-                        className={`w-full py-2 px-4 text-sm font-medium rounded-md transition-colors ${
-                          product.stock_quantity === 0
-                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            : 'bg-pink-600 text-white hover:bg-pink-700'
-                        }`}
-                      >
-                        {product.stock_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
-                      </button>
+                      {/* Quantity Selector and Add to Cart Button */}
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="flex items-center border border-gray-300 rounded-md">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setQuantities({
+                                ...quantities,
+                                [product.id]: Math.max(1, (quantities[product.id] || 1) - 1)
+                              })
+                            }}
+                            className="p-1 text-gray-600 hover:text-gray-900"
+                          >
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                            </svg>
+                          </button>
+                          <span className="px-3 py-1 text-sm font-medium text-gray-900">
+                            {quantities[product.id] || 1}
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setQuantities({
+                                ...quantities,
+                                [product.id]: (quantities[product.id] || 1) + 1
+                              })
+                            }}
+                            className="p-1 text-gray-600 hover:text-gray-900"
+                          >
+                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                          </button>
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            const quantity = quantities[product.id] || 1
+                            const discountedPrice = product.discounted_price && product.discounted_price < product.price 
+                              ? product.discounted_price 
+                              : product.price
+                            addToCart({
+                              product_id: product.id,
+                              name: product.name,
+                              price: discountedPrice,
+                              image: product.image_url || product.primary_image || '',
+                            }, quantity)
+                            addToast(`${product.name} added to cart!`, 'success', 3000)
+                            // Reset quantity after adding
+                            setQuantities({ ...quantities, [product.id]: 1 })
+                          }}
+                          disabled={product.stock_quantity === 0}
+                          className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+                            product.stock_quantity === 0
+                              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                              : 'bg-pink-600 text-white hover:bg-pink-700'
+                          }`}
+                        >
+                          {product.stock_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}

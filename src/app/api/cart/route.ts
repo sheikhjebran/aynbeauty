@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
         ci.*,
         p.name as product_name,
         p.price,
+        p.discounted_price,
         p.sku,
         p.stock_quantity,
         p.slug as product_slug,

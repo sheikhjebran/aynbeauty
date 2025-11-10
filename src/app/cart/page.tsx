@@ -17,6 +17,7 @@ interface CartItem {
   product_id: number
   quantity: number
   price: string
+  discounted_price?: string
   created_at: string
   updated_at: string
   product_name: string
@@ -227,10 +228,12 @@ Thank you for choosing AYN Beauty! 💄✨
       const orderResult = await orderResponse.json()
       const orderNumber = orderResult.order.order_number
 
-      // Calculate totals
-      const subtotal = cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0)
-      const shippingAmount = subtotal >= 299 ? 0 : 49
-      const total = subtotal + shippingAmount
+      // Calculate totals using discounted prices
+      const subtotal = cartItems.reduce((sum, item) => {
+        const price = item.discounted_price ? parseFloat(item.discounted_price) : parseFloat(item.price)
+        return sum + (price * item.quantity)
+      }, 0)
+      const total = subtotal
 
       // Prepare WhatsApp message with delivery details
       const customerDetails = `
@@ -244,14 +247,14 @@ ${deliveryDetails.address}
 ${deliveryDetails.city}, ${deliveryDetails.state} ${deliveryDetails.pincode}
       `.trim()
 
-      const orderDetails = cartItems.map(item => 
-        `• ${item.product_name} (Qty: ${item.quantity}) - ₹${(parseFloat(item.price) * item.quantity).toFixed(2)}`
-      ).join('\n')
+      const orderDetails = cartItems.map(item => {
+        const price = item.discounted_price ? parseFloat(item.discounted_price) : parseFloat(item.price)
+        return `• ${item.product_name} (Qty: ${item.quantity}) - ₹${(price * item.quantity).toFixed(2)}`
+      }).join('\n')
 
       const totalDetails = `
 *Order Summary:*
 Subtotal: ₹${subtotal.toFixed(2)}
-Shipping: ₹${shippingAmount.toFixed(2)}
 *Total: ₹${total.toFixed(2)}*
       `.trim()
 
@@ -436,14 +439,14 @@ Thank you for choosing AYN Beauty! 💄✨
 
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => {
-      return total + (parseFloat(item.price) * item.quantity)
+      const price = item.discounted_price ? parseFloat(item.discounted_price) : parseFloat(item.price)
+      return total + (price * item.quantity)
     }, 0)
   }
 
   const calculateOriginalTotal = () => {
     return cartItems.reduce((total, item) => {
-      const originalPrice = item.original_price ? parseFloat(item.original_price) : parseFloat(item.price)
-      return total + (originalPrice * item.quantity)
+      return total + (parseFloat(item.price) * item.quantity)
     }, 0)
   }
 
@@ -561,16 +564,16 @@ Thank you for choosing AYN Beauty! 💄✨
                       <p className="text-sm text-gray-600">{item.brand_name}</p>
                     )}
                     <div className="flex items-center space-x-2 mt-1">
-                      {item.original_price && parseFloat(item.original_price) > parseFloat(item.price) ? (
+                      {item.discounted_price && parseFloat(item.discounted_price) > 0 && parseFloat(item.discounted_price) < parseFloat(item.price) ? (
                         <>
                           <span className="text-lg font-bold text-pink-600">
-                            ₹{parseFloat(item.price).toFixed(2)}
+                            ₹{parseFloat(item.discounted_price).toFixed(2)}
                           </span>
                           <span className="text-sm text-gray-500 line-through">
-                            ₹{parseFloat(item.original_price).toFixed(2)}
+                            ₹{parseFloat(item.price).toFixed(2)}
                           </span>
                           <span className="bg-red-100 text-red-600 px-2 py-1 rounded text-xs font-medium">
-                            {Math.round(((parseFloat(item.original_price) - parseFloat(item.price)) / parseFloat(item.original_price)) * 100)}% OFF
+                            {Math.round(((parseFloat(item.price) - parseFloat(item.discounted_price)) / parseFloat(item.price)) * 100)}% OFF
                           </span>
                         </>
                       ) : (
@@ -603,11 +606,11 @@ Thank you for choosing AYN Beauty! 💄✨
 
                   <div className="text-right">
                     <p className="text-lg font-bold text-gray-900">
-                      ₹{(parseFloat(item.price) * item.quantity).toFixed(2)}
+                      ₹{((item.discounted_price ? parseFloat(item.discounted_price) : parseFloat(item.price)) * item.quantity).toFixed(2)}
                     </p>
-                    {item.original_price && parseFloat(item.original_price) > parseFloat(item.price) && (
+                    {item.discounted_price && parseFloat(item.discounted_price) > 0 && parseFloat(item.discounted_price) < parseFloat(item.price) && (
                       <p className="text-sm text-gray-500 line-through">
-                        ₹{(parseFloat(item.original_price) * item.quantity).toFixed(2)}
+                        ₹{(parseFloat(item.price) * item.quantity).toFixed(2)}
                       </p>
                     )}
                     <button
@@ -646,10 +649,6 @@ Thank you for choosing AYN Beauty! 💄✨
                   <span>-₹{calculateSavings().toFixed(2)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-gray-700">
-                <span>Shipping</span>
-                <span>Free</span>
-              </div>
               <div className="border-t pt-2">
                 <div className="flex justify-between font-bold text-lg text-gray-900">
                   <span>Total</span>

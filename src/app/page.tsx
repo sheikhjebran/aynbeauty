@@ -168,7 +168,7 @@ export default function HomePage() {
   const [addingToCartIds, setAddingToCartIds] = useState<Set<number>>(new Set())
   const [addingToWishlistIds, setAddingToWishlistIds] = useState<Set<number>>(new Set())
 
-  const addToCart = useCallback(async (e: React.MouseEvent, productId: number) => {
+  const addToCart = useCallback(async (e: React.MouseEvent, productId: number, productData?: Product) => {
     e.preventDefault()
     e.stopPropagation()
     
@@ -179,10 +179,6 @@ export default function HomePage() {
     
     try {
       const token = localStorage.getItem('token')
-      
-      // Find the product from our local state
-      const allProducts = [...featuredProducts, ...recommendedProducts, ...trendingProducts]
-      const product = allProducts.find(p => p.id === productId)
 
       if (token) {
         // User is logged in - use API
@@ -200,17 +196,17 @@ export default function HomePage() {
 
         if (response.ok) {
           // Update local cart context if we have product data
-          if (product) {
+          if (productData) {
             addToCartContext({
-              product_id: product.id,
-              name: product.name,
-              price: product.price,
-              discounted_price: product.discounted_price,
-              image: product.image_url || '',
+              product_id: productData.id,
+              name: productData.name,
+              price: productData.price,
+              discounted_price: productData.discounted_price,
+              image: productData.image_url || '',
             }, 1)
           }
           
-          addToast(`${product?.name || 'Product'} added to cart!`, 'success', 3000)
+          addToast(`${productData?.name || 'Product'} added to cart!`, 'success', 3000)
         } else {
           const errorData = await response.json()
           console.error('Cart API error:', errorData)
@@ -218,16 +214,16 @@ export default function HomePage() {
         }
       } else {
         // Guest user - use context only
-        if (product) {
+        if (productData) {
           addToCartContext({
-            product_id: product.id,
-            name: product.name,
-            price: product.price,
-            discounted_price: product.discounted_price,
-            image: product.image_url || '',
+            product_id: productData.id,
+            name: productData.name,
+            price: productData.price,
+            discounted_price: productData.discounted_price,
+            image: productData.image_url || '',
           }, 1)
           
-          addToast(`${product.name} added to cart!`, 'success', 3000)
+          addToast(`${productData.name} added to cart!`, 'success', 3000)
         }
       }
     } catch (error) {
@@ -240,7 +236,7 @@ export default function HomePage() {
         return newSet
       })
     }
-  }, [featuredProducts, recommendedProducts, trendingProducts, addToCartContext, addToast, addingToCartIds])
+  }, [addToCartContext, addToast, addingToCartIds])
 
   const addToWishlist = useCallback(async (e: React.MouseEvent, productId: number) => {
     e.preventDefault()
@@ -293,7 +289,7 @@ export default function HomePage() {
 
   const ProductCard = memo(({ product, onAddToCart, onAddToWishlist, isAddingToCart, isAddingToWishlist }: { 
     product: Product
-    onAddToCart: (e: React.MouseEvent, productId: number) => void
+    onAddToCart: (e: React.MouseEvent, productId: number, productData?: Product) => void
     onAddToWishlist: (e: React.MouseEvent, productId: number) => void
     isAddingToCart: boolean
     isAddingToWishlist: boolean
@@ -400,7 +396,7 @@ export default function HomePage() {
             )}
           </div>
           <button
-            onClick={(e) => onAddToCart(e, product.id)}
+            onClick={(e) => onAddToCart(e, product.id, product)}
             disabled={isAddingToCart}
             className="bg-pink-600 text-white p-2 rounded-full hover:bg-pink-700 transition-colors disabled:bg-pink-400 disabled:cursor-not-allowed"
           >
