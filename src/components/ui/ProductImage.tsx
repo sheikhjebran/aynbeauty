@@ -23,15 +23,12 @@ export function ProductImage({
   // Check if this is an uploaded image (starts with /uploads or /api/images)
   const isUploadedImage = src.startsWith('/uploads/') || src.startsWith('/api/images/')
   
-  // For uploaded images, always use regular img tag with aggressive cache busting
+  // For uploaded images, use regular img tag without cache busting
+  // to prevent flickering from URL changes on re-renders
   if (isUploadedImage) {
-    // Use current timestamp for aggressive cache busting
-    const separator = src.includes('?') ? '&' : '?'
-    const cacheBustSrc = `${src}${separator}cb=${Date.now()}`
-    
     return (
       <img
-        src={cacheBustSrc}
+        src={src}
         alt={alt}
         width={width}
         height={height}
