@@ -172,10 +172,11 @@ export default function HomePage() {
     e.preventDefault()
     e.stopPropagation()
     
-    // Prevent duplicate clicks
-    if (addingToCartIds.has(productId)) return
-    
-    setAddingToCartIds(prev => new Set(prev).add(productId))
+    setAddingToCartIds(prev => {
+      // Prevent duplicate clicks
+      if (prev.has(productId)) return prev
+      return new Set(prev).add(productId)
+    })
     
     try {
       const token = localStorage.getItem('token')
@@ -236,21 +237,27 @@ export default function HomePage() {
         return newSet
       })
     }
-  }, [addToCartContext, addToast, addingToCartIds])
+  }, [addToCartContext, addToast])
 
   const addToWishlist = useCallback(async (e: React.MouseEvent, productId: number) => {
     e.preventDefault()
     e.stopPropagation()
     
-    // Prevent duplicate clicks
-    if (addingToWishlistIds.has(productId)) return
-    
-    setAddingToWishlistIds(prev => new Set(prev).add(productId))
+    setAddingToWishlistIds(prev => {
+      // Prevent duplicate clicks
+      if (prev.has(productId)) return prev
+      return new Set(prev).add(productId)
+    })
     
     try {
       const token = localStorage.getItem('token')
       if (!token) {
         addToast('Please login to add items to wishlist', 'info', 3000)
+        setAddingToWishlistIds(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(productId)
+          return newSet
+        })
         return
       }
 
@@ -285,7 +292,7 @@ export default function HomePage() {
         return newSet
       })
     }
-  }, [addingToWishlistIds, addToast])
+  }, [addToast])
 
   const ProductCard = memo(({ product, onAddToCart, onAddToWishlist, isAddingToCart, isAddingToWishlist }: { 
     product: Product
