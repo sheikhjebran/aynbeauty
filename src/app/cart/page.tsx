@@ -564,10 +564,10 @@ Thank you for choosing AYN Beauty! 💄✨
                       {item.original_price && parseFloat(item.original_price) > parseFloat(item.price) ? (
                         <>
                           <span className="text-lg font-bold text-pink-600">
-                            ${parseFloat(item.price).toFixed(2)}
+                            ₹{parseFloat(item.price).toFixed(2)}
                           </span>
                           <span className="text-sm text-gray-500 line-through">
-                            ${parseFloat(item.original_price).toFixed(2)}
+                            ₹{parseFloat(item.original_price).toFixed(2)}
                           </span>
                           <span className="bg-red-100 text-red-600 px-2 py-1 rounded text-xs font-medium">
                             {Math.round(((parseFloat(item.original_price) - parseFloat(item.price)) / parseFloat(item.original_price)) * 100)}% OFF
@@ -575,7 +575,7 @@ Thank you for choosing AYN Beauty! 💄✨
                         </>
                       ) : (
                         <span className="text-lg font-bold text-pink-600">
-                          ${parseFloat(item.price).toFixed(2)}
+                          ₹{parseFloat(item.price).toFixed(2)}
                         </span>
                       )}
                     </div>
@@ -603,11 +603,11 @@ Thank you for choosing AYN Beauty! 💄✨
 
                   <div className="text-right">
                     <p className="text-lg font-bold text-gray-900">
-                      ${(parseFloat(item.price) * item.quantity).toFixed(2)}
+                      ₹{(parseFloat(item.price) * item.quantity).toFixed(2)}
                     </p>
                     {item.original_price && parseFloat(item.original_price) > parseFloat(item.price) && (
                       <p className="text-sm text-gray-500 line-through">
-                        ${(parseFloat(item.original_price) * item.quantity).toFixed(2)}
+                        ₹{(parseFloat(item.original_price) * item.quantity).toFixed(2)}
                       </p>
                     )}
                     <button
@@ -633,17 +633,17 @@ Thank you for choosing AYN Beauty! 💄✨
               {calculateSavings() > 0 && (
                 <div className="flex justify-between text-gray-700">
                   <span>Original Price</span>
-                  <span className="line-through">${calculateOriginalTotal().toFixed(2)}</span>
+                  <span className="line-through">₹{calculateOriginalTotal().toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between text-gray-700">
                 <span>Subtotal</span>
-                <span>${calculateTotal().toFixed(2)}</span>
+                <span>₹{calculateTotal().toFixed(2)}</span>
               </div>
               {calculateSavings() > 0 && (
                 <div className="flex justify-between text-green-600 font-medium">
                   <span>You Save</span>
-                  <span>-${calculateSavings().toFixed(2)}</span>
+                  <span>-₹{calculateSavings().toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between text-gray-700">
@@ -653,7 +653,7 @@ Thank you for choosing AYN Beauty! 💄✨
               <div className="border-t pt-2">
                 <div className="flex justify-between font-bold text-lg text-gray-900">
                   <span>Total</span>
-                  <span>${calculateTotal().toFixed(2)}</span>
+                  <span>₹{calculateTotal().toFixed(2)}</span>
                 </div>
               </div>
             </div>

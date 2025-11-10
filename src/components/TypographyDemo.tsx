@@ -95,7 +95,7 @@ const TypographyDemo: React.FC = () => {
               </p>
               
               <div className="flex items-center justify-between">
-                <span className="font-heading text-2xl font-bold text-gray-900">$45.00</span>
+                <span className="font-heading text-2xl font-bold text-gray-900">₹45.00</span>
                 <button className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-2 rounded-full font-body font-medium hover:from-pink-600 hover:to-purple-700 transition-all">
                   Add to Cart
                 </button>

@@ -180,7 +180,7 @@ export default function TermsOfServicePage() {
         },
         {
           subtitle: 'Limitation of Liability',
-          text: 'Our liability for any damages arising from your use of our services is limited to the amount you paid for the specific product or service that gave rise to the claim, and shall not exceed $100 in any event.'
+          text: 'Our liability for any damages arising from your use of our services is limited to the amount you paid for the specific product or service that gave rise to the claim, and shall not exceed ₹5000 in any event.'
         },
         {
           subtitle: 'Third-Party Content',

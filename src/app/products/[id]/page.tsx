@@ -19,6 +19,8 @@ import { StarIcon as StarSolidIcon, HeartIcon as HeartSolidIcon } from '@heroico
 import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
 import { ProductImage } from '@/components/ui/ProductImage'
+import { useToast } from '@/components/ui/Toast'
+import Toast from '@/components/ui/Toast'
 
 interface ProductImage {
   id: number
@@ -65,6 +67,9 @@ export default function ProductDetailPage() {
   
   // Cart context
   const { addToCart: addToCartContext } = useCart()
+  
+  // Toast hook
+  const { toasts, addToast, removeToast } = useToast()
   
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
@@ -133,43 +138,43 @@ export default function ProductDetailPage() {
   const addToCart = async () => {
     try {
       setAddingToCart(true)
-      
-      if (!user || !token) {
-        router.push('/login')
-        return
-      }
-
       if (!product) return;
 
-      const response = await fetch('/api/cart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          product_id: product?.id,
-          quantity
-        })
-      })
+      // Update local cart context first (works for both guest and logged-in)
+      addToCartContext({
+        product_id: product.id,
+        name: product.name,
+        price: product.price,
+        discounted_price: product.discounted_price,
+        image: product.images?.[0]?.image_url || '',
+      }, quantity)
 
-      if (response.ok) {
-        // Update local cart context
-        addToCartContext({
-          product_id: product.id,
-          name: product.name,
-          price: product.price,
-          discounted_price: product.discounted_price,
-          image: product.images?.[0]?.image_url || '',
-        }, quantity)
-        
-        alert('Product added to cart!')
-      } else {
-        throw new Error('Failed to add to cart')
+      // If user is logged in, also sync to API
+      if (token) {
+        const response = await fetch('/api/cart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            product_id: product?.id,
+            quantity
+          })
+        })
+
+        if (!response.ok) {
+          const error = await response.json()
+          addToast(error.error || 'Failed to sync cart', 'error', 3000)
+          return
+        }
       }
+
+      // Show success message
+      addToast(`${product.name} added to cart!`, 'success', 3000)
     } catch (error) {
       console.error('Add to cart error:', error)
-      alert('Failed to add product to cart')
+      addToast('Failed to add to cart', 'error', 3000)
     } finally {
       setAddingToCart(false)
     }
@@ -195,13 +200,15 @@ export default function ProductDetailPage() {
       })
 
       if (response.ok) {
-        alert('Product added to wishlist!')
+        addToast('Added to wishlist!', 'success', 3000)
+      } else if (response.status === 409) {
+        addToast('Already in your wishlist', 'info', 3000)
       } else {
         throw new Error('Failed to add to wishlist')
       }
     } catch (error) {
       console.error('Add to wishlist error:', error)
-      alert('Failed to add product to wishlist')
+      addToast('Failed to add to wishlist', 'error', 3000)
     }
   }
 
@@ -662,6 +669,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
+      <Toast toasts={toasts} onRemove={removeToast} />
     </div>
   )
 }

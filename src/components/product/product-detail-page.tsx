@@ -5,6 +5,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Heart, Share2, ShoppingCart, Star, Plus, Minus, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
+import { useToast } from '@/components/ui/Toast'
+import Toast from '@/components/ui/Toast'
 
 interface Product {
   id: number
@@ -65,6 +67,7 @@ export function ProductDetailPage({ productId }: ProductDetailPageProps) {
   
   // Cart context
   const { addToCart: addToCartContext } = useCart()
+  const { toasts, addToast, removeToast } = useToast()
 
   useEffect(() => {
     fetchProduct()
@@ -92,38 +95,45 @@ export function ProductDetailPage({ productId }: ProductDetailPageProps) {
     if (!product) return;
 
     try {
-      const response = await fetch('/api/cart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'user-id': '1' // Replace with actual user ID from auth
-        },
-        body: JSON.stringify({
-          product_id: product?.id,
-          variant_id: selectedVariant,
-          quantity
-        })
-      })
+      const token = localStorage.getItem('token')
+      
+      // Update local cart context first (works for both guest and logged-in users)
+      addToCartContext({
+        product_id: product.id,
+        name: product.name,
+        price: product.price,
+        discounted_price: product.sale_price,
+        image: product.images[0]?.image_url || '',
+        variant: selectedVariant ? product.variants.find(v => v.id === selectedVariant)?.variant_value : undefined
+      }, quantity)
 
-      if (response.ok) {
-        // Update local cart context
-        addToCartContext({
-          product_id: product.id,
-          name: product.name,
-          price: product.price,
-          discounted_price: product.sale_price,
-          image: product.images[0]?.image_url || '',
-          variant: selectedVariant ? product.variants.find(v => v.id === selectedVariant)?.variant_value : undefined
-        }, quantity)
-        
-        // Show success message
-        alert('Product added to cart!')
-      } else {
-        const error = await response.json()
-        alert(error.error || 'Failed to add to cart')
+      // If user is logged in, also add to API
+      if (token) {
+        const response = await fetch('/api/cart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            product_id: product?.id,
+            variant_id: selectedVariant,
+            quantity
+          })
+        })
+
+        if (!response.ok) {
+          const error = await response.json()
+          addToast(error.error || 'Failed to sync cart', 'error', 3000)
+          return
+        }
       }
+
+      // Show success message
+      addToast(`${product.name} added to cart!`, 'success', 3000)
     } catch (error) {
-      alert('Failed to add to cart')
+      console.error('Error adding to cart:', error)
+      addToast('Failed to add to cart', 'error', 3000)
     }
   }
 
@@ -166,6 +176,9 @@ export function ProductDetailPage({ productId }: ProductDetailPageProps) {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Toast Notifications */}
+      <Toast toasts={toasts} onRemove={removeToast} />
+
       {/* Header spacing for fixed header */}
       <div className="pt-32">
         {/* Breadcrumb */}

@@ -18,6 +18,8 @@ import { StarIcon as StarSolidIcon, HeartIcon as HeartSolidIcon } from '@heroico
 import { DesktopHeroSection } from '@/components/desktop/hero-section'
 import { MobileHeroSection } from '@/components/mobile/hero-section'
 import { useCart } from '@/contexts/CartContext'
+import { useToast } from '@/components/ui/Toast'
+import Toast from '@/components/ui/Toast'
 import { ProductImage } from '@/components/ui/ProductImage'
 
 // Category Image Component with Error Handling
@@ -84,8 +86,9 @@ export default function HomePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [loading, setLoading] = useState(true)
   
-  // Cart context
+  // Cart and Toast context
   const { addToCart: addToCartContext } = useCart()
+  const { toasts, addToast, removeToast } = useToast()
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -165,29 +168,45 @@ export default function HomePage() {
   const addToCart = async (productId: number) => {
     try {
       const token = localStorage.getItem('token')
-      if (!token) {
-        alert('Please login to add items to cart')
-        return
-      }
-
+      
       // Find the product from our local state
       const allProducts = [...featuredProducts, ...recommendedProducts, ...trendingProducts]
       const product = allProducts.find(p => p.id === productId)
 
-      const response = await fetch('/api/cart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          product_id: productId,
-          quantity: 1
+      if (token) {
+        // User is logged in - use API
+        const response = await fetch('/api/cart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            product_id: productId,
+            quantity: 1
+          })
         })
-      })
 
-      if (response.ok) {
-        // Update local cart context if we have product data
+        if (response.ok) {
+          // Update local cart context if we have product data
+          if (product) {
+            addToCartContext({
+              product_id: product.id,
+              name: product.name,
+              price: product.price,
+              discounted_price: product.discounted_price,
+              image: product.image_url || '',
+            }, 1)
+          }
+          
+          addToast(`${product?.name || 'Product'} added to cart!`, 'success', 3000)
+        } else {
+          const errorData = await response.json()
+          console.error('Cart API error:', errorData)
+          addToast(errorData.error || errorData.message || 'Failed to add product to cart', 'error', 3000)
+        }
+      } else {
+        // Guest user - use context only
         if (product) {
           addToCartContext({
             product_id: product.id,
@@ -196,17 +215,13 @@ export default function HomePage() {
             discounted_price: product.discounted_price,
             image: product.image_url || '',
           }, 1)
+          
+          addToast(`${product.name} added to cart!`, 'success', 3000)
         }
-        
-        alert('Product added to cart!')
-      } else {
-        const errorData = await response.json()
-        console.error('Cart API error:', errorData)
-        alert(errorData.error || errorData.message || 'Failed to add product to cart')
       }
     } catch (error) {
       console.error('Error adding to cart:', error)
-      alert('Failed to add product to cart')
+      addToast('Failed to add product to cart', 'error', 3000)
     }
   }
 
@@ -214,7 +229,7 @@ export default function HomePage() {
     try {
       const token = localStorage.getItem('token')
       if (!token) {
-        alert('Please login to add items to wishlist')
+        addToast('Please login to add items to wishlist', 'info', 3000)
         return
       }
 
@@ -231,17 +246,17 @@ export default function HomePage() {
       })
 
       if (response.ok) {
-        alert('Product added to wishlist!')
+        addToast('Added to wishlist!', 'success', 3000)
       } else if (response.status === 409) {
-        alert('Product is already in your wishlist!')
+        addToast('Already in your wishlist', 'info', 3000)
       } else {
         const errorData = await response.json()
         console.error('Wishlist API error:', errorData)
-        alert(errorData.error || errorData.message || 'Failed to add product to wishlist')
+        addToast(errorData.error || errorData.message || 'Failed to add to wishlist', 'error', 3000)
       }
     } catch (error) {
       console.error('Error adding to wishlist:', error)
-      alert('Failed to add product to wishlist')
+      addToast('Failed to add to wishlist', 'error', 3000)
     }
   }
 
@@ -372,6 +387,9 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Toast Notifications */}
+      <Toast toasts={toasts} onRemove={removeToast} />
+
       {/* Hero Section with Video Banner */}
       <div className="hidden md:block">
         <DesktopHeroSection />

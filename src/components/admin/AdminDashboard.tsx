@@ -166,7 +166,7 @@ const OverviewTab: React.FC<{ data: DashboardData | null }> = ({ data }) => {
   const metrics: MetricCard[] = [
     {
       title: 'Total Revenue',
-      value: `$${data.analytics?.revenue_metrics?.total_revenue?.toLocaleString() || '0'}`,
+      value: `₹${data.analytics?.revenue_metrics?.total_revenue?.toLocaleString() || '0'}`,
       change: data.analytics?.revenue_metrics?.growth_rate || 0,
       icon: <DollarSign className="w-6 h-6" />,
       color: 'green'
@@ -331,7 +331,7 @@ const AnalyticsTab: React.FC<{ data: any }> = ({ data }) => {
                   <p className="text-sm text-gray-500">{product.category}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold">${product.revenue}</p>
+                  <p className="font-semibold">₹{product.revenue}</p>
                   <p className="text-sm text-gray-500">{product.units_sold} sold</p>
                 </div>
               </div>
