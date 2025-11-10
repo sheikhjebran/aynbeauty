@@ -652,7 +652,7 @@ export default function HomePage() {
                   Shop Collection
                 </Link>
                 <Link 
-                  href="/categories"
+                  href="/products"
                   className="border-2 border-white text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-white/10 transition-all duration-300"
                 >
                   Browse Categories

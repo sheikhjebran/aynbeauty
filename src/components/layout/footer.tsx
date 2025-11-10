@@ -108,7 +108,7 @@ export function Footer() {
             </p>
             <div className="flex items-center space-x-6 mt-4 md:mt-0">
               <Link 
-                href="/admin/login" 
+                href="/admin" 
                 className="text-gray-500 hover:text-gray-300 text-xs transition-colors"
               >
                 Admin
