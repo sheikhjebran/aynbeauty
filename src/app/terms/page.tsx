@@ -64,7 +64,7 @@ export default function TermsOfServicePage() {
       id: 'contact',
       title: 'Have Questions?',
       icon: DocumentTextIcon,
-      content: 'If you have questions about these terms or anything else, reach out to us at support@aynbeauty.in or through our contact page. We\'re happy to help!'
+      content: 'If you have questions about these terms or anything else, reach out to us on WhatsApp at +91 9876543210 or through our contact page. We\'re happy to help!'
     }
   ]
 
@@ -145,9 +145,9 @@ export default function TermsOfServicePage() {
                 We keep things simple and straightforward. If anything in these terms is unclear or you have questions about how we operate, reach out to us anytime.
               </p>
               <div className="bg-gray-50 rounded-lg p-6">
-                <p className="text-gray-800 font-semibold mb-2">📧 Contact Us:</p>
+                <p className="text-gray-800 font-semibold mb-2">� Contact Us on WhatsApp:</p>
                 <p className="text-gray-700">
-                  Email: <span className="font-medium">support@aynbeauty.in</span>
+                  WhatsApp: <span className="font-medium">+91 9876543210</span>
                 </p>
                 <p className="text-gray-600 text-sm mt-3">
                   We're here to help and want to make sure everything is clear and fair for everyone.

@@ -165,7 +165,18 @@ export default function HomePage() {
     }
   }
 
-  const addToCart = async (productId: number) => {
+  const [addingToCartIds, setAddingToCartIds] = useState<Set<number>>(new Set())
+  const [addingToWishlistIds, setAddingToWishlistIds] = useState<Set<number>>(new Set())
+
+  const addToCart = async (e: React.MouseEvent, productId: number) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    // Prevent duplicate clicks
+    if (addingToCartIds.has(productId)) return
+    
+    setAddingToCartIds(prev => new Set(prev).add(productId))
+    
     try {
       const token = localStorage.getItem('token')
       
@@ -222,10 +233,24 @@ export default function HomePage() {
     } catch (error) {
       console.error('Error adding to cart:', error)
       addToast('Failed to add product to cart', 'error', 3000)
+    } finally {
+      setAddingToCartIds(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(productId)
+        return newSet
+      })
     }
   }
 
-  const addToWishlist = async (productId: number) => {
+  const addToWishlist = async (e: React.MouseEvent, productId: number) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    // Prevent duplicate clicks
+    if (addingToWishlistIds.has(productId)) return
+    
+    setAddingToWishlistIds(prev => new Set(prev).add(productId))
+    
     try {
       const token = localStorage.getItem('token')
       if (!token) {
@@ -257,6 +282,12 @@ export default function HomePage() {
     } catch (error) {
       console.error('Error adding to wishlist:', error)
       addToast('Failed to add to wishlist', 'error', 3000)
+    } finally {
+      setAddingToWishlistIds(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(productId)
+        return newSet
+      })
     }
   }
 
@@ -276,10 +307,15 @@ export default function HomePage() {
         </Link>
         
         <button
-          onClick={() => addToWishlist(product.id)}
-          className="absolute top-2 right-2 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
+          onClick={(e) => addToWishlist(e, product.id)}
+          disabled={addingToWishlistIds.has(product.id)}
+          className="absolute top-2 right-2 p-2 bg-white/80 rounded-full hover:bg-white transition-colors disabled:opacity-70"
         >
-          <HeartIcon className="h-5 w-5 text-gray-600 hover:text-red-500" />
+          {addingToWishlistIds.has(product.id) ? (
+            <div className="h-5 w-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <HeartIcon className="h-5 w-5 text-gray-600 hover:text-red-500" />
+          )}
         </button>
 
         {product.recommendation_reason && (
@@ -358,10 +394,15 @@ export default function HomePage() {
             )}
           </div>
           <button
-            onClick={() => addToCart(product.id)}
-            className="bg-pink-600 text-white p-2 rounded-full hover:bg-pink-700 transition-colors"
+            onClick={(e) => addToCart(e, product.id)}
+            disabled={addingToCartIds.has(product.id)}
+            className="bg-pink-600 text-white p-2 rounded-full hover:bg-pink-700 transition-colors disabled:bg-pink-400 disabled:cursor-not-allowed"
           >
-            <ShoppingBagIcon className="h-4 w-4" />
+            {addingToCartIds.has(product.id) ? (
+              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <ShoppingBagIcon className="h-4 w-4" />
+            )}
           </button>
         </div>
       </div>

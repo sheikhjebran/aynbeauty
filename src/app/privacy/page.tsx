@@ -65,7 +65,7 @@ export default function PrivacyPolicyPage() {
       id: 'contact',
       title: 'Questions or Concerns?',
       icon: DocumentTextIcon,
-      content: `If you have any questions about your privacy or how we handle your information:\n\n📧 Email: support@aynbeauty.in\n\nWe'll respond to your questions promptly and help resolve any concerns.`
+      content: `If you have any questions about your privacy or how we handle your information:\n\n� WhatsApp: +91 9876543210\n\nWe'll respond to your questions promptly and help resolve any concerns.`
     }
   ]
 
@@ -173,9 +173,9 @@ export default function PrivacyPolicyPage() {
             
             <div className="bg-white rounded-xl p-8 shadow-lg mb-8">
               <p className="text-lg text-gray-700 mb-2">
-                <span className="font-semibold">Email:</span> support@aynbeauty.in
+                <span className="font-semibold">💬 WhatsApp:</span> +91 9876543210
               </p>
-              <p className="text-gray-600">We'll get back to you within 24 hours</p>
+              <p className="text-gray-600">We're available to help you anytime</p>
             </div>
             
             <button className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white px-8 py-3 rounded-full font-semibold hover:from-purple-700 hover:to-indigo-800 transition-all duration-300">
