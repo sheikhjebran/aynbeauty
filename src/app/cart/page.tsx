@@ -52,14 +52,14 @@ export default function CartPage() {
         product_id: item.product_id,
         quantity: item.quantity,
         price: item.price.toString(),
+        discounted_price: item.discounted_price ? item.discounted_price.toString() : undefined,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         product_name: item.name,
         product_slug: item.name.toLowerCase().replace(/\s+/g, '-'),
         brand_name: item.brand || '',
         image_url: item.image,
-        stock_quantity: 0,
-        original_price: item.discounted_price ? item.price.toString() : undefined
+        stock_quantity: 0
       }))
       setCartItems(transformedItems)
       setLoading(false)
@@ -124,9 +124,10 @@ Phone: ${guestDetails.contact}
 ${guestDetails.address}
       `.trim()
 
-      const orderDetails = cartItems.map(item => 
-        `• ${item.product_name} (Qty: ${item.quantity}) - ₹${(parseFloat(item.price) * item.quantity).toFixed(2)}`
-      ).join('\n')
+      const orderDetails = cartItems.map(item => {
+        const price = item.discounted_price ? parseFloat(item.discounted_price) : parseFloat(item.price)
+        return `• ${item.product_name} (Qty: ${item.quantity}) - ₹${(price * item.quantity).toFixed(2)}`
+      }).join('\n')
 
       const totalDetails = `
 *Order Summary:*

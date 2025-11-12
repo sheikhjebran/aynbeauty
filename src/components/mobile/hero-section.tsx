@@ -20,7 +20,7 @@ export function MobileHeroSection() {
   const slides = [
     {
       id: 1,
-      video: '/images/banners/welcome-banner.mp4',
+      video: '/images/banners/mobile_banner.mp4',
       title: 'New Beauty Arrivals',
       subtitle: 'Discover the latest in makeup & skincare',
       gradient: '',
@@ -36,17 +36,18 @@ export function MobileHeroSection() {
     //   gradient: 'from-blue-500/60 to-teal-600/60',
     //   imageFit: 'cover' // Shows full image
     // },
-    // {
-    //   id: 3,
-    //   image: '/images/banners/bestsellers.jpg',
-    //   title: 'Makeup Essentials',
-    //   subtitle: 'Create your perfect look',
-    //   cta: 'Get Started',
-    //   gradient: 'from-orange-500/60 to-red-600/60',
-    //   imageFit: 'contain' // Shows full image
-    // },
     {
-      id: 1,
+      id: 2,
+      image: '/images/banners/bestsellers.jpeg',
+      title: 'Makeup Essentials',
+      subtitle: 'Create your perfect look',
+      description: '',
+      cta: 'Get Started',
+      gradient: '',
+      video: undefined,
+    },
+    {
+      id: 3,
       title: '',
       subtitle: '',
       description: '',

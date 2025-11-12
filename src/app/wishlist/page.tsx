@@ -136,7 +136,7 @@ export default function WishlistPage() {
             <h1 className="text-3xl font-bold text-gray-900">My Wishlist</h1>
             {isGuest && (
               <p className="text-sm text-gray-600 mt-2">
-                💾 Guest wishlist (saved in this session)
+              
               </p>
             )}
           </div>
@@ -210,10 +210,10 @@ export default function WishlistPage() {
 
                   {/* Price */}
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="font-bold text-gray-900">{formatPrice(item.price)}</span>
-                    {item.discounted_price && item.discounted_price > item.price && (
+                    <span className="font-bold text-gray-900">{formatPrice(item.discounted_price || item.price)}</span>
+                    {item.discounted_price && item.discounted_price < item.price && (
                       <span className="text-sm text-gray-500 line-through">
-                        {formatPrice(item.discounted_price)}
+                        {formatPrice(item.price)}
                       </span>
                     )}
                   </div>
