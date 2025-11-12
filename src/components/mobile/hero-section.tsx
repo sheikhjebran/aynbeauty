@@ -11,7 +11,7 @@ interface MobileSlide {
   gradient?: string
   image?: string
   video?: string
-  imageFit?: 'contain' | 'cover' | 'fill' // New optional property for image fitting
+  objectFit?: 'cover' | 'contain' | 'fill' | 'stretch'
 }
 
 export function MobileHeroSection() {
@@ -25,17 +25,9 @@ export function MobileHeroSection() {
       subtitle: 'Discover the latest in makeup & skincare',
       gradient: '',
       image: undefined,
-      cta: undefined
+      cta: undefined,
+      objectFit: 'cover'
     },
-    // {
-    //   id: 2,
-    //   image: '/images/banners/new-arrivals.jpg',
-    //   title: 'Premium Skincare',
-    //   subtitle: 'Glow with our bestselling products',
-    //   cta: 'Explore',
-    //   gradient: 'from-blue-500/60 to-teal-600/60',
-    //   imageFit: 'cover' // Shows full image
-    // },
     {
       id: 3,
       image: '/images/banners/bestsellers.jpeg',
@@ -45,6 +37,7 @@ export function MobileHeroSection() {
       cta: 'Get Started',
       gradient: '',
       video: undefined,
+      objectFit: 'cover'
     },
     {
       id: 1,
@@ -54,7 +47,8 @@ export function MobileHeroSection() {
       image: '/images/banners/mobile_banner1.jpeg',
       gradient: '',
       video: undefined,
-      cta: undefined
+      cta: undefined,
+      objectFit: 'cover'
     }
   ]
 
@@ -90,24 +84,28 @@ export function MobileHeroSection() {
                     muted
                     loop
                     playsInline
-                    className="w-full h-full object-cover"
+                    className={`w-full h-full ${
+                      slide.objectFit === 'contain' ? 'object-contain' :
+                      slide.objectFit === 'fill' ? 'object-fill' :
+                      slide.objectFit === 'stretch' ? 'w-full h-full' :
+                      'object-cover'
+                    }`}
                     style={{ objectPosition: 'center 40%' }}
                   >
                     <source src={slide.video} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
                 ) : slide.image ? (
-                  /* 
-                    Options for image display:
-                    1. object-contain: Shows full image, may have empty spaces
-                    2. object-cover: Fills container, may crop image
-                    3. object-fill: Stretches image to fit (may distort)
-                  */
                   <Image
                     src={slide.image}
                     alt={slide.title || 'Banner image'}
                     fill
-                    className="object-cover w-full h-full"
+                    className={`w-full h-full ${
+                      slide.objectFit === 'contain' ? 'object-contain' :
+                      slide.objectFit === 'fill' ? 'object-fill' :
+                      slide.objectFit === 'stretch' ? 'w-full h-full' :
+                      'object-cover'
+                    }`}
                     priority={index === 0}
                     sizes="(max-width: 768px) 100vw, 100vw"
                   />

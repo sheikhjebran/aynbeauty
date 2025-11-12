@@ -522,109 +522,114 @@ Thank you for choosing AYN Beauty! 💄✨
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
+      <div className="container mx-auto px-3 md:px-4 py-6 md:py-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Your Cart ({cartItems.length} items)</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900">Your Cart ({cartItems.length} items)</h1>
             {isGuest && (
-              <p className="text-sm text-gray-600 mt-1">Shopping as Guest</p>
+              <p className="text-xs md:text-sm text-gray-600 mt-1">Shopping as Guest</p>
             )}
           </div>
           {!isGuest && (
             <button
               onClick={clearCart}
               disabled={updating}
-              className="text-red-600 hover:text-red-800 disabled:opacity-50"
+              className="text-red-600 hover:text-red-800 disabled:opacity-50 text-sm md:text-base whitespace-nowrap"
             >
               Clear Cart
             </button>
           )}
         </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
         <div className="lg:col-span-2">
           <div className="space-y-4">
             {cartItems.map((item) => (
               <div key={item.id} className="bg-white border border-gray-200 rounded-lg p-4">
-                <div className="flex items-center space-x-4">
-                  <div className="flex-shrink-0">
+                {/* Mobile Layout */}
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                  <div className="flex-shrink-0 w-20 h-20 md:w-24 md:h-24">
                     <ProductImage
                       src={item.image_url || '/placeholder-product.jpg'}
                       alt={item.product_name}
-                      width={80}
-                      height={80}
-                      className="rounded-lg object-cover"
+                      width={96}
+                      height={96}
+                      className="rounded-lg object-cover w-full h-full"
                     />
                   </div>
 
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <Link
                       href={`/products/${item.product_slug}`}
-                      className="text-lg font-medium hover:text-pink-600 text-gray-900"
+                      className="text-base md:text-lg font-medium hover:text-pink-600 text-gray-900 break-words"
                     >
                       {item.product_name}
                     </Link>
                     {item.brand_name && (
-                      <p className="text-sm text-gray-600">{item.brand_name}</p>
+                      <p className="text-xs md:text-sm text-gray-600">{item.brand_name}</p>
                     )}
-                    <div className="flex items-center space-x-2 mt-1">
+                    <div className="flex flex-wrap gap-2 mt-2 md:mt-1">
                       {item.discounted_price && parseFloat(item.discounted_price) > 0 && parseFloat(item.discounted_price) < parseFloat(item.price) ? (
                         <>
-                          <span className="text-lg font-bold text-pink-600">
+                          <span className="text-base md:text-lg font-bold text-pink-600">
                             ₹{parseFloat(item.discounted_price).toFixed(2)}
                           </span>
-                          <span className="text-sm text-gray-500 line-through">
+                          <span className="text-xs md:text-sm text-gray-500 line-through">
                             ₹{parseFloat(item.price).toFixed(2)}
                           </span>
-                          <span className="bg-red-100 text-red-600 px-2 py-1 rounded text-xs font-medium">
+                          <span className="bg-red-100 text-red-600 px-2 py-0.5 rounded text-xs font-medium">
                             {Math.round(((parseFloat(item.price) - parseFloat(item.discounted_price)) / parseFloat(item.price)) * 100)}% OFF
                           </span>
                         </>
                       ) : (
-                        <span className="text-lg font-bold text-pink-600">
+                        <span className="text-base md:text-lg font-bold text-pink-600">
                           ₹{parseFloat(item.price).toFixed(2)}
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      disabled={updating}
-                      className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 border border-gray-300 text-gray-700 hover:text-gray-900"
-                    >
-                      <MinusIcon className="h-4 w-4" />
-                    </button>
-                    <span className="w-12 text-center text-gray-900 font-medium bg-gray-50 py-1 px-2 rounded border">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      disabled={updating || item.quantity >= item.stock_quantity}
-                      className="p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 border border-gray-300 text-gray-700 hover:text-gray-900"
-                    >
-                      <PlusIcon className="h-4 w-4" />
-                    </button>
-                  </div>
+                  <div className="w-full md:w-auto flex flex-col md:flex-row gap-4 items-start md:items-center mt-4 md:mt-0">
+                    {/* Quantity Controls */}
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        disabled={updating}
+                        className="p-1.5 md:p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 border border-gray-300 text-gray-700 hover:text-gray-900"
+                      >
+                        <MinusIcon className="h-4 w-4" />
+                      </button>
+                      <span className="w-10 md:w-12 text-center text-gray-900 font-medium bg-gray-50 py-1 px-2 rounded border text-sm">
+                        {item.quantity}
+                      </span>
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        disabled={updating || item.quantity >= item.stock_quantity}
+                        className="p-1.5 md:p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 border border-gray-300 text-gray-700 hover:text-gray-900"
+                      >
+                        <PlusIcon className="h-4 w-4" />
+                      </button>
+                    </div>
 
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-gray-900">
-                      ₹{((item.discounted_price ? parseFloat(item.discounted_price) : parseFloat(item.price)) * item.quantity).toFixed(2)}
-                    </p>
-                    {item.discounted_price && parseFloat(item.discounted_price) > 0 && parseFloat(item.discounted_price) < parseFloat(item.price) && (
-                      <p className="text-sm text-gray-500 line-through">
-                        ₹{(parseFloat(item.price) * item.quantity).toFixed(2)}
+                    {/* Price and Remove */}
+                    <div className="md:text-right w-full md:w-auto">
+                      <p className="text-base md:text-lg font-bold text-gray-900">
+                        ₹{((item.discounted_price ? parseFloat(item.discounted_price) : parseFloat(item.price)) * item.quantity).toFixed(2)}
                       </p>
-                    )}
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      disabled={updating}
-                      className="text-red-600 hover:text-red-800 text-sm disabled:opacity-50 mt-2"
-                    >
-                      <TrashIcon className="h-4 w-4 inline mr-1" />
-                      Remove
-                    </button>
+                      {item.discounted_price && parseFloat(item.discounted_price) > 0 && parseFloat(item.discounted_price) < parseFloat(item.price) && (
+                        <p className="text-xs md:text-sm text-gray-500 line-through">
+                          ₹{(parseFloat(item.price) * item.quantity).toFixed(2)}
+                        </p>
+                      )}
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        disabled={updating}
+                        className="text-red-600 hover:text-red-800 text-xs md:text-sm disabled:opacity-50 mt-2 block w-full md:w-auto text-left md:text-right"
+                      >
+                        <TrashIcon className="h-4 w-4 inline mr-1" />
+                        Remove
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -633,17 +638,17 @@ Thank you for choosing AYN Beauty! 💄✨
         </div>
 
         <div className="lg:col-span-1">
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-            <h2 className="text-lg font-bold mb-4 text-gray-900">Order Summary</h2>
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 md:p-6 sticky top-4">
+            <h2 className="text-base md:text-lg font-bold mb-4 text-gray-900">Order Summary</h2>
             
-            <div className="space-y-2 mb-4">
+            <div className="space-y-2 mb-4 text-sm md:text-base">
               {calculateSavings() > 0 && (
                 <div className="flex justify-between text-gray-700">
                   <span>Original Price</span>
-                  <span className="line-through">₹{calculateOriginalTotal().toFixed(2)}</span>
+                  <span className="line-through font-medium">₹{calculateOriginalTotal().toFixed(2)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-gray-700">
+              <div className="flex justify-between text-gray-700 font-medium">
                 <span>Subtotal</span>
                 <span>₹{calculateTotal().toFixed(2)}</span>
               </div>
@@ -654,9 +659,9 @@ Thank you for choosing AYN Beauty! 💄✨
                 </div>
               )}
               <div className="border-t pt-2">
-                <div className="flex justify-between font-bold text-lg text-gray-900">
+                <div className="flex justify-between font-bold text-base md:text-lg text-gray-900">
                   <span>Total</span>
-                  <span>₹{calculateTotal().toFixed(2)}</span>
+                  <span className="text-pink-600">₹{calculateTotal().toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -664,13 +669,14 @@ Thank you for choosing AYN Beauty! 💄✨
             <button
               onClick={handleWhatsAppCheckout}
               disabled={updating || cartItems.length === 0 || loading || checkoutLoading}
-              className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2 transition-colors duration-200"
+              className="w-full bg-green-600 text-white py-2.5 md:py-3 px-3 md:px-4 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2 transition-colors duration-200 text-sm md:text-base"
               title={cartItems.length === 0 ? "Your cart is empty" : "Send order via WhatsApp"}
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 md:w-5 h-4 md:h-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
               </svg>
-              {checkoutLoading ? 'Creating Order...' : loading ? 'Loading...' : cartItems.length === 0 ? 'Cart is Empty' : 'Order via WhatsApp'}
+              <span className="hidden sm:inline">{checkoutLoading ? 'Creating Order...' : loading ? 'Loading...' : cartItems.length === 0 ? 'Cart is Empty' : 'Order via WhatsApp'}</span>
+              <span className="sm:hidden">{checkoutLoading ? '...' : loading ? '...' : cartItems.length === 0 ? 'Empty' : 'Order'}</span>
             </button>
 
             {/* Alternative checkout info */}
@@ -680,7 +686,7 @@ Thank you for choosing AYN Beauty! 💄✨
 
             <Link
               href="/"
-              className="block w-full text-center mt-3 text-pink-600 hover:text-pink-800"
+              className="block w-full text-center mt-3 text-pink-600 hover:text-pink-800 text-sm md:text-base"
             >
               Continue Shopping
             </Link>

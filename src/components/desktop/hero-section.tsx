@@ -14,6 +14,7 @@ interface HeroSlide {
   image?: string
   video?: string
   bgColor?: string
+  objectFit?: 'cover' | 'contain' | 'fill' | 'stretch'
 }
 
 export function DesktopHeroSection() {
@@ -29,7 +30,8 @@ export function DesktopHeroSection() {
       buttonLink: '/products',
       video: '/images/banners/nail_desktop_banner1.mp4',
       bgColor: '',
-      image: undefined
+      image: undefined,
+      objectFit: 'contain'
     },
     // {
     //   id: 2,
@@ -58,7 +60,8 @@ export function DesktopHeroSection() {
       image: '/images/banners/banner3.jpeg',
       video: undefined,
       buttonText: undefined,
-      buttonLink: undefined
+      buttonLink: undefined,
+      objectFit: 'cover'
     }
   ]
 
@@ -71,14 +74,15 @@ export function DesktopHeroSection() {
   }, [heroSlides.length])
 
   return (
-    <section className="relative h-[600px] overflow-hidden">
-      {heroSlides.map((slide, index) => (
-        <div
-          key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === currentSlide ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
+    <section className="relative h-[600px] overflow-hidden px-4 sm:px-6 lg:px-8">
+      <div className="h-full rounded-lg overflow-hidden">
+        {heroSlides.map((slide, index) => (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 transition-opacity duration-1000 rounded-lg overflow-hidden ${
+              index === currentSlide ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
           {/* Background */}
           {slide.bgColor && <div className={`absolute inset-0 bg-gradient-to-r ${slide.bgColor} opacity-90`} />}
           
@@ -90,7 +94,12 @@ export function DesktopHeroSection() {
                 muted
                 loop
                 playsInline
-                className="w-full h-full object-cover"
+                className={`w-full h-full ${
+                  slide.objectFit === 'contain' ? 'object-contain' :
+                  slide.objectFit === 'fill' ? 'object-fill' :
+                  slide.objectFit === 'stretch' ? 'w-full h-full' :
+                  'object-cover'
+                }`}
               >
                 <source src={slide.video} type="video/mp4" />
                 Your browser does not support the video tag.
@@ -100,7 +109,12 @@ export function DesktopHeroSection() {
                 src={slide.image}
                 alt={slide.title || 'Banner image'}
                 fill
-                className="object-cover"
+                className={`${
+                  slide.objectFit === 'contain' ? 'object-contain' :
+                  slide.objectFit === 'fill' ? 'object-fill' :
+                  slide.objectFit === 'stretch' ? 'w-full h-full' :
+                  'object-cover'
+                }`}
                 priority={index === 0}
               />
             ) : null}
@@ -181,6 +195,7 @@ export function DesktopHeroSection() {
       {/* Decorative Elements */}
       <div className="absolute top-20 right-20 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse" />
       <div className="absolute bottom-32 left-20 w-24 h-24 bg-white/10 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
     </section>
   )
 }
