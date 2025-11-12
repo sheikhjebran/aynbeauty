@@ -27,7 +27,7 @@ export function DesktopHeroSection() {
       description: 'Find everything from makeup to skincare at AynBeauty',
       buttonText: 'Shop Now',
       buttonLink: '/products',
-      video: '/images/banners/welcome-banner.mp4',
+      video: '/images/banners/nail_desktop_banner1.mp4',
       bgColor: '',
       image: undefined
     },
