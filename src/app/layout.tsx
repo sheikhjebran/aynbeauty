@@ -23,7 +23,7 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   metadataBase: new URL('https://aynbeauty.in'),
   title: 'AynBeauty - For every day, for every mood, for every you',
-  description: 'Discover premium beauty products from top brands. Makeup, skincare, haircare, fragrance and more at AynBeauty.',
+  description: 'Discover Premium Moroccan Skincare Products, Haircare, Fragrance and More at Ayn Beauty.',
   keywords: 'beauty, makeup, skincare, cosmetics, fragrance, hair care, AynBeauty',
   authors: [{ name: 'AynBeauty' }],
   creator: 'AynBeauty',
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     siteName: 'AynBeauty',
     images: [
       {
-        url: '/images/og-image.jpg',
+        url: '/images/logo.png',
         width: 1200,
         height: 630,
         alt: 'AynBeauty - Premium Beauty Products',
@@ -49,10 +49,10 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'AynBeauty - For every day, for every mood, for every you',
     description: 'Discover premium beauty products from top brands.',
-    images: ['/images/twitter-image.jpg'],
+    images: ['/images/logo.png'],
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: '/images/logo.png',
   },
   manifest: '/site.webmanifest',
 }

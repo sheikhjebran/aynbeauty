@@ -19,7 +19,7 @@ export function MobileHeroSection() {
 
   const slides = [
     {
-      id: 1,
+      id: 2,
       video: '/images/banners/mobile_banner.mp4',
       title: 'New Beauty Arrivals',
       subtitle: 'Discover the latest in makeup & skincare',
@@ -37,7 +37,7 @@ export function MobileHeroSection() {
     //   imageFit: 'cover' // Shows full image
     // },
     {
-      id: 2,
+      id: 3,
       image: '/images/banners/bestsellers.jpeg',
       title: 'Makeup Essentials',
       subtitle: 'Create your perfect look',
@@ -47,7 +47,7 @@ export function MobileHeroSection() {
       video: undefined,
     },
     {
-      id: 3,
+      id: 1,
       title: '',
       subtitle: '',
       description: '',
@@ -182,20 +182,7 @@ export function MobileHeroSection() {
         </button>
       </div>
 
-      {/* Quick Actions Bar */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-4">
-        <div className="flex justify-center space-x-4">
-          <button className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium border border-white/30 hover:bg-white/30 transition-colors">
-            💄 Lips
-          </button>
-          <button className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium border border-white/30 hover:bg-white/30 transition-colors">
-            ✨ SkinCare
-          </button>
-          <button className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium border border-white/30 hover:bg-white/30 transition-colors">
-            🌸 Fragrances
-          </button>
-        </div>
-      </div>
+      
     </div>
   )
 }

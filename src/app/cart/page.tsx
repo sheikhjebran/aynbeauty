@@ -110,7 +110,10 @@ export default function CartPage() {
       setShowGuestCheckoutModal(false)
 
       // Calculate totals
-      const subtotal = cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0)
+      const subtotal = cartItems.reduce((sum, item) => {
+        const price = item.discounted_price ? parseFloat(item.discounted_price) : parseFloat(item.price)
+        return sum + (price * item.quantity)
+      }, 0)
       const shippingAmount = subtotal >= 299 ? 0 : 49
       const total = subtotal + shippingAmount
 
