@@ -13,7 +13,7 @@ interface HeroSlide {
   buttonLink?: string
   image?: string
   video?: string
-  bgColor: string
+  bgColor?: string
 }
 
 export function DesktopHeroSection() {
@@ -53,7 +53,11 @@ export function DesktopHeroSection() {
       title: '',
       subtitle: '',
       description: '',
-      image: '/images/banners/banner3.jpeg'
+      bgColor: '', 
+      image: '/images/banners/banner3.jpeg',
+      video: undefined,
+      buttonText: undefined,
+      buttonLink: undefined
     }
   ]
 
@@ -75,7 +79,7 @@ export function DesktopHeroSection() {
           }`}
         >
           {/* Background */}
-          <div className={`absolute inset-0 bg-gradient-to-r ${slide.bgColor} opacity-90`} />
+          {slide.bgColor && <div className={`absolute inset-0 bg-gradient-to-r ${slide.bgColor} opacity-90`} />}
           
           {/* Background Video/Image */}
           <div className="absolute inset-0">

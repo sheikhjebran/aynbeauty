@@ -8,7 +8,7 @@ interface MobileSlide {
   title?: string
   subtitle?: string
   cta?: string
-  gradient: string
+  gradient?: string
   image?: string
   video?: string
   imageFit?: 'contain' | 'cover' | 'fill' // New optional property for image fitting
@@ -48,7 +48,10 @@ export function MobileHeroSection() {
       title: '',
       subtitle: '',
       description: '',
-      image: '/images/banners/banner3.jpeg',
+      image: '/images/banners/mobile_banner1.jpeg',
+      gradient: '',
+      video: undefined,
+      cta: undefined
     }
   ]
 
@@ -111,7 +114,7 @@ export function MobileHeroSection() {
               </div>
 
             {/* Gradient Overlay */}
-            <div className={`absolute inset-0 bg-gradient-to-t ${slide.gradient}`}></div>
+            {slide.gradient && <div className={`absolute inset-0 bg-gradient-to-t ${slide.gradient}`}></div>}
 
             {/* Content */}
             {(slide.title || slide.subtitle || slide.cta) && (
