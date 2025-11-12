@@ -20,36 +20,36 @@ export function DesktopHeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
 
   const heroSlides = [
+    // {
+    //   id: 1,
+    //   title: 'Discover Your Perfect Beauty Match',
+    //   subtitle: 'Explore premium beauty products from top brands',
+    //   description: 'Find everything from makeup to skincare at AynBeauty',
+    //   buttonText: 'Shop Now',
+    //   buttonLink: '/products',
+    //   video: '/images/banners/welcome-banner.mp4',
+    //   bgColor: 'from-pink-500 to-purple-600'
+    // },
+    // {
+    //   id: 2,
+    //   title: 'New Arrivals Just Dropped',
+    //   subtitle: 'Be the first to try the latest beauty innovations',
+    //   description: 'Discover trending products from your favorite brands',
+    //   buttonText: 'Explore New',
+    //   buttonLink: '/new-arrivals',
+    //   image: '/images/banners/new-arrivals.jpg',
+    // },
+    // {
+    //   id: 3,
+    //   title: 'Bestsellers Everyone Loves',
+    //   subtitle: 'Shop the most popular beauty products',
+    //   description: 'Join thousands of happy customers',
+    //   buttonText: 'Shop Bestsellers',
+    //   buttonLink: '/bestsellers',
+    //   image: '/images/banners/bestsellers.jpg',
+    // },
     {
       id: 1,
-      title: 'Discover Your Perfect Beauty Match',
-      subtitle: 'Explore premium beauty products from top brands',
-      description: 'Find everything from makeup to skincare at AynBeauty',
-      buttonText: 'Shop Now',
-      buttonLink: '/products',
-      video: '/images/banners/welcome-banner.mp4',
-      bgColor: 'from-pink-500 to-purple-600'
-    },
-    {
-      id: 2,
-      title: 'New Arrivals Just Dropped',
-      subtitle: 'Be the first to try the latest beauty innovations',
-      description: 'Discover trending products from your favorite brands',
-      buttonText: 'Explore New',
-      buttonLink: '/new-arrivals',
-      image: '/images/banners/new-arrivals.jpg',
-    },
-    {
-      id: 3,
-      title: 'Bestsellers Everyone Loves',
-      subtitle: 'Shop the most popular beauty products',
-      description: 'Join thousands of happy customers',
-      buttonText: 'Shop Bestsellers',
-      buttonLink: '/bestsellers',
-      image: '/images/banners/bestsellers.jpg',
-    },
-    {
-      id: 4,
       title: '',
       subtitle: '',
       description: '',

@@ -18,33 +18,33 @@ export function MobileHeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
 
   const slides = [
+    // {
+    //   id: 1,
+    //   video: '/images/banners/welcome-banner.mp4',
+    //   title: 'New Beauty Arrivals',
+    //   subtitle: 'Discover the latest in makeup & skincare',
+    //   gradient: 'from-pink-500/60 to-purple-600/60'
+    // },
+    // {
+    //   id: 2,
+    //   image: '/images/banners/new-arrivals.jpg',
+    //   title: 'Premium Skincare',
+    //   subtitle: 'Glow with our bestselling products',
+    //   cta: 'Explore',
+    //   gradient: 'from-blue-500/60 to-teal-600/60',
+    //   imageFit: 'cover' // Shows full image
+    // },
+    // {
+    //   id: 3,
+    //   image: '/images/banners/bestsellers.jpg',
+    //   title: 'Makeup Essentials',
+    //   subtitle: 'Create your perfect look',
+    //   cta: 'Get Started',
+    //   gradient: 'from-orange-500/60 to-red-600/60',
+    //   imageFit: 'contain' // Shows full image
+    // },
     {
       id: 1,
-      video: '/images/banners/welcome-banner.mp4',
-      title: 'New Beauty Arrivals',
-      subtitle: 'Discover the latest in makeup & skincare',
-      gradient: 'from-pink-500/60 to-purple-600/60'
-    },
-    {
-      id: 2,
-      image: '/images/banners/new-arrivals.jpg',
-      title: 'Premium Skincare',
-      subtitle: 'Glow with our bestselling products',
-      cta: 'Explore',
-      gradient: 'from-blue-500/60 to-teal-600/60',
-      imageFit: 'cover' // Shows full image
-    },
-    {
-      id: 3,
-      image: '/images/banners/bestsellers.jpg',
-      title: 'Makeup Essentials',
-      subtitle: 'Create your perfect look',
-      cta: 'Get Started',
-      gradient: 'from-orange-500/60 to-red-600/60',
-      imageFit: 'contain' // Shows full image
-    },
-    {
-      id: 4,
       title: '',
       subtitle: '',
       description: '',
@@ -101,7 +101,7 @@ export function MobileHeroSection() {
                     src={slide.image}
                     alt={slide.title || 'Banner image'}
                     fill
-                    className={`object-${slide.imageFit || 'contain'}`}
+                    className="object-cover w-full h-full"
                     priority={index === 0}
                     sizes="(max-width: 768px) 100vw, 100vw"
                   />
