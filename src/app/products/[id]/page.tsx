@@ -18,6 +18,7 @@ import {
 import { StarIcon as StarSolidIcon, HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid'
 import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
+import { useWishlist } from '@/contexts/WishlistContext'
 import { ProductImage } from '@/components/ui/ProductImage'
 import { useToast } from '@/components/ui/Toast'
 import Toast from '@/components/ui/Toast'
@@ -67,6 +68,9 @@ export default function ProductDetailPage() {
   
   // Cart context
   const { addToCart: addToCartContext } = useCart()
+  
+  // Wishlist context
+  const { addToWishlist: addToWishlistContext } = useWishlist()
   
   // Toast hook
   const { toasts, addToast, removeToast } = useToast()
@@ -182,30 +186,18 @@ export default function ProductDetailPage() {
 
   const addToWishlist = async () => {
     try {
-      if (!user || !token) {
-        router.push('/login')
-        return
-      }
+      if (!product) return
 
-      const response = await fetch('/api/wishlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          action: 'add',
-          product_id: product?.id
-        })
+      // Use context to add to wishlist (supports both guest and authenticated users)
+      await addToWishlistContext({
+        product_id: product.id,
+        name: product.name,
+        price: product.price,
+        discounted_price: product.discounted_price,
+        image: product.primary_image || product.image_url || '/images/placeholder.jpg'
       })
-
-      if (response.ok) {
-        addToast('Added to wishlist!', 'success', 3000)
-      } else if (response.status === 409) {
-        addToast('Already in your wishlist', 'info', 3000)
-      } else {
-        throw new Error('Failed to add to wishlist')
-      }
+      
+      addToast('Added to wishlist!', 'success', 3000)
     } catch (error) {
       console.error('Add to wishlist error:', error)
       addToast('Failed to add to wishlist', 'error', 3000)

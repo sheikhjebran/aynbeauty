@@ -18,6 +18,7 @@ import { StarIcon as StarSolidIcon, HeartIcon as HeartSolidIcon } from '@heroico
 import { DesktopHeroSection } from '@/components/desktop/hero-section'
 import { MobileHeroSection } from '@/components/mobile/hero-section'
 import { useCart } from '@/contexts/CartContext'
+import { useWishlist } from '@/contexts/WishlistContext'
 import { useToast } from '@/components/ui/Toast'
 import Toast from '@/components/ui/Toast'
 import { ProductImage } from '@/components/ui/ProductImage'
@@ -239,7 +240,9 @@ export default function HomePage() {
     }
   }, [addToCartContext, addToast])
 
-  const addToWishlist = useCallback(async (e: React.MouseEvent, productId: number) => {
+  const { addToWishlist: addToWishlistContext, isInWishlist } = useWishlist()
+
+  const addToWishlist = useCallback(async (e: React.MouseEvent, productId: number, product?: Product) => {
     e.preventDefault()
     e.stopPropagation()
     
@@ -250,38 +253,16 @@ export default function HomePage() {
     })
     
     try {
-      const token = localStorage.getItem('token')
-      if (!token) {
-        addToast('Please login to add items to wishlist', 'info', 3000)
-        setAddingToWishlistIds(prev => {
-          const newSet = new Set(prev)
-          newSet.delete(productId)
-          return newSet
-        })
-        return
-      }
-
-      const response = await fetch('/api/wishlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          action: 'add',
-          product_id: productId
-        })
+      // Use context to add to wishlist (supports both guest and authenticated users)
+      await addToWishlistContext({
+        product_id: productId,
+        name: product?.name || 'Product',
+        price: product?.price || 0,
+        discounted_price: product?.discounted_price,
+        image: product?.image_url || '/images/placeholder.jpg'
       })
-
-      if (response.ok) {
-        addToast('Added to wishlist!', 'success', 3000)
-      } else if (response.status === 409) {
-        addToast('Already in your wishlist', 'info', 3000)
-      } else {
-        const errorData = await response.json()
-        console.error('Wishlist API error:', errorData)
-        addToast(errorData.error || errorData.message || 'Failed to add to wishlist', 'error', 3000)
-      }
+      
+      addToast('Added to wishlist!', 'success', 3000)
     } catch (error) {
       console.error('Error adding to wishlist:', error)
       addToast('Failed to add to wishlist', 'error', 3000)
@@ -292,12 +273,12 @@ export default function HomePage() {
         return newSet
       })
     }
-  }, [addToast])
+  }, [addToWishlistContext, addToast])
 
   const ProductCard = memo(({ product, onAddToCart, onAddToWishlist, isAddingToCart, isAddingToWishlist }: { 
     product: Product
     onAddToCart: (e: React.MouseEvent, productId: number, productData?: Product) => void
-    onAddToWishlist: (e: React.MouseEvent, productId: number) => void
+    onAddToWishlist: (e: React.MouseEvent, productId: number, productData?: Product) => void
     isAddingToCart: boolean
     isAddingToWishlist: boolean
   }) => (
@@ -316,7 +297,7 @@ export default function HomePage() {
         </Link>
         
         <button
-          onClick={(e) => onAddToWishlist(e, product.id)}
+          onClick={(e) => onAddToWishlist(e, product.id, product)}
           disabled={isAddingToWishlist}
           className="absolute top-2 right-2 p-2 bg-white/80 rounded-full hover:bg-white transition-colors disabled:opacity-70"
         >

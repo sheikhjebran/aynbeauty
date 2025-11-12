@@ -413,7 +413,14 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
                   }`}>
                     {/* Wishlist Button */}
                     <div className="absolute top-2 right-2 z-10">
-                      <WishlistButton productId={product.id} size="sm" />
+                      <WishlistButton 
+                        productId={product.id} 
+                        productName={product.name}
+                        productPrice={product.price}
+                        productDiscountedPrice={product.discounted_price}
+                        productImage={product.images?.[0] || product.primary_image || product.image_url || '/images/placeholder.jpg'}
+                        size="sm" 
+                      />
                     </div>
 
                     <Link href={`/products/${product.id}`}>
