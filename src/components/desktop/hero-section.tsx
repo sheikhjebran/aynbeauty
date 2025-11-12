@@ -55,7 +55,7 @@ export function DesktopHeroSection() {
       description: 'Discover the best skincare solutions for your needs',
       buttonText: 'Explore Skincare',
       buttonLink: '/categories/skincare',
-      image: '/images/banners/banner3.jpg'
+      image: '/images/banners/banner3.jpeg'
     }
   ]
 

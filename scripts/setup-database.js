@@ -229,7 +229,7 @@ async function insertSampleData(connection) {
     INSERT IGNORE INTO content_blocks (title, content, page_location, display_order, image_url, link_url) VALUES
     ('Welcome to AYN Beauty', 'Discover premium beauty products from top brands', 'homepage_banner', 1, '/images/banner1.jpg', '/products'),
     ('New Arrivals', 'Check out our latest beauty collection', 'homepage_banner', 2, '/images/banner2.jpg', '/products?new=true'),
-    ('Special Offers', 'Up to 30% off on selected items', 'homepage_banner', 3, '/images/banner3.jpg', '/offers')
+    ('Special Offers', 'Up to 30% off on selected items', 'homepage_banner', 3, '/images/banner3.jpeg', '/offers')
   `);
 
   console.log("✅ Sample data inserted");
