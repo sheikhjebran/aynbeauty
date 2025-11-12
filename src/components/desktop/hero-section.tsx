@@ -50,11 +50,9 @@ export function DesktopHeroSection() {
     },
     {
       id: 4,
-      title: 'Premium Skincare Collection',
-      subtitle: 'Transform your skin with expert-recommended products',
-      description: 'Discover the best skincare solutions for your needs',
-      buttonText: 'Explore Skincare',
-      buttonLink: '/categories/skincare',
+      title: '',
+      subtitle: '',
+      description: '',
       image: '/images/banners/banner3.jpeg'
     }
   ]
