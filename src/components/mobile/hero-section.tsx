@@ -42,6 +42,15 @@ export function MobileHeroSection() {
       cta: 'Get Started',
       gradient: 'from-orange-500/60 to-red-600/60',
       imageFit: 'contain' // Shows full image
+    },
+    {
+      id: 4,
+      title: 'Premium Skincare Collection',
+      subtitle: 'Transform your skin with expert-recommended products',
+      description: 'Discover the best skincare solutions for your needs',
+      buttonText: 'Explore Skincare',
+      buttonLink: '/categories/skincare',
+      image: '/images/banners/banner3.jpg',
     }
   ]
 

@@ -72,7 +72,7 @@ export function DesktopFooter() {
               <span className="ml-2 text-xl font-bold gradient-text"></span>
             </div>
             <p className="text-gray-400 text-sm mb-6">
-              For every day, for every mood, for every you. Discover premium beauty products from top brands.
+              Beauty Beyond Borders - At AYN Beauty, you experience Moroccan and Arab world skincare treasures designed to elevate your skincare ritual.   Pure Beauty crafted for every girl.
             </p>
             {/* Social Media */}
             <div className="flex space-x-4">

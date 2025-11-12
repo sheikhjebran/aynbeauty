@@ -47,7 +47,7 @@ export function Footer() {
               <span className="text-xl font-light text-gray-300 ml-1">Beauty</span>
             </Link>
             <p className="text-gray-400 leading-relaxed">
-              For every day, for every mood, for every you. Discover premium beauty products from top brands.
+              Beauty Beyond Borders - At AYN Beauty, you experience Moroccan and Arab world skincare treasures designed to elevate your skincare ritual.   Pure Beauty crafted for every girl.
             </p>
             <div className="flex space-x-4">
               
@@ -106,22 +106,6 @@ export function Footer() {
             <p className="text-gray-400 text-sm">
               © {currentYear} AYN Beauty. All rights reserved.| developer: sheikhjebran@gmail.com
             </p>
-            <div className="flex items-center space-x-6 mt-4 md:mt-0">
-              <Link 
-                href="/admin" 
-                className="text-gray-500 hover:text-gray-300 text-xs transition-colors"
-              >
-                Admin
-              </Link>
-              <div className="flex items-center space-x-4">
-                <span className="text-gray-400 text-sm">Secure payments by:</span>
-                <div className="flex space-x-2">
-                  <div className="w-8 h-5 bg-blue-600 rounded text-white text-xs flex items-center justify-center font-bold">VISA</div>
-                  <div className="w-8 h-5 bg-red-600 rounded text-white text-xs flex items-center justify-center font-bold">MC</div>
-                  <div className="w-8 h-5 bg-blue-500 rounded text-white text-xs flex items-center justify-center font-bold">PP</div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

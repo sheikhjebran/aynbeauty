@@ -47,7 +47,15 @@ export function DesktopHeroSection() {
       buttonText: 'Shop Bestsellers',
       buttonLink: '/bestsellers',
       image: '/images/banners/bestsellers.jpg',
-      
+    },
+    {
+      id: 4,
+      title: 'Premium Skincare Collection',
+      subtitle: 'Transform your skin with expert-recommended products',
+      description: 'Discover the best skincare solutions for your needs',
+      buttonText: 'Explore Skincare',
+      buttonLink: '/categories/skincare',
+      image: '/images/banners/banner3.jpg'
     }
   ]
 
