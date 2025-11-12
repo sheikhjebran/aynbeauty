@@ -20,16 +20,17 @@ export function DesktopHeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
 
   const heroSlides = [
-    // {
-    //   id: 1,
-    //   title: 'Discover Your Perfect Beauty Match',
-    //   subtitle: 'Explore premium beauty products from top brands',
-    //   description: 'Find everything from makeup to skincare at AynBeauty',
-    //   buttonText: 'Shop Now',
-    //   buttonLink: '/products',
-    //   video: '/images/banners/welcome-banner.mp4',
-    //   bgColor: 'from-pink-500 to-purple-600'
-    // },
+    {
+      id: 1,
+      title: 'Discover Your Perfect Beauty Match',
+      subtitle: 'Explore premium beauty products from top brands',
+      description: 'Find everything from makeup to skincare at AynBeauty',
+      buttonText: 'Shop Now',
+      buttonLink: '/products',
+      video: '/images/banners/welcome-banner.mp4',
+      bgColor: '',
+      image: undefined
+    },
     // {
     //   id: 2,
     //   title: 'New Arrivals Just Dropped',
@@ -49,7 +50,7 @@ export function DesktopHeroSection() {
     //   image: '/images/banners/bestsellers.jpg',
     // },
     {
-      id: 1,
+      id: 2,
       title: '',
       subtitle: '',
       description: '',

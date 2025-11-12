@@ -18,13 +18,15 @@ export function MobileHeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
 
   const slides = [
-    // {
-    //   id: 1,
-    //   video: '/images/banners/welcome-banner.mp4',
-    //   title: 'New Beauty Arrivals',
-    //   subtitle: 'Discover the latest in makeup & skincare',
-    //   gradient: 'from-pink-500/60 to-purple-600/60'
-    // },
+    {
+      id: 1,
+      video: '/images/banners/welcome-banner.mp4',
+      title: 'New Beauty Arrivals',
+      subtitle: 'Discover the latest in makeup & skincare',
+      gradient: '',
+      image: undefined,
+      cta: undefined
+    },
     // {
     //   id: 2,
     //   image: '/images/banners/new-arrivals.jpg',
