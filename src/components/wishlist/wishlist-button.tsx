@@ -3,9 +3,14 @@
 import { useState, useEffect } from 'react'
 import { HeartIcon } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid'
+import { useWishlist } from '@/contexts/WishlistContext'
 
 interface WishlistButtonProps {
   productId: number
+  productName?: string
+  productPrice?: number
+  productDiscountedPrice?: number
+  productImage?: string
   className?: string
   size?: 'sm' | 'md' | 'lg'
   showLabel?: boolean
@@ -13,7 +18,11 @@ interface WishlistButtonProps {
 }
 
 export function WishlistButton({ 
-  productId, 
+  productId,
+  productName = 'Product',
+  productPrice = 0,
+  productDiscountedPrice,
+  productImage = '/images/placeholder.jpg',
   className = '', 
   size = 'md',
   showLabel = false,
@@ -21,68 +30,29 @@ export function WishlistButton({
 }: WishlistButtonProps) {
   const [isInWishlist, setIsInWishlist] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { addToWishlist, removeFromWishlist, isInWishlist: checkIsInWishlist } = useWishlist()
 
   useEffect(() => {
-    checkAuthAndWishlistStatus()
-  }, [productId])
-
-  const checkAuthAndWishlistStatus = async () => {
-    const token = localStorage.getItem('token')
-    if (!token) {
-      setIsAuthenticated(false)
-      return
-    }
-
-    setIsAuthenticated(true)
-    
-    try {
-      const response = await fetch('/api/wishlist', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        const inWishlist = data.items.some((item: any) => item.product_id === productId)
-        setIsInWishlist(inWishlist)
-      }
-    } catch (error) {
-      console.error('Error checking wishlist status:', error)
-    }
-  }
+    setIsInWishlist(checkIsInWishlist(productId))
+  }, [productId, checkIsInWishlist])
 
   const toggleWishlist = async () => {
-    if (!isAuthenticated) {
-      // Redirect to login
-      window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`
-      return
-    }
-
     setLoading(true)
     try {
-      const token = localStorage.getItem('token')
-      const response = await fetch('/api/wishlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          action: 'toggle',
-          product_id: productId
-        })
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setIsInWishlist(data.inWishlist)
-        onToggle?.(data.inWishlist)
+      if (isInWishlist) {
+        await removeFromWishlist(productId)
+        setIsInWishlist(false)
       } else {
-        const error = await response.json()
-        console.error('Error toggling wishlist:', error.message)
+        await addToWishlist({
+          product_id: productId,
+          name: productName,
+          price: productPrice,
+          discounted_price: productDiscountedPrice,
+          image: productImage
+        })
+        setIsInWishlist(true)
       }
+      onToggle?.(!isInWishlist)
     } catch (error) {
       console.error('Error toggling wishlist:', error)
     } finally {

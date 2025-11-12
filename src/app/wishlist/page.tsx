@@ -1,97 +1,48 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { TrashIcon, ShoppingBagIcon, StarIcon } from '@heroicons/react/24/outline'
 import { WishlistButton } from '@/components/wishlist/wishlist-button'
+import { useWishlist } from '@/contexts/WishlistContext'
 import { useCart } from '@/contexts/CartContext'
 
-interface WishlistItem {
+interface WishlistDisplayItem {
   id: number
   product_id: number
-  product_name: string
+  name: string
   price: number
-  original_price?: number
-  slug: string
-  brand_name: string
-  image_url: string
-  stock_quantity: number
-  avg_rating: number | string
-  review_count: number
-  created_at: string
+  discounted_price?: number
+  image: string
 }
 
 export default function WishlistPage() {
-  const router = useRouter()
-  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [removingItems, setRemovingItems] = useState<Set<number>>(new Set())
+  
+  // Wishlist context
+  const { items: wishlistItems, removeFromWishlist, isGuest } = useWishlist()
   
   // Cart context
   const { addToCart: addToCartContext } = useCart()
 
   useEffect(() => {
-    fetchWishlistItems()
+    // Simulate loading state
+    setTimeout(() => {
+      setLoading(false)
+    }, 500)
   }, [])
 
-  const fetchWishlistItems = async () => {
-    try {
-      const token = localStorage.getItem('token')
-      if (!token) {
-        router.push('/login?redirect=/wishlist')
-        return
-      }
-
-      const response = await fetch('/api/wishlist', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          localStorage.removeItem('token')
-          localStorage.removeItem('user')
-          router.push('/login?redirect=/wishlist')
-          return
-        }
-        throw new Error('Failed to fetch wishlist items')
-      }
-
-      const data = await response.json()
-      setWishlistItems(data.items || [])
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const removeFromWishlist = async (productId: number) => {
+  const removeFromWishlistHandler = async (productId: number) => {
     setRemovingItems(prev => new Set(prev).add(productId))
     
     try {
-      const token = localStorage.getItem('token')
-      const response = await fetch('/api/wishlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          action: 'remove',
-          product_id: productId
-        })
-      })
-
-      if (response.ok) {
-        setWishlistItems(items => items.filter(item => item.product_id !== productId))
-      }
+      await removeFromWishlist(productId)
     } catch (error) {
       console.error('Error removing from wishlist:', error)
+      setError('Failed to remove item from wishlist')
     } finally {
       setRemovingItems(prev => {
         const newSet = new Set(prev)
@@ -101,43 +52,21 @@ export default function WishlistPage() {
     }
   }
 
-  const addToCart = async (productId: number) => {
+  const addToCart = async (item: WishlistDisplayItem) => {
     try {
-      const token = localStorage.getItem('token')
+      addToCartContext({
+        product_id: item.product_id,
+        name: item.name,
+        price: item.price,
+        discounted_price: item.discounted_price,
+        image: item.image,
+      }, 1)
       
-      // Find the product from wishlist items
-      const product = wishlistItems.find(item => item.product_id === productId)
-      
-      const response = await fetch('/api/cart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          action: 'add',
-          product_id: productId,
-          quantity: 1
-        })
-      })
-
-      if (response.ok) {
-        // Update local cart context if we have product data
-        if (product) {
-          addToCartContext({
-            product_id: product.product_id,
-            name: product.product_name,
-            price: product.price,
-            discounted_price: product.original_price,
-            image: product.image_url || '',
-          }, 1)
-        }
-        
-        // Show success message or update cart count
-        console.log('Added to cart successfully')
-      }
+      // Show success message or update cart count
+      console.log('Added to cart successfully')
     } catch (error) {
       console.error('Error adding to cart:', error)
+      setError('Failed to add item to cart')
     }
   }
 
@@ -147,19 +76,13 @@ export default function WishlistPage() {
     }
 
     try {
-      const token = localStorage.getItem('token')
-      const response = await fetch('/api/wishlist', {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-
-      if (response.ok) {
-        setWishlistItems([])
+      // Remove all items one by one
+      for (const item of wishlistItems) {
+        await removeFromWishlist(item.product_id)
       }
     } catch (error) {
       console.error('Error clearing wishlist:', error)
+      setError('Failed to clear wishlist')
     }
   }
 
@@ -169,23 +92,6 @@ export default function WishlistPage() {
       currency: 'INR',
       minimumFractionDigits: 0
     }).format(price)
-  }
-
-  const renderStars = (rating: number | string) => {
-    const numRating = typeof rating === 'string' ? parseFloat(rating) : rating
-    const safeRating = isNaN(numRating) ? 0 : numRating
-    
-    return (
-      <div className="flex items-center">
-        {[...Array(5)].map((_, i) => (
-          <StarIcon
-            key={i}
-            className={`h-4 w-4 ${i < Math.floor(safeRating) ? 'text-yellow-400' : 'text-gray-300'}`}
-          />
-        ))}
-        <span className="ml-1 text-sm text-gray-600">({safeRating.toFixed(1)})</span>
-      </div>
-    )
   }
 
   if (loading) {
@@ -212,10 +118,10 @@ export default function WishlistPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Error</h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
-            onClick={fetchWishlistItems}
+            onClick={() => setError(null)}
             className="bg-pink-600 text-white px-4 py-2 rounded-md hover:bg-pink-700"
           >
-            Try Again
+            Dismiss
           </button>
         </div>
       </div>
@@ -226,7 +132,14 @@ export default function WishlistPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">My Wishlist</h1>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">My Wishlist</h1>
+            {isGuest && (
+              <p className="text-sm text-gray-600 mt-2">
+                💾 Guest wishlist (saved in this session)
+              </p>
+            )}
+          </div>
           {wishlistItems.length > 0 && (
             <button
               onClick={clearWishlist}
@@ -261,64 +174,46 @@ export default function WishlistPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {wishlistItems.map((item) => (
-              <div key={item.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+              <div key={item.id} className="relative bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                 {/* Wishlist Button */}
                 <div className="absolute top-2 right-2 z-10">
                   <WishlistButton
                     productId={item.product_id}
+                    productName={item.name}
+                    productPrice={item.price}
+                    productDiscountedPrice={item.discounted_price}
+                    productImage={item.image}
                     size="md"
                     onToggle={(inWishlist) => {
                       if (!inWishlist) {
-                        setWishlistItems(items => items.filter(i => i.product_id !== item.product_id))
+                        // Item was removed from wishlist
                       }
                     }}
                   />
                 </div>
 
                 {/* Product Image */}
-                <Link href={`/products/${item.product_id}`}>
-                  <div className="relative aspect-square">
-                    <Image
-                      src={item.image_url || `https://picsum.photos/300/300?random=${item.product_id}`}
-                      alt={item.product_name}
-                      fill
-                      className="object-cover"
-                    />
-                    {item.original_price && item.original_price > item.price && (
-                      <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs rounded">
-                        {Math.round(((item.original_price - item.price) / item.original_price) * 100)}% OFF
-                      </div>
-                    )}
-                    {item.stock_quantity === 0 && (
-                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                        <span className="text-white font-semibold">Out of Stock</span>
-                      </div>
-                    )}
-                  </div>
-                </Link>
+                <div className="relative aspect-square bg-gray-100">
+                  <Image
+                    src={item.image || '/images/placeholder.jpg'}
+                    alt={item.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
 
                 {/* Product Details */}
                 <div className="p-4">
-                  <Link href={`/products/${item.product_id}`}>
-                    <h3 className="font-medium text-gray-900 mb-1 line-clamp-2 hover:text-pink-600">
-                      {item.product_name}
-                    </h3>
-                  </Link>
-                  <p className="text-sm text-gray-600 mb-2">{item.brand_name}</p>
-
-                  {/* Rating */}
-                  {item.review_count > 0 && (
-                    <div className="mb-2">
-                      {renderStars(item.avg_rating)}
-                    </div>
-                  )}
+                  <h3 className="font-medium text-gray-900 mb-1 line-clamp-2">
+                    {item.name}
+                  </h3>
 
                   {/* Price */}
                   <div className="flex items-center gap-2 mb-3">
                     <span className="font-bold text-gray-900">{formatPrice(item.price)}</span>
-                    {item.original_price && item.original_price > item.price && (
+                    {item.discounted_price && item.discounted_price > item.price && (
                       <span className="text-sm text-gray-500 line-through">
-                        {formatPrice(item.original_price)}
+                        {formatPrice(item.discounted_price)}
                       </span>
                     )}
                   </div>
@@ -326,20 +221,15 @@ export default function WishlistPage() {
                   {/* Actions */}
                   <div className="flex gap-2">
                     <button
-                      onClick={() => addToCart(item.product_id)}
-                      disabled={item.stock_quantity === 0}
-                      className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 text-sm font-medium rounded-md transition-colors ${
-                        item.stock_quantity === 0
-                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                          : 'bg-pink-600 text-white hover:bg-pink-700'
-                      }`}
+                      onClick={() => addToCart(item)}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 px-3 text-sm font-medium rounded-md transition-colors bg-pink-600 text-white hover:bg-pink-700"
                     >
                       <ShoppingBagIcon className="h-4 w-4" />
-                      {item.stock_quantity === 0 ? 'Out of Stock' : 'Add to Cart'}
+                      Add to Cart
                     </button>
                     
                     <button
-                      onClick={() => removeFromWishlist(item.product_id)}
+                      onClick={() => removeFromWishlistHandler(item.product_id)}
                       disabled={removingItems.has(item.product_id)}
                       className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
                       title="Remove from wishlist"
@@ -347,11 +237,6 @@ export default function WishlistPage() {
                       <TrashIcon className="h-4 w-4" />
                     </button>
                   </div>
-
-                  {/* Added Date */}
-                  <p className="text-xs text-gray-500 mt-2">
-                    Added {new Date(item.created_at).toLocaleDateString()}
-                  </p>
                 </div>
               </div>
             ))}

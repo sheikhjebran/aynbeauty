@@ -18,21 +18,26 @@ interface WishlistContextType {
   removeFromWishlist: (productId: number) => Promise<void>
   isInWishlist: (productId: number) => boolean
   loading: boolean
+  isGuest: boolean
 }
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined)
+const SESSION_STORAGE_KEY = 'ayn_guest_wishlist'
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<WishlistItem[]>([])
   const [loading, setLoading] = useState(false)
+  const [isGuest, setIsGuest] = useState(false)
   const { user, token } = useAuth()
 
-  // Load wishlist when user logs in
+  // Load wishlist on mount and when auth status changes
   useEffect(() => {
     if (user && token) {
       loadWishlist()
+      setIsGuest(false)
     } else {
-      setItems([])
+      loadGuestWishlist()
+      setIsGuest(true)
     }
   }, [user, token])
 
@@ -58,29 +63,63 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const addToWishlist = async (product: Omit<WishlistItem, 'id'>) => {
-    if (!token) {
-      throw new Error('Please sign in to add items to wishlist')
-    }
-
+  const loadGuestWishlist = () => {
     try {
-      const response = await fetch('/api/wishlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ product_id: product.product_id })
-      })
+      if (typeof window !== 'undefined') {
+        const guestWishlist = sessionStorage.getItem(SESSION_STORAGE_KEY)
+        if (guestWishlist) {
+          setItems(JSON.parse(guestWishlist))
+        } else {
+          setItems([])
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load guest wishlist:', error)
+      setItems([])
+    }
+  }
 
-      if (response.ok) {
+  const saveGuestWishlist = (wishlistItems: WishlistItem[]) => {
+    try {
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(wishlistItems))
+      }
+    } catch (error) {
+      console.error('Failed to save guest wishlist:', error)
+    }
+  }
+
+  const addToWishlist = async (product: Omit<WishlistItem, 'id'>) => {
+    try {
+      if (token) {
+        // Authenticated user
+        const response = await fetch('/api/wishlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ product_id: product.product_id })
+        })
+
+        if (response.ok) {
+          const newItem: WishlistItem = {
+            ...product,
+            id: Date.now()
+          }
+          setItems(prev => [...prev, newItem])
+        } else {
+          throw new Error('Failed to add to wishlist')
+        }
+      } else {
+        // Guest user - save to sessionStorage
         const newItem: WishlistItem = {
           ...product,
           id: Date.now()
         }
-        setItems(prev => [...prev, newItem])
-      } else {
-        throw new Error('Failed to add to wishlist')
+        const updatedItems = [...items, newItem]
+        setItems(updatedItems)
+        saveGuestWishlist(updatedItems)
       }
     } catch (error) {
       console.error('Add to wishlist error:', error)
@@ -89,20 +128,26 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   }
 
   const removeFromWishlist = async (productId: number) => {
-    if (!token) return
-
     try {
-      const response = await fetch(`/api/wishlist/${productId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+      if (token) {
+        // Authenticated user
+        const response = await fetch(`/api/wishlist/${productId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
 
-      if (response.ok) {
-        setItems(prev => prev.filter(item => item.product_id !== productId))
+        if (response.ok) {
+          setItems(prev => prev.filter(item => item.product_id !== productId))
+        } else {
+          throw new Error('Failed to remove from wishlist')
+        }
       } else {
-        throw new Error('Failed to remove from wishlist')
+        // Guest user - remove from sessionStorage
+        const updatedItems = items.filter(item => item.product_id !== productId)
+        setItems(updatedItems)
+        saveGuestWishlist(updatedItems)
       }
     } catch (error) {
       console.error('Remove from wishlist error:', error)
@@ -120,7 +165,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       addToWishlist,
       removeFromWishlist,
       isInWishlist,
-      loading
+      loading,
+      isGuest
     }}>
       {children}
     </WishlistContext.Provider>
