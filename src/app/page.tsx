@@ -367,8 +367,8 @@ export default function HomePage() {
           <span className="text-sm text-gray-600">({product.rating_count})</span>
         </div>
 
-        <div className="flex items-center justify-between mt-3">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-3 mt-3">
+          <div className="flex items-center gap-2 flex-wrap">
             {product.discounted_price && product.discounted_price < product.price ? (
               <>
                 <span className="text-lg font-bold text-pink-600">₹{product.discounted_price}</span>
@@ -384,10 +384,10 @@ export default function HomePage() {
           <button
             onClick={(e) => onAddToCart(e, product.id, product)}
             disabled={isAddingToCart}
-            className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors disabled:bg-pink-400 disabled:cursor-not-allowed font-medium text-sm"
+            className="w-full bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors disabled:bg-pink-400 disabled:cursor-not-allowed font-medium text-sm"
           >
             {isAddingToCart ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center gap-2">
                 <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 <span>Adding...</span>
               </div>
