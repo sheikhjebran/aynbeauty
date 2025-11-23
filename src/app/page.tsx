@@ -455,7 +455,7 @@ export default function HomePage() {
             {[
               { name: 'Skincare', image: '/images/categories/skincare.jpg', href: '/categories/skincare' },
               { name: 'Lips', image: '/images/categories/lips.jpg', href: '/categories/lips' },
-              { name: 'Bath and Body', image: '/images/categories/bath-body.jpg', href: '/categories/bath-body' },
+              { name: 'Bath and Body', image: '/images/categories/bath-body.jpg', href: '/categories/bath-and-body' },
               { name: 'Fragrances', image: '/images/categories/fragrances.jpg', href: '/categories/fragrance' },
               { name: 'Eyes', image: '/images/categories/eyes.jpeg', href: '/categories/eyes' },
               { name: 'Nails', image: '/images/categories/nails.jpg', href: '/categories/nails' },
