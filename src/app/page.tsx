@@ -6,7 +6,6 @@ import Image from 'next/image'
 import {
   StarIcon,
   HeartIcon,
-  ShoppingBagIcon,
   SparklesIcon,
   TrophyIcon,
   FireIcon,
@@ -385,12 +384,15 @@ export default function HomePage() {
           <button
             onClick={(e) => onAddToCart(e, product.id, product)}
             disabled={isAddingToCart}
-            className="bg-pink-600 text-white p-2 rounded-full hover:bg-pink-700 transition-colors disabled:bg-pink-400 disabled:cursor-not-allowed"
+            className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors disabled:bg-pink-400 disabled:cursor-not-allowed font-medium text-sm"
           >
             {isAddingToCart ? (
-              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Adding...</span>
+              </div>
             ) : (
-              <ShoppingBagIcon className="h-4 w-4" />
+              'Add to Cart'
             )}
           </button>
         </div>
