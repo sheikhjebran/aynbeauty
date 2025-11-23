@@ -499,7 +499,7 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
                         </span>
                       </div>
                       
-                      <div className="flex items-center gap-2 mb-3">
+                      <div className="flex items-center gap-2 mb-3 flex-wrap">
                         {product.discounted_price && product.discounted_price < product.price ? (
                           <>
                             <span className="text-lg font-bold text-pink-600">₹{product.discounted_price}</span>
@@ -514,8 +514,8 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
                       </div>
 
                       {/* Quantity Selector and Add to Cart Button */}
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="flex items-center border border-gray-300 rounded-md">
+                      <div className="flex flex-col sm:flex-row items-center gap-2 mb-3">
+                        <div className="flex items-center border border-gray-300 rounded-md w-full sm:w-auto">
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
@@ -566,7 +566,7 @@ export function ProductListingPage({ category, searchParams }: ProductListingPag
                             setQuantities({ ...quantities, [product.id]: 1 })
                           }}
                           disabled={product.stock_quantity === 0}
-                          className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+                          className={`w-full sm:flex-1 py-2 px-4 text-sm font-medium rounded-md transition-colors ${
                             product.stock_quantity === 0
                               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                               : 'bg-pink-600 text-white hover:bg-pink-700'
