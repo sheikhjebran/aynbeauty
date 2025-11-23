@@ -21,8 +21,8 @@ export function MobileHeroSection() {
     {
       id: 2,
       video: '/images/banners/mobile_banner.mp4',
-      title: 'New Beauty Arrivals',
-      subtitle: 'Discover the latest in makeup & skincare',
+      title: '',
+      subtitle: '',
       gradient: '',
       image: undefined,
       cta: undefined,
@@ -31,10 +31,10 @@ export function MobileHeroSection() {
     {
       id: 3,
       image: '/images/banners/bestsellers.jpeg',
-      title: 'Makeup Essentials',
-      subtitle: 'Create your perfect look',
+      title: '',
+      subtitle: '',
       description: '',
-      cta: 'Get Started',
+      cta: '',
       gradient: '',
       video: undefined,
       objectFit: 'cover'
@@ -70,7 +70,7 @@ export function MobileHeroSection() {
       {/* Mobile: Responsive height */}
       <div className="h-[60vh] min-h-[350px] max-h-[500px] sm:h-[70vh] sm:min-h-[400px] sm:max-h-[600px]">
         {/* Slides */}
-        <div 
+        <div
           className="flex transition-transform duration-500 ease-in-out h-full"
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}
         >
@@ -84,12 +84,11 @@ export function MobileHeroSection() {
                     muted
                     loop
                     playsInline
-                    className={`w-full h-full ${
-                      slide.objectFit === 'contain' ? 'object-contain' :
-                      slide.objectFit === 'fill' ? 'object-fill' :
-                      slide.objectFit === 'stretch' ? 'w-full h-full' :
-                      'object-cover'
-                    }`}
+                    className={`w-full h-full ${slide.objectFit === 'contain' ? 'object-contain' :
+                        slide.objectFit === 'fill' ? 'object-fill' :
+                          slide.objectFit === 'stretch' ? 'w-full h-full' :
+                            'object-cover'
+                      }`}
                     style={{ objectPosition: 'center 40%' }}
                   >
                     <source src={slide.video} type="video/mp4" />
@@ -100,12 +99,11 @@ export function MobileHeroSection() {
                     src={slide.image}
                     alt={slide.title || 'Banner image'}
                     fill
-                    className={`w-full h-full ${
-                      slide.objectFit === 'contain' ? 'object-contain' :
-                      slide.objectFit === 'fill' ? 'object-fill' :
-                      slide.objectFit === 'stretch' ? 'w-full h-full' :
-                      'object-cover'
-                    }`}
+                    className={`w-full h-full ${slide.objectFit === 'contain' ? 'object-contain' :
+                        slide.objectFit === 'fill' ? 'object-fill' :
+                          slide.objectFit === 'stretch' ? 'w-full h-full' :
+                            'object-cover'
+                      }`}
                     priority={index === 0}
                     sizes="(max-width: 768px) 100vw, 100vw"
                   />
@@ -114,33 +112,33 @@ export function MobileHeroSection() {
                 )}
               </div>
 
-            {/* Gradient Overlay */}
-            {slide.gradient && <div className={`absolute inset-0 bg-gradient-to-t ${slide.gradient}`}></div>}
+              {/* Gradient Overlay */}
+              {slide.gradient && <div className={`absolute inset-0 bg-gradient-to-t ${slide.gradient}`}></div>}
 
-            {/* Content */}
-            {(slide.title || slide.subtitle || slide.cta) && (
-              <div className="relative h-full flex items-center justify-center px-6">
-                <div className="text-center text-white max-w-sm">
-                  {slide.title && (
-                    <h1 className="text-2xl md:text-3xl font-bold mb-3 leading-tight">
-                      {slide.title}
-                    </h1>
-                  )}
-                  {slide.subtitle && (
-                    <p className="text-lg mb-6 opacity-90">
-                      {slide.subtitle}
-                    </p>
-                  )}
-                  {slide.cta && (
-                    <button className="bg-white text-gray-900 font-semibold px-8 py-3 rounded-full hover:bg-gray-100 transition-colors shadow-lg">
-                      {slide.cta}
-                    </button>
-                  )}
+              {/* Content */}
+              {(slide.title || slide.subtitle || slide.cta) && (
+                <div className="relative h-full flex items-center justify-center px-6">
+                  <div className="text-center text-white max-w-sm">
+                    {slide.title && (
+                      <h1 className="text-2xl md:text-3xl font-bold mb-3 leading-tight">
+                        {slide.title}
+                      </h1>
+                    )}
+                    {slide.subtitle && (
+                      <p className="text-lg mb-6 opacity-90">
+                        {slide.subtitle}
+                      </p>
+                    )}
+                    {slide.cta && (
+                      <button className="bg-white text-gray-900 font-semibold px-8 py-3 rounded-full hover:bg-gray-100 transition-colors shadow-lg">
+                        {slide.cta}
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
@@ -149,11 +147,10 @@ export function MobileHeroSection() {
         {slides.map((_, index) => (
           <button
             key={index}
-            className={`w-2 h-2 rounded-full transition-all duration-200 ${
-              index === currentSlide
+            className={`w-2 h-2 rounded-full transition-all duration-200 ${index === currentSlide
                 ? 'bg-white w-6'
                 : 'bg-white/50'
-            }`}
+              }`}
             onClick={() => goToSlide(index)}
           />
         ))}
@@ -180,7 +177,7 @@ export function MobileHeroSection() {
         </button>
       </div>
 
-      
+
     </div>
   )
 }

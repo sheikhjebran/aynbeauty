@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback, memo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { 
-  StarIcon, 
-  HeartIcon, 
+import {
+  StarIcon,
+  HeartIcon,
   ShoppingBagIcon,
   SparklesIcon,
   TrophyIcon,
@@ -86,7 +86,7 @@ export default function HomePage() {
   const [loyaltyData, setLoyaltyData] = useState<LoyaltyData | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [loading, setLoading] = useState(true)
-  
+
   // Cart and Toast context
   const { addToCart: addToCartContext } = useCart()
   const { toasts, addToast, removeToast } = useToast()
@@ -94,7 +94,7 @@ export default function HomePage() {
   useEffect(() => {
     const token = localStorage.getItem('token')
     setIsLoggedIn(!!token)
-    
+
     fetchHomepageData()
     if (token) {
       fetchPersonalizedData()
@@ -172,13 +172,13 @@ export default function HomePage() {
   const addToCart = useCallback(async (e: React.MouseEvent, productId: number, productData?: Product) => {
     e.preventDefault()
     e.stopPropagation()
-    
+
     setAddingToCartIds(prev => {
       // Prevent duplicate clicks
       if (prev.has(productId)) return prev
       return new Set(prev).add(productId)
     })
-    
+
     try {
       const token = localStorage.getItem('token')
 
@@ -207,7 +207,7 @@ export default function HomePage() {
               image: productData.image_url || '',
             }, 1)
           }
-          
+
           addToast(`${productData?.name || 'Product'} added to cart!`, 'success', 3000)
         } else {
           const errorData = await response.json()
@@ -224,7 +224,7 @@ export default function HomePage() {
             discounted_price: productData.discounted_price,
             image: productData.image_url || '',
           }, 1)
-          
+
           addToast(`${productData.name} added to cart!`, 'success', 3000)
         }
       }
@@ -245,13 +245,13 @@ export default function HomePage() {
   const addToWishlist = useCallback(async (e: React.MouseEvent, productId: number, product?: Product) => {
     e.preventDefault()
     e.stopPropagation()
-    
+
     setAddingToWishlistIds(prev => {
       // Prevent duplicate clicks
       if (prev.has(productId)) return prev
       return new Set(prev).add(productId)
     })
-    
+
     try {
       // Use context to add to wishlist (supports both guest and authenticated users)
       await addToWishlistContext({
@@ -261,7 +261,7 @@ export default function HomePage() {
         discounted_price: product?.discounted_price,
         image: product?.image_url || '/images/placeholder.jpg'
       })
-      
+
       addToast('Added to wishlist!', 'success', 3000)
     } catch (error) {
       console.error('Error adding to wishlist:', error)
@@ -275,7 +275,7 @@ export default function HomePage() {
     }
   }, [addToWishlistContext, addToast])
 
-  const ProductCard = memo(({ product, onAddToCart, onAddToWishlist, isAddingToCart, isAddingToWishlist }: { 
+  const ProductCard = memo(({ product, onAddToCart, onAddToWishlist, isAddingToCart, isAddingToWishlist }: {
     product: Product
     onAddToCart: (e: React.MouseEvent, productId: number, productData?: Product) => void
     onAddToWishlist: (e: React.MouseEvent, productId: number, productData?: Product) => void
@@ -295,7 +295,7 @@ export default function HomePage() {
             />
           </div>
         </Link>
-        
+
         <button
           onClick={(e) => onAddToWishlist(e, product.id, product)}
           disabled={isAddingToWishlist}
@@ -321,21 +321,21 @@ export default function HomePage() {
             {product.name}
           </h3>
         </Link>
-        
+
         {/* Product Description */}
         {product.description && (
-          <p className="text-xs text-gray-600 mt-2 leading-relaxed overflow-hidden" 
-             style={{
-               display: '-webkit-box',
-               WebkitLineClamp: 3,
-               WebkitBoxOrient: 'vertical'
-             }}>
+          <p className="text-xs text-gray-600 mt-2 leading-relaxed overflow-hidden"
+            style={{
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical'
+            }}>
             {product.description}
           </p>
         )}
-        
+
         <p className="text-sm text-gray-600 mt-2">{product.brand}</p>
-        
+
         {/* Tags */}
         <div className="flex flex-wrap gap-1 mt-2">
           {product.is_trending === 1 && (
@@ -354,15 +354,14 @@ export default function HomePage() {
             </span>
           )}
         </div>
-        
+
         <div className="flex items-center gap-1 mt-2">
           <div className="flex items-center">
             {[...Array(5)].map((_, i) => (
               <StarSolidIcon
                 key={i}
-                className={`h-4 w-4 ${
-                  i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-200'
-                }`}
+                className={`h-4 w-4 ${i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-200'
+                  }`}
               />
             ))}
           </div>
@@ -441,8 +440,8 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Top Categories</h2>
-            <Link 
-              href="/products" 
+            <Link
+              href="/products"
               className="flex items-center text-gray-600 hover:text-black transition-colors group"
             >
               <span className="mr-2">View All</span>
@@ -451,7 +450,7 @@ export default function HomePage() {
               </svg>
             </Link>
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6">
             {[
               { name: 'Skincare', image: '/images/categories/skincare.jpg', href: '/categories/skincare' },
@@ -486,7 +485,7 @@ export default function HomePage() {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">Only On AYN</h2>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {[
               { name: 'Brand 1', discount: 'Up to 40% off', image: '/images/brands/brand.jpeg' },
@@ -575,8 +574,8 @@ export default function HomePage() {
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Trending Now</h2>
-              <Link 
-                href="/products" 
+              <Link
+                href="/products"
                 className="flex items-center text-gray-600 hover:text-black transition-colors group"
               >
                 <span className="mr-2">View All</span>
@@ -587,9 +586,9 @@ export default function HomePage() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
               {trendingProducts.slice(0, 10).map((product) => (
-                <ProductCard 
-                  key={product.id} 
-                  product={product} 
+                <ProductCard
+                  key={product.id}
+                  product={product}
                   onAddToCart={addToCart}
                   onAddToWishlist={addToWishlist}
                   isAddingToCart={addingToCartIds.has(product.id)}
@@ -615,7 +614,7 @@ export default function HomePage() {
               />
               <div className="absolute inset-0 bg-gradient-to-r from-pink-900/80 to-purple-900/70"></div>
             </div>
-            
+
             {/* Content */}
             <div className="relative z-10 px-8 py-16 md:px-16 md:py-24 text-center">
               <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
@@ -626,13 +625,13 @@ export default function HomePage() {
                 Explore our curated collection of premium beauty products and transform your skincare routine with expert-recommended essentials.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link 
+                <Link
                   href="/products"
                   className="bg-white text-pink-900 px-10 py-4 rounded-full font-bold text-lg hover:bg-pink-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
                 >
                   Shop Collection
                 </Link>
-                <Link 
+                <Link
                   href="/products"
                   className="border-2 border-white text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-white/10 transition-all duration-300"
                 >
@@ -640,7 +639,7 @@ export default function HomePage() {
                 </Link>
               </div>
             </div>
-            
+
             {/* Decorative Elements */}
             <div className="absolute top-10 right-10 w-20 h-20 bg-pink-400/20 rounded-full blur-xl"></div>
             <div className="absolute bottom-10 left-10 w-32 h-32 bg-purple-400/20 rounded-full blur-xl"></div>
@@ -653,8 +652,8 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Must-Have Products</h2>
-            <Link 
-              href="/products" 
+            <Link
+              href="/products"
               className="flex items-center text-gray-600 hover:text-black transition-colors group"
             >
               <span className="mr-2">Shop All</span>
@@ -665,9 +664,9 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {featuredProducts.map((product) => (
-              <ProductCard 
-                key={product.id} 
-                product={product} 
+              <ProductCard
+                key={product.id}
+                product={product}
                 onAddToCart={addToCart}
                 onAddToWishlist={addToWishlist}
                 isAddingToCart={addingToCartIds.has(product.id)}
@@ -687,8 +686,8 @@ export default function HomePage() {
                 <SparklesIcon className="h-8 w-8 text-pink-600" />
                 <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Just For You</h2>
               </div>
-              <Link 
-                href="/products" 
+              <Link
+                href="/products"
                 className="flex items-center text-gray-600 hover:text-black transition-colors group"
               >
                 <span className="mr-2">View All</span>
@@ -699,9 +698,9 @@ export default function HomePage() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
               {recommendedProducts.slice(0, 10).map((product) => (
-                <ProductCard 
-                  key={product.id} 
-                  product={product} 
+                <ProductCard
+                  key={product.id}
+                  product={product}
                   onAddToCart={addToCart}
                   onAddToWishlist={addToWishlist}
                   isAddingToCart={addingToCartIds.has(product.id)}
@@ -725,7 +724,7 @@ export default function HomePage() {
               <h3 className="text-xl font-bold mb-4 text-gray-900">Delivery Across India</h3>
               <p className="text-gray-600 leading-relaxed">Fast and reliable delivery across India. Get your beauty essentials delivered to your doorstep within 3-5 business days.</p>
             </div>
-            
+
             <div className="text-center group">
               <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-purple-200 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <SparklesIcon className="h-10 w-10 text-purple-600" />
@@ -733,7 +732,7 @@ export default function HomePage() {
               <h3 className="text-xl font-bold mb-4 text-gray-900">Authentic Products</h3>
               <p className="text-gray-600 leading-relaxed">100% authentic products from trusted brands. Beauty you can trust, every time.</p>
             </div>
-            
+
             <div className="text-center group">
               <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <TrophyIcon className="h-10 w-10 text-blue-600" />

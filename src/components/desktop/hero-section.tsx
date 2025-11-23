@@ -23,11 +23,11 @@ export function DesktopHeroSection() {
   const heroSlides = [
     {
       id: 1,
-      title: 'Discover Your Perfect Beauty Match',
-      subtitle: 'Explore premium beauty products from top brands',
-      description: 'Find everything from makeup to skincare at AynBeauty',
-      buttonText: 'Shop Now',
-      buttonLink: '/products',
+      title: '',
+      subtitle: '',
+      description: '',
+      buttonText: '',
+      buttonLink: '',
       video: '/images/banners/nail_desktop_banner1.mp4',
       bgColor: '',
       image: undefined,
@@ -56,7 +56,7 @@ export function DesktopHeroSection() {
       title: '',
       subtitle: '',
       description: '',
-      bgColor: '', 
+      bgColor: '',
       image: '/images/banners/banner3.jpeg',
       video: undefined,
       buttonText: undefined,
@@ -79,51 +79,48 @@ export function DesktopHeroSection() {
         {heroSlides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-1000 rounded-lg overflow-hidden ${
-              index === currentSlide ? 'opacity-100' : 'opacity-0'
-            }`}
+            className={`absolute inset-0 transition-opacity duration-1000 rounded-lg overflow-hidden ${index === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
           >
-          {/* Background */}
-          {slide.bgColor && <div className={`absolute inset-0 bg-gradient-to-r ${slide.bgColor} opacity-90`} />}
-          
-          {/* Background Video/Image */}
-          <div className="absolute inset-0">
-            {slide.video ? (
-              <video
-                autoPlay
-                muted
-                loop
-                playsInline
-                className={`w-full h-full ${
-                  slide.objectFit === 'contain' ? 'object-contain' :
-                  slide.objectFit === 'fill' ? 'object-fill' :
-                  slide.objectFit === 'stretch' ? 'w-full h-full' :
-                  'object-cover'
-                }`}
-              >
-                <source src={slide.video} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            ) : slide.image ? (
-              <Image
-                src={slide.image}
-                alt={slide.title || 'Banner image'}
-                fill
-                className={`${
-                  slide.objectFit === 'contain' ? 'object-contain' :
-                  slide.objectFit === 'fill' ? 'object-fill' :
-                  slide.objectFit === 'stretch' ? 'w-full h-full' :
-                  'object-cover'
-                }`}
-                priority={index === 0}
-              />
-            ) : null}
-          </div>
+            {/* Background */}
+            {slide.bgColor && <div className={`absolute inset-0 bg-gradient-to-r ${slide.bgColor} opacity-90`} />}
 
-          {/* Content */}
-          <div className="relative z-10 h-full flex items-center">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-              <div className="max-w-3xl">
+            {/* Background Video/Image */}
+            <div className="absolute inset-0">
+              {slide.video ? (
+                <video
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className={`w-full h-full ${slide.objectFit === 'contain' ? 'object-contain' :
+                      slide.objectFit === 'fill' ? 'object-fill' :
+                        slide.objectFit === 'stretch' ? 'w-full h-full' :
+                          'object-cover'
+                    }`}
+                >
+                  <source src={slide.video} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              ) : slide.image ? (
+                <Image
+                  src={slide.image}
+                  alt={slide.title || 'Banner image'}
+                  fill
+                  className={`${slide.objectFit === 'contain' ? 'object-contain' :
+                      slide.objectFit === 'fill' ? 'object-fill' :
+                        slide.objectFit === 'stretch' ? 'w-full h-full' :
+                          'object-cover'
+                    }`}
+                  priority={index === 0}
+                />
+              ) : null}
+            </div>
+
+            {/* Content */}
+            <div className="relative z-10 h-full flex items-center">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                <div className="max-w-3xl">
                   {slide.title && (
                     <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 leading-tight">
                       {slide.title}
@@ -134,67 +131,66 @@ export function DesktopHeroSection() {
                       {slide.subtitle}
                     </p>
                   )}
-                {slide.description && (
-                  <p className="text-lg text-white/80 mb-8 max-w-2xl">
-                    {slide.description}
-                  </p>
-                )}
-                {slide.buttonText && slide.buttonLink && (
-                  <Link
-                    href={slide.buttonLink}
-                    className="inline-flex items-center px-8 py-4 bg-white text-primary-600 font-semibold rounded-full hover:bg-gray-50 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 duration-300"
-                  >
-                    {slide.buttonText}
-                    <svg className="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </Link>
-                )}
+                  {slide.description && (
+                    <p className="text-lg text-white/80 mb-8 max-w-2xl">
+                      {slide.description}
+                    </p>
+                  )}
+                  {slide.buttonText && slide.buttonLink && (
+                    <Link
+                      href={slide.buttonLink}
+                      className="inline-flex items-center px-8 py-4 bg-white text-primary-600 font-semibold rounded-full hover:bg-gray-50 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 duration-300"
+                    >
+                      {slide.buttonText}
+                      <svg className="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           </div>
+        ))}
+
+        {/* Slide Indicators */}
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20">
+          <div className="flex space-x-3">
+            {heroSlides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide
+                    ? 'bg-white scale-125'
+                    : 'bg-white/50 hover:bg-white/80'
+                  }`}
+              />
+            ))}
+          </div>
         </div>
-      ))}
 
-      {/* Slide Indicators */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20">
-        <div className="flex space-x-3">
-          {heroSlides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentSlide
-                  ? 'bg-white scale-125'
-                  : 'bg-white/50 hover:bg-white/80'
-              }`}
-            />
-          ))}
-        </div>
-      </div>
+        {/* Navigation Arrows */}
+        <button
+          onClick={() => setCurrentSlide(currentSlide === 0 ? heroSlides.length - 1 : currentSlide - 1)}
+          className="absolute left-6 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-300"
+        >
+          <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
 
-      {/* Navigation Arrows */}
-      <button
-        onClick={() => setCurrentSlide(currentSlide === 0 ? heroSlides.length - 1 : currentSlide - 1)}
-        className="absolute left-6 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-300"
-      >
-        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
+        <button
+          onClick={() => setCurrentSlide((currentSlide + 1) % heroSlides.length)}
+          className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-300"
+        >
+          <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
 
-      <button
-        onClick={() => setCurrentSlide((currentSlide + 1) % heroSlides.length)}
-        className="absolute right-6 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-300"
-      >
-        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-
-      {/* Decorative Elements */}
-      <div className="absolute top-20 right-20 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse" />
-      <div className="absolute bottom-32 left-20 w-24 h-24 bg-white/10 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }} />
+        {/* Decorative Elements */}
+        <div className="absolute top-20 right-20 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse" />
+        <div className="absolute bottom-32 left-20 w-24 h-24 bg-white/10 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
     </section>
   )
