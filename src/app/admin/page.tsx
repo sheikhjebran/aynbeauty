@@ -55,10 +55,21 @@ export default function AdminDashboard() {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(true)
 
   useEffect(() => {
     fetchDashboardData()
-  }, [])
+    
+    // Set up auto-refresh every 30 seconds
+    const refreshInterval = setInterval(() => {
+      if (autoRefreshEnabled) {
+        fetchDashboardData()
+      }
+    }, 30000) // 30 seconds
+    
+    return () => clearInterval(refreshInterval)
+  }, [autoRefreshEnabled])
 
   const fetchDashboardData = async () => {
     try {
@@ -84,6 +95,8 @@ export default function AdminDashboard() {
 
       const data = await response.json()
       setDashboardData(data.data)
+      setLastUpdated(new Date())
+      setError('')
     } catch (error) {
       console.error('Dashboard fetch error:', error)
       setError('Failed to load dashboard data')
@@ -124,9 +137,46 @@ export default function AdminDashboard() {
     <AdminLayout>
       <div className="py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
-            <p className="text-gray-600 mt-2">Welcome to your admin dashboard</p>
+          <div className="mb-8 flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
+              <p className="text-gray-600 mt-2">Welcome to your admin dashboard</p>
+              {lastUpdated && (
+                <p className="text-xs text-gray-500 mt-2">
+                  Last updated: {lastUpdated.toLocaleTimeString()}
+                </p>
+              )}
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={fetchDashboardData}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
+                title="Refresh dashboard data"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Refresh
+              </button>
+              <button
+                onClick={() => setAutoRefreshEnabled(!autoRefreshEnabled)}
+                className={`px-4 py-2 rounded transition-colors flex items-center gap-2 ${
+                  autoRefreshEnabled
+                    ? 'bg-green-600 text-white hover:bg-green-700'
+                    : 'bg-gray-400 text-white hover:bg-gray-500'
+                }`}
+                title={autoRefreshEnabled ? 'Auto-refresh enabled (30s)' : 'Auto-refresh disabled'}
+              >
+                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                  {autoRefreshEnabled ? (
+                    <path d="M15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                  ) : (
+                    <path d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-13.5-4l9 9m0 0l-9-9" />
+                  )}
+                </svg>
+                {autoRefreshEnabled ? 'Auto-Refresh On' : 'Auto-Refresh Off'}
+              </button>
+            </div>
           </div>
 
           {/* Stats Grid */}
