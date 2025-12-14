@@ -495,37 +495,37 @@ export default function AdminInventory() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Inventory Management</h1>
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Inventory Management</h1>
           <button
             onClick={() => openModal()}
-            className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 flex items-center gap-2"
+            className="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 flex items-center justify-center gap-2 w-full sm:w-auto text-sm sm:text-base"
           >
-            <PlusIcon className="h-5 w-5" />
+            <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             Add Product
           </button>
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-          <div className="flex gap-4">
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <div className="flex-1">
               <div className="relative">
-                <MagnifyingGlassIcon className="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <MagnifyingGlassIcon className="h-4 w-4 sm:h-5 sm:w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={handleSearch}
                   placeholder="Search products..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full pl-9 sm:pl-10 pr-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
                 />
               </div>
             </div>
-            <div className="w-48">
+            <div className="w-full sm:w-48">
               <select
                 value={categoryFilter}
                 onChange={handleCategoryFilter}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
               >
                 <option value="">All Categories</option>
                 {categories.map((category) => (
@@ -538,162 +538,169 @@ export default function AdminInventory() {
 
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           {error && (
-            <div className="p-4 bg-red-50 border-b border-red-200">
-              <p className="text-red-600">{error}</p>
+            <div className="p-3 sm:p-4 bg-red-50 border-b border-red-200">
+              <p className="text-red-600 text-sm sm:text-base">{error}</p>
             </div>
           )}
           
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Product
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Category
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Price
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Stock
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredProducts.map((product) => (
-                  <tr key={product.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        {product.image_url ? (
-                          <img
-                            src={product.image_url}
-                            alt={product.name}
-                            className="h-10 w-10 rounded-full object-cover"
-                          />
-                        ) : (
-                          <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                            <PhotoIcon className="h-6 w-6 text-gray-400" />
-                          </div>
-                        )}
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {product.name}
-                          </div>
-                          <div className="text-sm text-gray-500 truncate max-w-xs">
-                            {product.description}
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Product
+                    </th>
+                    <th className="hidden md:table-cell px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Category
+                    </th>
+                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Price
+                    </th>
+                    <th className="hidden sm:table-cell px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Stock
+                    </th>
+                    <th className="hidden lg:table-cell px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredProducts.map((product) => (
+                    <tr key={product.id} className="hover:bg-gray-50">
+                      <td className="px-3 sm:px-6 py-3 sm:py-4">
+                        <div className="flex items-center">
+                          {product.image_url ? (
+                            <img
+                              src={product.image_url}
+                              alt={product.name}
+                              className="h-8 w-8 sm:h-10 sm:w-10 rounded-full object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
+                              <PhotoIcon className="h-4 w-4 sm:h-6 sm:w-6 text-gray-400" />
+                            </div>
+                          )}
+                          <div className="ml-2 sm:ml-4 min-w-0">
+                            <div className="text-xs sm:text-sm font-medium text-gray-900 truncate">
+                              {product.name}
+                            </div>
+                            <div className="text-xs text-gray-500 truncate md:hidden">
+                              {product.category}
+                            </div>
+                            <div className="text-xs text-gray-500 truncate max-w-[150px] sm:max-w-xs hidden md:block">
+                              {product.description}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.category}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <div className="flex flex-col">
-                        {product.discounted_price ? (
-                          <>
-                            <span className="line-through text-gray-500">₹{product.price}</span>
-                            <span className="text-pink-600 font-medium">₹{product.discounted_price}</span>
-                          </>
-                        ) : (
-                          <span>₹{product.price}</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {product.stock_quantity}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex gap-1">
-                        {product.is_trending && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                            <FireIcon className="h-3 w-3 mr-1" />
-                            Trending
-                          </span>
-                        )}
-                        {product.is_must_have && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                            <SparklesIcon className="h-3 w-3 mr-1" />
-                            Featured
-                          </span>
-                        )}
-                        {product.is_new_arrival && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            <NewspaperIcon className="h-3 w-3 mr-1" />
-                            New
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => openModal(product)}
-                          className="text-indigo-600 hover:text-indigo-900"
-                        >
-                          <PencilIcon className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(product.id)}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          <TrashIcon className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      </td>
+                      <td className="hidden md:table-cell px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">
+                        {product.category}
+                      </td>
+                      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">
+                        <div className="flex flex-col">
+                          {product.discounted_price ? (
+                            <>
+                              <span className="line-through text-gray-500">₹{product.price}</span>
+                              <span className="text-pink-600 font-medium">₹{product.discounted_price}</span>
+                            </>
+                          ) : (
+                            <span>₹{product.price}</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="hidden sm:table-cell px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-900">
+                        {product.stock_quantity}
+                      </td>
+                      <td className="hidden lg:table-cell px-3 sm:px-6 py-3 sm:py-4">
+                        <div className="flex flex-wrap gap-1">
+                          {product.is_trending && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                              <FireIcon className="h-3 w-3 mr-1" />
+                              Trending
+                            </span>
+                          )}
+                          {product.is_must_have && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                              <SparklesIcon className="h-3 w-3 mr-1" />
+                              Featured
+                            </span>
+                          )}
+                          {product.is_new_arrival && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              <NewspaperIcon className="h-3 w-3 mr-1" />
+                              New
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex gap-1 sm:gap-2">
+                          <button
+                            onClick={() => openModal(product)}
+                            className="text-indigo-600 hover:text-indigo-900 p-1"
+                            title="Edit"
+                          >
+                            <PencilIcon className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(product.id)}
+                            className="text-red-600 hover:text-red-900 p-1"
+                            title="Delete"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
                 {editingProduct ? 'Edit Product' : 'Add New Product'}
               </h2>
               <button
                 onClick={closeModal}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 p-1"
               >
-                <XMarkIcon className="h-6 w-6" />
+                <XMarkIcon className="h-5 w-5 sm:h-6 sm:w-6" />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Product Name</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700">Product Name</label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleFormChange}
                     required
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-pink-500 focus:border-pink-500"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Category</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700">Category</label>
                   <select
                     name="category"
                     value={formData.category}
                     onChange={handleFormChange}
                     required
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-pink-500 focus:border-pink-500"
                   >
                     <option value="">Select Category</option>
                     {categories.map((category) => (
@@ -704,20 +711,20 @@ export default function AdminInventory() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700">Description</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700">Description</label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleFormChange}
                   required
                   rows={3}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-pink-500 focus:border-pink-500"
                 />
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Price (₹)</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700">Price (₹)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -725,44 +732,44 @@ export default function AdminInventory() {
                     value={formData.price}
                     onChange={handleFormChange}
                     required
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-pink-500 focus:border-pink-500"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Discounted Price (₹)</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700">Discounted Price (₹)</label>
                   <input
                     type="number"
                     step="0.01"
                     name="discounted_price"
                     value={formData.discounted_price}
                     onChange={handleFormChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-pink-500 focus:border-pink-500"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Stock Quantity</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700">Stock Quantity</label>
                   <input
                     type="number"
                     name="stock_quantity"
                     value={formData.stock_quantity}
                     onChange={handleFormChange}
                     required
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-pink-500 focus:border-pink-500"
                   />
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                   Product Images (1-5 images required)
                 </label>
                 
                 {editingProduct && existingImages.length > 0 && (
-                  <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Current Images:</h4>
-                    <div className="grid grid-cols-3 gap-2">
+                  <div className="mb-3 sm:mb-4">
+                    <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Current Images:</h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {existingImages.map((image, index) => (
                         <div key={image.id} className="relative group">
                           <img 
@@ -804,7 +811,7 @@ export default function AdminInventory() {
                   accept="image/jpeg,image/jpg,image/png,image/webp"
                   multiple
                   onChange={handleFileSelect}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-pink-500 focus:border-pink-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500"
                   required={!editingProduct && existingImages.length === 0}
                 />
                 <p className="mt-1 text-xs text-gray-500">
@@ -813,10 +820,10 @@ export default function AdminInventory() {
                 
                 {selectedFiles.length > 0 && (
                   <div className="mt-3">
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">
+                    <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">
                       Selected Images ({selectedFiles.length}):
                     </h4>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {imagePreviews.map((preview, index) => (
                         <div key={index} className="relative group">
                           <img 
@@ -877,7 +884,7 @@ export default function AdminInventory() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Product Tags</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Product Tags</label>
                 <div className="space-y-2">
                   <label className="flex items-center">
                     <input
@@ -887,8 +894,8 @@ export default function AdminInventory() {
                       onChange={handleFormChange}
                       className="rounded border-gray-300 text-pink-600 focus:ring-pink-500"
                     />
-                    <span className="ml-2 text-sm text-gray-700 flex items-center">
-                      <FireIcon className="h-4 w-4 text-red-500 mr-1" />
+                    <span className="ml-2 text-xs sm:text-sm text-gray-700 flex items-center">
+                      <FireIcon className="h-3 w-3 sm:h-4 sm:w-4 text-red-500 mr-1" />
                       Trending Product
                     </span>
                   </label>
@@ -901,8 +908,8 @@ export default function AdminInventory() {
                       onChange={handleFormChange}
                       className="rounded border-gray-300 text-pink-600 focus:ring-pink-500"
                     />
-                    <span className="ml-2 text-sm text-gray-700 flex items-center">
-                      <SparklesIcon className="h-4 w-4 text-yellow-500 mr-1" />
+                    <span className="ml-2 text-xs sm:text-sm text-gray-700 flex items-center">
+                      <SparklesIcon className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 mr-1" />
                       Must Have / Featured
                     </span>
                   </label>
@@ -915,26 +922,26 @@ export default function AdminInventory() {
                       onChange={handleFormChange}
                       className="rounded border-gray-300 text-pink-600 focus:ring-pink-500"
                     />
-                    <span className="ml-2 text-sm text-gray-700 flex items-center">
-                      <NewspaperIcon className="h-4 w-4 text-green-500 mr-1" />
+                    <span className="ml-2 text-xs sm:text-sm text-gray-700 flex items-center">
+                      <NewspaperIcon className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 mr-1" />
                       New Arrival
                     </span>
                   </label>
                 </div>
               </div>
               
-              <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-200 sticky bottom-0 bg-white -mx-4 sm:mx-0 px-4 sm:px-0 pb-4 sm:pb-0">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+                  className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isUploading}
-                  className="px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-md hover:bg-pink-700 disabled:opacity-50"
+                  className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-pink-600 rounded-md hover:bg-pink-700 disabled:opacity-50"
                 >
                   {isUploading ? 'Saving...' : (editingProduct ? 'Update Product' : 'Add Product')}
                 </button>

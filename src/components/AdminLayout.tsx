@@ -177,16 +177,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Main content */}
       <div className="lg:pl-64 flex flex-col flex-1">
-        <div className="sticky top-0 z-10 lg:hidden pl-1 pt-1 sm:pl-3 sm:pt-3 bg-gray-50">
+        <div className="sticky top-0 z-10 lg:hidden pl-2 pt-2 sm:pl-3 sm:pt-3 bg-gray-50 border-b border-gray-200">
           <button
             type="button"
-            className="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-pink-500"
+            className="h-10 w-10 sm:h-12 sm:w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-pink-500 mb-2"
             onClick={() => setSidebarOpen(true)}
           >
-            <Bars3Icon className="h-6 w-6" />
+            <Bars3Icon className="h-5 w-5 sm:h-6 sm:w-6" />
           </button>
         </div>
-        <main className="flex-1">
+        <main className="flex-1 p-3 sm:p-4 lg:p-6">
           {children}
         </main>
       </div>
