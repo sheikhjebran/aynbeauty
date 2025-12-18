@@ -18,14 +18,7 @@ export function HydrationBoundary({ children }: HydrationBoundaryProps) {
     setIsHydrated(true)
   }, [])
 
-  // Return a fallback during SSR to prevent hydration mismatches
-  if (!isHydrated) {
-    return (
-      <div suppressHydrationWarning>
-        {/* Empty div - will be replaced with actual content after hydration */}
-      </div>
-    )
-  }
-
-  return <>{children}</>
+  // Render children with suppressHydrationWarning to prevent digest errors
+  // The suppressHydrationWarning allows client-side state to differ from SSR
+  return <div suppressHydrationWarning>{children}</div>
 }
