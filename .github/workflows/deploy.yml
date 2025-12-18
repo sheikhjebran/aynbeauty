@@ -1,206 +1,206 @@
-name: Deploy to Production Server
+# name: Deploy to Production Server
 
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
+# on:
+#   push:
+#     branches: [main]
+#   workflow_dispatch:
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-          cache: "npm"
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: "18"
+#           cache: "npm"
 
-      - name: Install dependencies
-        run: npm ci
+#       - name: Install dependencies
+#         run: npm ci
 
-      - name: Copy production environment file
-        run: cp .env.prod .env.local
+#       - name: Copy production environment file
+#         run: cp .env.prod .env.local
 
-      - name: Build application
-        run: npm run build
+#       - name: Build application
+#         run: npm run build
 
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          port: 22
-          envs: DB_HOST,DB_PORT,DB_USER,DB_PASSWORD,DB_NAME,NODE_ENV
-          script: |
-            echo "🚀 Starting deployment..."
-            set -e  # Exit on error
+#       - name: Deploy to server
+#         uses: appleboy/ssh-action@v1.0.0
+#         with:
+#           host: ${{ secrets.HOST }}
+#           username: ${{ secrets.USERNAME }}
+#           password: ${{ secrets.PASSWORD }}
+#           port: 22
+#           envs: DB_HOST,DB_PORT,DB_USER,DB_PASSWORD,DB_NAME,NODE_ENV
+#           script: |
+#             echo "🚀 Starting deployment..."
+#             set -e  # Exit on error
 
-            # Navigate to project directory
-            cd /var/www/aynbeauty
-            PROJECT_DIR=$(pwd)
-            BACKUP_DIR="/var/backups/aynbeauty"
-            IMAGES_DIR="$PROJECT_DIR/public/uploads/products"
-            BACKUP_IMAGES_DIR="$BACKUP_DIR/product-images-$(date +%Y%m%d-%H%M%S)"
+#             # Navigate to project directory
+#             cd /var/www/aynbeauty
+#             PROJECT_DIR=$(pwd)
+#             BACKUP_DIR="/var/backups/aynbeauty"
+#             IMAGES_DIR="$PROJECT_DIR/public/uploads/products"
+#             BACKUP_IMAGES_DIR="$BACKUP_DIR/product-images-$(date +%Y%m%d-%H%M%S)"
 
-            # Create backup directory if it doesn't exist
-            mkdir -p "$BACKUP_DIR"
-            mkdir -p "$IMAGES_DIR"
+#             # Create backup directory if it doesn't exist
+#             mkdir -p "$BACKUP_DIR"
+#             mkdir -p "$IMAGES_DIR"
 
-            echo "📸 Creating backup of product images..."
-            if [ -d "$IMAGES_DIR" ] && [ "$(ls -A $IMAGES_DIR)" ]; then
-              mkdir -p "$BACKUP_IMAGES_DIR"
-              cp -r "$IMAGES_DIR"/* "$BACKUP_IMAGES_DIR/" 2>/dev/null || echo "⚠️ No existing images to backup"
-              echo "✅ Product images backed up to: $BACKUP_IMAGES_DIR"
-              LATEST_BACKUP="$BACKUP_IMAGES_DIR"
-            else
-              echo "ℹ️ No existing product images found"
-            fi
+#             echo "📸 Creating backup of product images..."
+#             if [ -d "$IMAGES_DIR" ] && [ "$(ls -A $IMAGES_DIR)" ]; then
+#               mkdir -p "$BACKUP_IMAGES_DIR"
+#               cp -r "$IMAGES_DIR"/* "$BACKUP_IMAGES_DIR/" 2>/dev/null || echo "⚠️ No existing images to backup"
+#               echo "✅ Product images backed up to: $BACKUP_IMAGES_DIR"
+#               LATEST_BACKUP="$BACKUP_IMAGES_DIR"
+#             else
+#               echo "ℹ️ No existing product images found"
+#             fi
 
-            # Stop the application gracefully
-            echo "⏹️ Stopping application..."
-            if pm2 desc aynbeauty > /dev/null 2>&1; then
-              pm2 stop aynbeauty
-              sleep 3
-              echo "✅ Application stopped"
-            else
-              echo "ℹ️ Application not running in PM2"
-            fi
+#             # Stop the application gracefully
+#             echo "⏹️ Stopping application..."
+#             if pm2 desc aynbeauty > /dev/null 2>&1; then
+#               pm2 stop aynbeauty
+#               sleep 3
+#               echo "✅ Application stopped"
+#             else
+#               echo "ℹ️ Application not running in PM2"
+#             fi
 
-            # Pull latest changes
-            echo "📥 Pulling latest changes from main..."
-            git config --global --add safe.directory /var/www/aynbeauty
-            git fetch origin main
-            git reset --hard origin/main
-            echo "✅ Code updated"
+#             # Pull latest changes
+#             echo "📥 Pulling latest changes from main..."
+#             git config --global --add safe.directory /var/www/aynbeauty
+#             git fetch origin main
+#             git reset --hard origin/main
+#             echo "✅ Code updated"
 
-            # Copy production environment
-            echo "📋 Setting up production environment..."
-            if [ -f ".env.prod" ]; then
-              cp .env.prod .env.local
-              echo "✅ Production environment file copied"
-            else
-              echo "⚠️ Warning: .env.prod not found, using existing .env.local"
-            fi
+#             # Copy production environment
+#             echo "📋 Setting up production environment..."
+#             if [ -f ".env.prod" ]; then
+#               cp .env.prod .env.local
+#               echo "✅ Production environment file copied"
+#             else
+#               echo "⚠️ Warning: .env.prod not found, using existing .env.local"
+#             fi
 
-            # Clean build artifacts to prevent stale cache issues
-            echo "🧹 Cleaning old build artifacts..."
-            rm -rf .next dist .turbo || true
-            echo "✅ Old artifacts cleaned"
+#             # Clean build artifacts to prevent stale cache issues
+#             echo "🧹 Cleaning old build artifacts..."
+#             rm -rf .next dist .turbo || true
+#             echo "✅ Old artifacts cleaned"
 
-            # Install dependencies
-            echo "📦 Installing dependencies..."
-            npm ci --production=false
-            echo "✅ Dependencies installed"
+#             # Install dependencies
+#             echo "📦 Installing dependencies..."
+#             npm ci --production=false
+#             echo "✅ Dependencies installed"
 
-            # Build the application
-            echo "🔨 Building Next.js application..."
-            npm run build
-            if [ $? -eq 0 ]; then
-              echo "✅ Build completed successfully"
-            else
-              echo "❌ Build failed! Rolling back..."
-              exit 1
-            fi
+#             # Build the application
+#             echo "🔨 Building Next.js application..."
+#             npm run build
+#             if [ $? -eq 0 ]; then
+#               echo "✅ Build completed successfully"
+#             else
+#               echo "❌ Build failed! Rolling back..."
+#               exit 1
+#             fi
 
-            # Restore product images
-            echo "📸 Restoring product images..."
-            mkdir -p "$IMAGES_DIR"
-            if [ -d "$LATEST_BACKUP" ] && [ "$(ls -A $LATEST_BACKUP)" ]; then
-              cp -r "$LATEST_BACKUP"/* "$IMAGES_DIR/" 2>/dev/null
-              echo "✅ Product images restored"
-            else
-              echo "ℹ️ No backup images to restore"
-            fi
+#             # Restore product images
+#             echo "📸 Restoring product images..."
+#             mkdir -p "$IMAGES_DIR"
+#             if [ -d "$LATEST_BACKUP" ] && [ "$(ls -A $LATEST_BACKUP)" ]; then
+#               cp -r "$LATEST_BACKUP"/* "$IMAGES_DIR/" 2>/dev/null
+#               echo "✅ Product images restored"
+#             else
+#               echo "ℹ️ No backup images to restore"
+#             fi
 
-            # Update database schema (if migration exists)
-            echo "🗄️ Updating database schema..."
-            DB_HOST="${DB_HOST:-127.0.0.1}"
-            DB_PORT="${DB_PORT:-3306}"
-            if [ -f "migrate-image-urls.sql" ]; then
-              mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < migrate-image-urls.sql && echo "✅ Database migration completed" || echo "⚠️ Database migration skipped"
-            else
-              echo "ℹ️ No database migrations to run"
-            fi
+#             # Update database schema (if migration exists)
+#             echo "🗄️ Updating database schema..."
+#             DB_HOST="${DB_HOST:-127.0.0.1}"
+#             DB_PORT="${DB_PORT:-3306}"
+#             if [ -f "migrate-image-urls.sql" ]; then
+#               mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < migrate-image-urls.sql && echo "✅ Database migration completed" || echo "⚠️ Database migration skipped"
+#             else
+#               echo "ℹ️ No database migrations to run"
+#             fi
 
-            # Set proper permissions
-            echo "🔐 Setting file permissions..."
-            sudo chown -R www-data:www-data "$PROJECT_DIR" 2>/dev/null || chown -R nobody "$PROJECT_DIR"
-            sudo chmod -R 755 "$PROJECT_DIR" 2>/dev/null || chmod -R 755 "$PROJECT_DIR"
-            sudo chmod -R 775 "$IMAGES_DIR" 2>/dev/null || chmod -R 775 "$IMAGES_DIR"
-            echo "✅ Permissions set"
+#             # Set proper permissions
+#             echo "🔐 Setting file permissions..."
+#             sudo chown -R www-data:www-data "$PROJECT_DIR" 2>/dev/null || chown -R nobody "$PROJECT_DIR"
+#             sudo chmod -R 755 "$PROJECT_DIR" 2>/dev/null || chmod -R 755 "$PROJECT_DIR"
+#             sudo chmod -R 775 "$IMAGES_DIR" 2>/dev/null || chmod -R 775 "$IMAGES_DIR"
+#             echo "✅ Permissions set"
 
-            # Start or restart the application with PM2
-            echo "🔄 Starting application with PM2..."
-            if pm2 desc aynbeauty > /dev/null 2>&1; then
-              pm2 restart aynbeauty
-              echo "✅ Application restarted"
-            else
-              pm2 start ecosystem.config.js
-              echo "✅ Application started"
-            fi
+#             # Start or restart the application with PM2
+#             echo "🔄 Starting application with PM2..."
+#             if pm2 desc aynbeauty > /dev/null 2>&1; then
+#               pm2 restart aynbeauty
+#               echo "✅ Application restarted"
+#             else
+#               pm2 start ecosystem.config.js
+#               echo "✅ Application started"
+#             fi
 
-            # Wait for application to be ready - increased timeout
-            echo "⏳ Waiting for application startup..."
-            sleep 10
+#             # Wait for application to be ready - increased timeout
+#             echo "⏳ Waiting for application startup..."
+#             sleep 10
 
-            # Show PM2 status
-            echo "📊 PM2 Application status:"
-            pm2 status
-            echo ""
-            pm2 info aynbeauty || true
+#             # Show PM2 status
+#             echo "📊 PM2 Application status:"
+#             pm2 status
+#             echo ""
+#             pm2 info aynbeauty || true
 
-            # Test the application health with extended timeout
-            echo "🧪 Testing application health..."
-            RETRY_COUNT=0
-            MAX_RETRIES=10
-            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-              if curl -f http://localhost:3000/api/health --max-time 30 --silent > /dev/null 2>&1; then
-                echo "✅ Health check passed - Application is healthy"
-                break
-              else
-                RETRY_COUNT=$((RETRY_COUNT + 1))
-                if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-                  echo "⚠️ Health check attempt $RETRY_COUNT/$MAX_RETRIES failed, retrying in 5s..."
-                  # Show current status
-                  pm2 status || true
-                  sleep 5
-                else
-                  echo "⚠️ Health check failed after $MAX_RETRIES attempts"
-                  echo "Application is likely still booting or has errors. Showing last errors:"
-                  tail -50 "$PROJECT_DIR/logs/aynbeauty-error.log" 2>/dev/null || echo "No error log available"
-                  echo ""
-                  echo "Full PM2 status:"
-                  pm2 info aynbeauty || pm2 status
-                fi
-              fi
-            done
+#             # Test the application health with extended timeout
+#             echo "🧪 Testing application health..."
+#             RETRY_COUNT=0
+#             MAX_RETRIES=10
+#             while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+#               if curl -f http://localhost:3000/api/health --max-time 30 --silent > /dev/null 2>&1; then
+#                 echo "✅ Health check passed - Application is healthy"
+#                 break
+#               else
+#                 RETRY_COUNT=$((RETRY_COUNT + 1))
+#                 if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+#                   echo "⚠️ Health check attempt $RETRY_COUNT/$MAX_RETRIES failed, retrying in 5s..."
+#                   # Show current status
+#                   pm2 status || true
+#                   sleep 5
+#                 else
+#                   echo "⚠️ Health check failed after $MAX_RETRIES attempts"
+#                   echo "Application is likely still booting or has errors. Showing last errors:"
+#                   tail -50 "$PROJECT_DIR/logs/aynbeauty-error.log" 2>/dev/null || echo "No error log available"
+#                   echo ""
+#                   echo "Full PM2 status:"
+#                   pm2 info aynbeauty || pm2 status
+#                 fi
+#               fi
+#             done
 
-            # Verify backups are accessible
-            echo "📂 Backup information:"
-            echo "Backup directory: $BACKUP_DIR"
-            if [ -d "$BACKUP_DIR" ]; then
-              ls -lh "$BACKUP_DIR" | tail -5 || echo "No backups found"
-            fi
+#             # Verify backups are accessible
+#             echo "📂 Backup information:"
+#             echo "Backup directory: $BACKUP_DIR"
+#             if [ -d "$BACKUP_DIR" ]; then
+#               ls -lh "$BACKUP_DIR" | tail -5 || echo "No backups found"
+#             fi
 
-            echo ""
-            echo "✅ Deployment completed successfully!"
-            echo "🌐 Application running at: http://66.116.199.206:3000"
-            echo "📊 To check logs: pm2 logs aynbeauty"
-            echo "🔄 To restart manually: pm2 restart aynbeauty"
-            echo "⏹️ To stop: pm2 stop aynbeauty"
+#             echo ""
+#             echo "✅ Deployment completed successfully!"
+#             echo "🌐 Application running at: http://66.116.199.206:3000"
+#             echo "📊 To check logs: pm2 logs aynbeauty"
+#             echo "🔄 To restart manually: pm2 restart aynbeauty"
+#             echo "⏹️ To stop: pm2 stop aynbeauty"
 
-      - name: Notify deployment success
-        if: success()
-        run: echo "✅ Deployment completed successfully!"
+#       - name: Notify deployment success
+#         if: success()
+#         run: echo "✅ Deployment completed successfully!"
 
-      - name: Notify deployment failure
-        if: failure()
-        run: |
-          echo "❌ Deployment failed!"
-          echo "Please check the logs above for details."
-          exit 1
+#       - name: Notify deployment failure
+#         if: failure()
+#         run: |
+#           echo "❌ Deployment failed!"
+#           echo "Please check the logs above for details."
+#           exit 1
