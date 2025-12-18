@@ -31,13 +31,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Mark that hydration is complete
     setIsHydrated(true)
     
-    // Check for existing token in localStorage
-    const savedToken = localStorage.getItem('auth_token') || localStorage.getItem('token')
-    const savedUser = localStorage.getItem('auth_user')
-    
-    if (savedToken && savedUser) {
-      setToken(savedToken)
-      setUser(JSON.parse(savedUser))
+    // Check for existing token in localStorage (client-side only)
+    if (typeof window !== 'undefined') {
+      const savedToken = localStorage.getItem('auth_token') || localStorage.getItem('token')
+      const savedUser = localStorage.getItem('auth_user')
+      
+      if (savedToken && savedUser) {
+        setToken(savedToken)
+        setUser(JSON.parse(savedUser))
+      }
     }
     setLoading(false)
   }, [])
@@ -57,10 +59,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.ok) {
         const { token: authToken, user: userData, isAdmin } = data
         
-        // Save to localStorage with both keys for compatibility
-        localStorage.setItem('auth_token', authToken)
-        localStorage.setItem('token', authToken) // For backward compatibility
-        localStorage.setItem('auth_user', JSON.stringify(userData))
+        // Save to localStorage with both keys for compatibility (client-side only)
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('auth_token', authToken)
+          localStorage.setItem('token', authToken) // For backward compatibility
+          localStorage.setItem('auth_user', JSON.stringify(userData))
+        }
         
         // Update state
         setToken(authToken)
@@ -76,9 +80,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const logout = () => {
-    localStorage.removeItem('auth_token')
-    localStorage.removeItem('token') // Remove both keys
-    localStorage.removeItem('auth_user')
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('token') // Remove both keys
+      localStorage.removeItem('auth_user')
+    }
     setToken(null)
     setUser(null)
   }

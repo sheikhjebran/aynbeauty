@@ -18,7 +18,7 @@ export function HydrationBoundary({ children }: HydrationBoundaryProps) {
     setIsHydrated(true)
   }, [])
 
-  // Render children with suppressHydrationWarning to prevent digest errors
-  // The suppressHydrationWarning allows client-side state to differ from SSR
-  return <div suppressHydrationWarning>{children}</div>
+  // Return children directly with suppressHydrationWarning on the fragment
+  // This prevents hydration mismatches from localStorage state differences
+  return <>{children}</>
 }

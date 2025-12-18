@@ -20,9 +20,6 @@ const playfair = Playfair_Display({
   fallback: ['Georgia', 'Times New Roman', 'serif']
 })
 
-// Force dynamic rendering to support authentication context
-export const dynamic = 'force-dynamic'
-
 export const metadata: Metadata = {
   metadataBase: new URL('https://aynbeauty.in'),
   title: 'AynBeauty - For every day, for every mood, for every you',
