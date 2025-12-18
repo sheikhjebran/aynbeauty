@@ -35,6 +35,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: 22
+          envs: DB_HOST,DB_PORT,DB_USER,DB_PASSWORD,DB_NAME
           script: |
             echo "🚀 Starting deployment..."
             set -e  # Exit on error
@@ -63,7 +64,7 @@ jobs:
             # Stop the application gracefully
             echo "⏹️ Stopping application..."
             if pm2 desc aynbeauty > /dev/null 2>&1; then
-              pm2 stop aynbeauty --wait-ready
+              pm2 stop aynbeauty
               sleep 3
               echo "✅ Application stopped"
             else
@@ -113,8 +114,10 @@ jobs:
 
             # Update database schema (if migration exists)
             echo "🗄️ Updating database schema..."
+            DB_HOST="${DB_HOST:-127.0.0.1}"
+            DB_PORT="${DB_PORT:-3306}"
             if [ -f "migrate-image-urls.sql" ]; then
-              mysql -u ${{ secrets.DB_USER }} -p${{ secrets.DB_PASSWORD }} ${{ secrets.DB_NAME }} < migrate-image-urls.sql && echo "✅ Database migration completed" || echo "⚠️ Database migration skipped"
+              mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < migrate-image-urls.sql && echo "✅ Database migration completed" || echo "⚠️ Database migration skipped"
             else
               echo "ℹ️ No database migrations to run"
             fi
@@ -129,10 +132,10 @@ jobs:
             # Start or restart the application with PM2
             echo "🔄 Starting application with PM2..."
             if pm2 desc aynbeauty > /dev/null 2>&1; then
-              pm2 restart aynbeauty --wait-ready
+              pm2 restart aynbeauty
               echo "✅ Application restarted"
             else
-              pm2 start ecosystem.config.js --name aynbeauty 2>/dev/null || pm2 start npm --name aynbeauty -- start
+              pm2 start ecosystem.config.js
               echo "✅ Application started"
             fi
 

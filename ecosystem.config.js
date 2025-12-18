@@ -2,8 +2,7 @@ module.exports = {
   apps: [
     {
       name: "aynbeauty",
-      script: "./node_modules/.bin/next",
-      args: "start",
+      script: ".next/standalone/server.js",
       instances: 1,
       exec_mode: "fork",
       autorestart: true,
