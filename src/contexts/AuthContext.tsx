@@ -25,8 +25,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isHydrated, setIsHydrated] = useState(false)
 
   useEffect(() => {
+    // Mark that hydration is complete
+    setIsHydrated(true)
+    
     // Check for existing token in localStorage
     const savedToken = localStorage.getItem('auth_token') || localStorage.getItem('token')
     const savedUser = localStorage.getItem('auth_user')
