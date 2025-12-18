@@ -12,8 +12,9 @@ const nextConfig = {
   // Configure output for production deployment
   output: "standalone",
 
-  // Disable static generation for dynamic pages to avoid digest mismatches
-  staticPageGenerationTimeout: 120,
+  // Force all pages to be server-side rendered to avoid digest mismatches
+  // This disables static page generation which causes the digest error
+  staticPageGenerationTimeout: 0,
 
   // Prevent cache issues
   onDemandEntries: {

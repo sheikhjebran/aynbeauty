@@ -1,5 +1,9 @@
 'use client'
 
+// Force dynamic rendering to avoid digest mismatches
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'

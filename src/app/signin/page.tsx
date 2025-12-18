@@ -1,5 +1,9 @@
 'use client'
 
+// Force dynamic rendering to avoid digest mismatches
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 import { Suspense } from 'react'
 import { useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'

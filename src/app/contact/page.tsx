@@ -1,5 +1,9 @@
 'use client'
 
+// Force dynamic rendering to avoid digest mismatches
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 import { motion } from 'framer-motion'
 import { PhoneIcon } from '@heroicons/react/24/outline'
 
