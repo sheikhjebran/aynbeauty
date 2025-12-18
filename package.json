@@ -21,7 +21,8 @@
     "cleanup:images": "node scripts/automatic-cleanup.js",
     "cleanup:images:dry-run": "node scripts/automatic-cleanup.js --dry-run",
     "admin:reset": "node scripts/reset-admin.js reset",
-    "admin:info": "node scripts/reset-admin.js info"
+    "admin:info": "node scripts/reset-admin.js info",
+    "test:build": "node scripts/test-build.js"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
