@@ -39,6 +39,7 @@ export function Footer() {
                   width={40}
                   height={40}
                   className="w-full h-full object-contain"
+                  unoptimized={true}
                 />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">

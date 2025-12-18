@@ -51,6 +51,7 @@ export function MobileHeader() {
                     className="h-14 w-auto"
                     priority
                     onError={() => setLogoError(true)}
+                    unoptimized={true}
                   />
                   <span className="ml-2 text-xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
                     

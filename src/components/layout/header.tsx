@@ -131,6 +131,7 @@ export function Header() {
                   className="h-16 w-auto md:h-20 md:w-auto"
                   priority
                   onError={() => setLogoError(true)}
+                  unoptimized={true}
                 />
                 <span className="ml-3 text-2xl md:text-3xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
                   
