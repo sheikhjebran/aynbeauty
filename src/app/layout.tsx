@@ -54,8 +54,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={`${poppins.variable} ${playfair.variable} font-sans`}>
+    <html lang="en" suppressHydrationWarning>
+      <body 
+        className={`${poppins.variable} ${playfair.variable} font-sans`}
+        suppressHydrationWarning
+      >
         <Providers>
           <ConditionalLayout>
             {children}
