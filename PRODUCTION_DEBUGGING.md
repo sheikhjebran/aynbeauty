@@ -140,6 +140,7 @@ The digest error in Next.js 14.2.33 is sometimes a symptom of:
 
 ### Nuclear Option (Last Resort)
 
+
 ```bash
 # On production server
 cd /var/www/aynbeauty
