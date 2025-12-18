@@ -49,6 +49,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const navigation = [
     { name: 'Dashboard', href: '/admin', icon: ChartBarIcon, current: pathname === '/admin' },
+    { name: 'Sales Analytics', href: '/admin/sales', icon: ChartBarIcon, current: pathname === '/admin/sales' },
     { name: 'Inventory', href: '/admin/inventory', icon: CubeIcon, current: pathname === '/admin/inventory' },
     { name: 'Cleanup Images', href: '/admin/cleanup-images', icon: TrashIcon, current: pathname === '/admin/cleanup-images' },
   ]

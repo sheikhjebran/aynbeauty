@@ -55,8 +55,12 @@ export async function GET(request: NextRequest) {
       // Total orders
       executeQuery('SELECT COUNT(*) as count FROM orders'),
       
-      // Total revenue
-      executeQuery('SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE status = "completed"'),
+      // Total revenue (include all orders except cancelled and pending)
+      executeQuery(`
+        SELECT COALESCE(SUM(total_amount), 0) as total 
+        FROM orders 
+        WHERE payment_status = 'paid' OR status IN ('completed', 'delivered', 'shipped', 'processing', 'confirmed')
+      `),
       
       // Recent orders (last 10)
       executeQuery(`
@@ -82,7 +86,7 @@ export async function GET(request: NextRequest) {
         FROM products p
         LEFT JOIN order_items oi ON p.id = oi.product_id
         LEFT JOIN orders o ON oi.order_id = o.id
-        WHERE o.status = 'completed' OR o.status IS NULL
+        WHERE o.payment_status = 'paid' OR o.status IN ('completed', 'delivered', 'shipped', 'processing', 'confirmed') OR o.id IS NULL
         GROUP BY p.id, p.name, p.price, p.stock_quantity
         ORDER BY total_sold DESC
         LIMIT 10
