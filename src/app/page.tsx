@@ -35,6 +35,13 @@ const CategoryImage = ({ src, alt, className }: { src: string, alt: string, clas
     }
   }
 
+  // Handle null or invalid src
+  if (!src || typeof src !== 'string') {
+    return (
+      <div className={`${className} bg-gray-200`} />
+    )
+  }
+
   return (
     <Image
       src={imgSrc}
@@ -42,6 +49,7 @@ const CategoryImage = ({ src, alt, className }: { src: string, alt: string, clas
       fill
       className={className}
       onError={handleError}
+      unoptimized={imgSrc.startsWith('/uploads') || imgSrc.startsWith('/api/images')}
     />
   )
 }

@@ -5,10 +5,21 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: "100mb",
     },
+    // Optimize for production deployments
+    optimizePackageImports: ["@heroicons/react", "lucide-react"],
   },
 
   // Configure output for production deployment
   output: "standalone",
+
+  // Disable static generation for dynamic pages to avoid digest mismatches
+  staticPageGenerationTimeout: 120,
+
+  // Prevent cache issues
+  onDemandEntries: {
+    maxInactiveAge: 15 * 1000,
+    pagesBufferLength: 5,
+  },
 
   images: {
     remotePatterns: [
@@ -37,11 +48,8 @@ const nextConfig = {
     ],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
-    // Allow local uploads directory
     domains: [],
-    // Specify image loader for local images
     loader: "default",
-    // Unoptimized for local development/testing
     unoptimized: false,
   },
   // Custom headers for static files

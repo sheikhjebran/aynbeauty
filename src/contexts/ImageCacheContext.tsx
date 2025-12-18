@@ -16,14 +16,25 @@ export function ImageCacheProvider({ children }: { children: React.ReactNode }) 
   }, [])
 
   const getImageUrl = useCallback((url: string) => {
+    // Handle null or undefined URLs
+    if (!url || typeof url !== 'string') {
+      return ''
+    }
+    
     if (url.startsWith('/uploads/')) {
       return `${url}?v=${imageVersion}`
     }
     return url
   }, [imageVersion])
 
+  const value: ImageCacheContextType = {
+    imageVersion,
+    refreshImages,
+    getImageUrl
+  }
+
   return (
-    <ImageCacheContext.Provider value={{ imageVersion, refreshImages, getImageUrl }}>
+    <ImageCacheContext.Provider value={value}>
       {children}
     </ImageCacheContext.Provider>
   )

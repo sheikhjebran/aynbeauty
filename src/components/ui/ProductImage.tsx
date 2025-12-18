@@ -20,6 +20,16 @@ export function ProductImage({
   fill = false,
   priority = false 
 }: ProductImageProps) {
+  // Handle null or undefined src
+  if (!src || typeof src !== 'string') {
+    return (
+      <div 
+        className={className}
+        style={fill ? { width: '100%', height: '100%', backgroundColor: '#f0f0f0' } : { width, height, backgroundColor: '#f0f0f0' }}
+      />
+    )
+  }
+
   // Check if this is an uploaded image (starts with /uploads or /api/images)
   const isUploadedImage = src.startsWith('/uploads/') || src.startsWith('/api/images/')
   

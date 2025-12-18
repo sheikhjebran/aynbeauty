@@ -35,7 +35,9 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: 22
-          envs: DB_HOST,DB_PORT,DB_USER,DB_PASSWORD,DB_NAME
+          envs: DB_HOST,DB_PORT,DB_USER,DB_PASSWORD,DB_NAME,NODE_ENV
+          env:
+            NODE_ENV: production
           script: |
             echo "🚀 Starting deployment..."
             set -e  # Exit on error
@@ -86,6 +88,11 @@ jobs:
             else
               echo "⚠️ Warning: .env.prod not found, using existing .env.local"
             fi
+
+            # Clean build artifacts to prevent stale cache issues
+            echo "🧹 Cleaning old build artifacts..."
+            rm -rf .next dist .turbo || true
+            echo "✅ Old artifacts cleaned"
 
             # Install dependencies
             echo "📦 Installing dependencies..."
@@ -139,8 +146,9 @@ jobs:
               echo "✅ Application started"
             fi
 
-            # Wait for application to be ready
-            sleep 5
+            # Wait for application to be ready - increased timeout
+            echo "⏳ Waiting for application startup..."
+            sleep 10
 
             # Show PM2 status
             echo "📊 PM2 Application status:"
@@ -148,10 +156,10 @@ jobs:
             echo ""
             pm2 info aynbeauty || true
 
-            # Test the application health
+            # Test the application health with extended timeout
             echo "🧪 Testing application health..."
             RETRY_COUNT=0
-            MAX_RETRIES=5
+            MAX_RETRIES=10
             while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
               if curl -f http://localhost:3000/api/health --max-time 30 --silent > /dev/null 2>&1; then
                 echo "✅ Health check passed - Application is healthy"
@@ -159,11 +167,17 @@ jobs:
               else
                 RETRY_COUNT=$((RETRY_COUNT + 1))
                 if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-                  echo "⚠️ Health check attempt $RETRY_COUNT failed, retrying..."
-                  sleep 3
+                  echo "⚠️ Health check attempt $RETRY_COUNT/$MAX_RETRIES failed, retrying in 5s..."
+                  # Show current status
+                  pm2 status || true
+                  sleep 5
                 else
                   echo "⚠️ Health check failed after $MAX_RETRIES attempts"
-                  pm2 logs aynbeauty --lines 50 | head -20
+                  echo "Application is likely still booting or has errors. Showing last errors:"
+                  tail -50 "$PROJECT_DIR/logs/aynbeauty-error.log" 2>/dev/null || echo "No error log available"
+                  echo ""
+                  echo "Full PM2 status:"
+                  pm2 info aynbeauty || pm2 status
                 fi
               fi
             done

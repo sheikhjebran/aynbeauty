@@ -36,23 +36,14 @@ export const metadata: Metadata = {
     title: 'AynBeauty - For every day, for every mood, for every you',
     description: 'Discover premium beauty products from top brands.',
     siteName: 'AynBeauty',
-    images: [
-      {
-        url: '/images/logo.png',
-        width: 1200,
-        height: 630,
-        alt: 'AynBeauty - Premium Beauty Products',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'AynBeauty - For every day, for every mood, for every you',
     description: 'Discover premium beauty products from top brands.',
-    images: ['/images/logo.png'],
   },
   icons: {
-    icon: '/images/logo.png',
+    icon: '/favicon.ico',
   },
   manifest: '/site.webmanifest',
 }
