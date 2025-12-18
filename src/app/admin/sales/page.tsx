@@ -248,7 +248,7 @@ export default function SalesAnalytics() {
                     <dl>
                       <dt className="text-sm font-medium text-gray-500 truncate">Avg Order Value</dt>
                       <dd className="text-lg font-medium text-gray-900">
-                        ₹{salesData?.summary.average_order_value?.toFixed(2) || 0}
+                        ₹{(salesData?.summary.average_order_value || 0).toFixed(2)}
                       </dd>
                     </dl>
                   </div>
@@ -330,7 +330,7 @@ export default function SalesAnalytics() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₹{product.price}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.stock_quantity}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-pink-600">{product.units_sold}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">₹{product.revenue?.toLocaleString()}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">₹{(product.revenue || 0).toLocaleString()}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.number_of_orders}</td>
                       </tr>
                     ))}
@@ -364,7 +364,7 @@ export default function SalesAnalytics() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{day.orders_count}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{day.items_sold}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
-                          ₹{day.daily_revenue?.toLocaleString()}
+                          ₹{(day.daily_revenue || 0).toLocaleString()}
                         </td>
                       </tr>
                     ))}
@@ -398,7 +398,7 @@ export default function SalesAnalytics() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{customer.email}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{customer.total_orders}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
-                          ₹{customer.total_spent?.toLocaleString()}
+                          ₹{(customer.total_spent || 0).toLocaleString()}
                         </td>
                       </tr>
                     ))}
@@ -430,7 +430,7 @@ export default function SalesAnalytics() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{category.orders_count}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{category.units_sold}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
-                          ₹{category.revenue?.toLocaleString()}
+                          ₹{(category.revenue || 0).toLocaleString()}
                         </td>
                       </tr>
                     ))}
