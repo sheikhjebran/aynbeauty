@@ -61,12 +61,12 @@ jobs:
               echo "ℹ️ No existing product images found"
             fi
 
-            # Stop the application gracefully
+            # Stop and delete the application from PM2
             echo "⏹️ Stopping application..."
             if pm2 desc aynbeauty > /dev/null 2>&1; then
-              pm2 stop aynbeauty
-              sleep 3
-              echo "✅ Application stopped"
+              pm2 delete aynbeauty
+              sleep 2
+              echo "✅ Application removed from PM2"
             else
               echo "ℹ️ Application not running in PM2"
             fi
@@ -149,15 +149,11 @@ jobs:
             sudo chmod -R 775 "$IMAGES_DIR" 2>/dev/null || chmod -R 775 "$IMAGES_DIR"
             echo "✅ Permissions set"
 
-            # Start or restart the application with PM2
+            # Start the application with PM2
             echo "🔄 Starting application with PM2..."
-            if pm2 desc aynbeauty > /dev/null 2>&1; then
-              pm2 restart aynbeauty
-              echo "✅ Application restarted"
-            else
-              pm2 start ecosystem.config.js
-              echo "✅ Application started"
-            fi
+            pm2 start ecosystem.config.js
+            pm2 save
+            echo "✅ Application started"
 
             # Wait for application to be ready - increased timeout
             echo "⏳ Waiting for application startup..."
