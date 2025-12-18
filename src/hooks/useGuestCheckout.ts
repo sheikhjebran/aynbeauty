@@ -31,8 +31,10 @@ const SESSION_EXPIRY_MS = 24 * 60 * 60 * 1000 // 24 hours
  * Handles session creation, data persistence, and order creation
  */
 export function useGuestCheckout() {
-  // Save checkout data to localStorage
+  // Save checkout data to localStorage (client-side only)
   const saveCheckoutData = useCallback((data: GuestCheckoutData) => {
+    if (typeof window === 'undefined') return ''
+    
     const sessionData = {
       data,
       timestamp: Date.now(),
@@ -42,8 +44,10 @@ export function useGuestCheckout() {
     return sessionData.sessionId
   }, [])
 
-  // Retrieve checkout data from localStorage
+  // Retrieve checkout data from localStorage (client-side only)
   const getCheckoutData = useCallback((): GuestCheckoutData | null => {
+    if (typeof window === 'undefined') return null
+    
     try {
       const saved = localStorage.getItem(GUEST_CHECKOUT_KEY)
       if (!saved) return null
@@ -63,8 +67,10 @@ export function useGuestCheckout() {
     }
   }, [])
 
-  // Clear checkout data
+  // Clear checkout data (client-side only)
   const clearCheckoutData = useCallback(() => {
+    if (typeof window === 'undefined') return
+    
     localStorage.removeItem(GUEST_CHECKOUT_KEY)
     localStorage.removeItem(GUEST_SESSION_KEY)
   }, [])
@@ -209,6 +215,8 @@ function generateSessionId(): string {
  * Helper to check if checkout data is expired
  */
 export function isCheckoutSessionExpired(): boolean {
+  if (typeof window === 'undefined') return true
+  
   try {
     const saved = localStorage.getItem(GUEST_CHECKOUT_KEY)
     if (!saved) return true
@@ -224,6 +232,8 @@ export function isCheckoutSessionExpired(): boolean {
  * Helper to clear all guest data
  */
 export function clearAllGuestData(): void {
+  if (typeof window === 'undefined') return
+  
   localStorage.removeItem(GUEST_CHECKOUT_KEY)
   localStorage.removeItem(GUEST_SESSION_KEY)
   localStorage.removeItem(GUEST_CART_KEY)
