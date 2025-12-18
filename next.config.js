@@ -12,10 +12,6 @@ const nextConfig = {
   // Configure output for production deployment
   output: "standalone",
 
-  // Force all pages to be server-side rendered to avoid digest mismatches
-  // This disables static page generation which causes the digest error
-  staticPageGenerationTimeout: 0,
-
   // Prevent cache issues
   onDemandEntries: {
     maxInactiveAge: 15 * 1000,
