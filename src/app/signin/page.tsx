@@ -1,7 +1,5 @@
 'use client'
 
-// Force dynamic rendering to avoid digest mismatches
-export const dynamic = 'force-dynamic'
 
 import { Suspense } from 'react'
 import { useEffect } from 'react'

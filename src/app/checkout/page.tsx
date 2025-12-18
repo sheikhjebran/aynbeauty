@@ -1,8 +1,5 @@
 'use client'
 
-// Force dynamic rendering to avoid digest mismatches
-export const dynamic = 'force-dynamic'
-
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'

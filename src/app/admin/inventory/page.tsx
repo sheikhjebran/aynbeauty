@@ -1,8 +1,5 @@
 'use client'
 
-// Force dynamic rendering to avoid digest mismatches
-export const dynamic = 'force-dynamic'
-
 import { useState, useEffect } from 'react'
 import AdminLayout from '@/components/AdminLayout'
 import { useImageCache } from '@/contexts/ImageCacheContext'

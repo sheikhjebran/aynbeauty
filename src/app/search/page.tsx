@@ -1,6 +1,3 @@
-// Force dynamic rendering to avoid digest mismatches
-export const dynamic = 'force-dynamic'
-
 import { ProductListingPage } from '@/components/product'
 import { Metadata } from 'next'
 

@@ -1,8 +1,5 @@
 'use client'
 
-// Force dynamic rendering to avoid digest mismatches
-export const dynamic = 'force-dynamic'
-
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import {
