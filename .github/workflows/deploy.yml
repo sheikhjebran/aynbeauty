@@ -78,13 +78,20 @@ jobs:
             git reset --hard origin/main
             echo "✅ Code updated"
 
-            # Copy production environment
+            # Setup production environment
             echo "📋 Setting up production environment..."
+            # Delete local env file if exists
+            if [ -f ".env.local" ]; then
+              rm .env.local
+              echo "🗑️ Deleted .env.local (local development env)"
+            fi
+            # Rename production env to .env.local
             if [ -f ".env.prod" ]; then
-              cp .env.prod .env.local
-              echo "✅ Production environment file copied"
+              mv .env.prod .env.local
+              echo "✅ Production environment activated (.env.prod → .env.local)"
             else
-              echo "⚠️ Warning: .env.prod not found, using existing .env.local"
+              echo "❌ ERROR: .env.prod not found!"
+              exit 1
             fi
 
             # Clean build artifacts to prevent stale cache issues
@@ -122,14 +129,37 @@ jobs:
             echo "✅ Static files verified: $STATIC_COUNT files"
             echo "✅ Public files verified: $PUBLIC_COUNT files"
 
-            # Restore product images
+            # Ensure public files are in standalone FIRST
+            echo "📁 Syncing public files to standalone..."
+            rsync -av public/ .next/standalone/public/ 2>/dev/null || cp -rf public/* .next/standalone/public/ 2>/dev/null || true
+            echo "✅ Public files synced"
+
+            # Restore product images AFTER syncing public (so they don't get deleted by rsync --delete)
             echo "📸 Restoring product images..."
             mkdir -p "$IMAGES_DIR"
+            mkdir -p ".next/standalone/public/uploads/products"
             if [ -d "$LATEST_BACKUP" ] && [ "$(ls -A $LATEST_BACKUP)" ]; then
-              cp -r "$LATEST_BACKUP"/* "$IMAGES_DIR/" 2>/dev/null
-              echo "✅ Product images restored"
+              cp -r "$LATEST_BACKUP"/* "$IMAGES_DIR/" 2>/dev/null || true
+              cp -r "$LATEST_BACKUP"/* ".next/standalone/public/uploads/products/" 2>/dev/null || true
+              IMAGE_COUNT=$(find "$IMAGES_DIR" -type f 2>/dev/null | wc -l)
+              echo "✅ Product images restored to both locations ($IMAGE_COUNT files)"
             else
               echo "ℹ️ No backup images to restore"
+            fi
+
+            # Copy environment variables to standalone
+            echo "🔐 Copying environment variables to standalone..."
+            if [ -f ".env.local" ]; then
+              cp .env.local .next/standalone/.env.local
+              # Verify database credentials are present
+              if grep -q "DB_PASSWORD" .env.local && grep -q "DB_NAME" .env.local; then
+                echo "✅ Environment variables copied to standalone (DB credentials verified)"
+              else
+                echo "⚠️ Warning: Database credentials may be missing in .env.local"
+              fi
+            else
+              echo "❌ ERROR: .env.local not found!"
+              exit 1
             fi
 
             # Update database schema (if migration exists)
@@ -149,11 +179,26 @@ jobs:
             sudo chmod -R 775 "$IMAGES_DIR" 2>/dev/null || chmod -R 775 "$IMAGES_DIR"
             echo "✅ Permissions set"
 
+            # Verify environment file in standalone
+            echo "🔍 Verifying environment configuration..."
+            if [ -f ".next/standalone/.env.local" ]; then
+              echo "✅ .env.local exists in standalone directory"
+              echo "Environment variables loaded:"
+              grep -E "^(DB_HOST|DB_NAME|NODE_ENV|PORT)=" .next/standalone/.env.local | sed 's/=.*/=***/' || echo "Could not read env file"
+            else
+              echo "❌ .env.local NOT FOUND in standalone directory!"
+              exit 1
+            fi
+
             # Start the application with PM2
             echo "🔄 Starting application with PM2..."
-            pm2 start ecosystem.config.js
+            pm2 start ecosystem.config.js --update-env
             pm2 save
             echo "✅ Application started"
+
+            # Show PM2 status
+            echo "📊 PM2 Status:"
+            pm2 list
 
             # Wait for application to be ready - increased timeout
             echo "⏳ Waiting for application startup..."

@@ -2,18 +2,20 @@ module.exports = {
   apps: [
     {
       name: "aynbeauty",
-      script: ".next/standalone/server.js",
+      script: "server.js",
+      cwd: ".next/standalone",
       instances: 1,
       exec_mode: "fork",
       autorestart: true,
       watch: false,
       max_memory_restart: "500M",
+      env_file: ".env.local",
       env: {
         NODE_ENV: "production",
         PORT: 3000,
       },
-      error_file: "./logs/aynbeauty-error.log",
-      out_file: "./logs/aynbeauty-out.log",
+      error_file: "../../logs/aynbeauty-error.log",
+      out_file: "../../logs/aynbeauty-out.log",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
       merge_logs: true,
 
